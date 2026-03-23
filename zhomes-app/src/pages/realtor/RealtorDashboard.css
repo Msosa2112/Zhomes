@@ -474,6 +474,10 @@
         width: 100%;
         justify-content: center;
     }
+
+    .realtor-dashboard {
+        padding-bottom: 120px;
+    }
 }
 
 @media (max-width: 480px) {

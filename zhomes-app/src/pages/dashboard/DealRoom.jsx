@@ -74,8 +74,8 @@ const TABS = [
     { key: 'timeline', label: 'Timeline', icon: Clock },
     { key: 'chat', label: 'Chat', icon: MessageSquare },
     { key: 'commission', label: 'Comisión', icon: DollarSign },
-    { key: 'notes', label: 'Notas', icon: StickyNote },
-    { key: 'ai', label: 'AI Intel', icon: Brain },
+    { key: 'people', label: 'People', icon: Users },
+    { key: 'ai', label: 'ZhomesAI', icon: Brain },
 ]
 
 /* AI Deal Intelligence Data */
@@ -290,7 +290,7 @@ export default function DealRoom() {
                     </div>
                 )}
 
-                {/* AI Intel tab */}
+                {/* ZhomesAI tab */}
                 {activeTab === 'ai' && (
                     <div className="ai-intel-panel animate-fadeInUp">
                         {/* Deal Score */}
