@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, Search, Users, Calculator, Building2, Sun, Moon } from 'lucide-react'
+import { Home, Search, Users, Calculator, Building2, Sun, Moon, Map } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton, IonButtons } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
 import './PublicLayoutMobile.css'
@@ -27,6 +27,7 @@ export default function PublicLayoutMobile() {
     const navs = [
         { path: '/', icon: Home, label: 'Inicio' },
         { path: '/propiedades', icon: Search, label: 'Buscar' },
+        { path: '/mapa', icon: Map, label: 'Mapa' },
         { path: '/realtors', icon: Users, label: 'Equipo' },
         { path: '/calculadora', icon: Calculator, label: 'Calcular' },
     ]

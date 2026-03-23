@@ -9,6 +9,7 @@ import LandingPageMobile from './pages/mobile/public/LandingPageMobile'
 import PropertiesPageMobile from './pages/mobile/public/PropertiesPageMobile'
 import PropertyDetailPageMobile from './pages/mobile/public/PropertyDetailPageMobile'
 import RealtorsPageMobile from './pages/mobile/public/RealtorsPageMobile'
+import MapPageMobile from './pages/mobile/public/MapPageMobile'
 import MortgageCalculatorPageMobile from './pages/mobile/public/MortgageCalculatorPageMobile'
 import LoginPageMobile from './pages/mobile/auth/LoginPageMobile'
 import VibeSearchPage from './pages/public/VibeSearchPage'
@@ -43,6 +44,7 @@ export default function AppRoutes() {
                 <Route path="/" element={<LandingPageMobile />} />
                 <Route path="/propiedades" element={<PropertiesPageMobile />} />
                 <Route path="/propiedades/:id" element={<PropertyDetailPageMobile />} />
+                <Route path="/mapa" element={<MapPageMobile />} />
                 <Route path="/realtors" element={<RealtorsPageMobile />} />
                 <Route path="/calculadora" element={<MortgageCalculatorPageMobile />} />
                 <Route path="/vibe" element={<VibeSearchPage />} />

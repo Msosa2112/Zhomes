@@ -1,0 +1,145 @@
+.mobile-map-page {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background-color: var(--bg-primary, #121212);
+    overflow: hidden;
+}
+
+.zhomes-map {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+/* Fix marker styles to not collide dynamically */
+.zhomes-custom-marker {
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+}
+
+/* Glassmorphic popup container overriding leaflet */
+.zhomes-map-popup .leaflet-popup-content-wrapper {
+    background: rgba(30, 30, 30, 0.85); /* dark mode base */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+/* Light mode specific popup */
+.mobile-map-page.light .zhomes-map-popup .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.zhomes-map-popup .leaflet-popup-tip {
+    background: rgba(30, 30, 30, 0.85);
+}
+.mobile-map-page.light .zhomes-map-popup .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* Popup inner layout */
+.zhomes-map-popup .leaflet-popup-content {
+    margin: 0;
+    width: 220px !important;
+}
+
+.map-prop-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.map-prop-img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.mobile-map-page.light .map-prop-img {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.map-prop-info {
+    padding: 14px;
+    text-align: left;
+}
+
+.map-prop-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff; /* Use hardcoded white or app var */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mobile-map-page.light .map-prop-info h3 {
+    color: #1a1a1a;
+}
+
+.map-price {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+.mobile-map-page.light .map-price {
+    color: #1a1a1a;
+}
+
+.map-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    color: #a0a0a0;
+    font-size: 0.75rem;
+    align-items: center;
+}
+.mobile-map-page.light .map-meta {
+    color: #666;
+}
+
+.map-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.map-meta svg {
+    opacity: 0.7;
+}
+
+.map-btn {
+    width: 100%;
+    background: var(--zhomes-red, #E31E24);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
+}
+
+.map-btn:active {
+    opacity: 0.8;
+}
+
+/* Clean up Leaflet generic controls so it blends nicely */
+.leaflet-control-container .leaflet-routing-container {
+    display: none;
+}

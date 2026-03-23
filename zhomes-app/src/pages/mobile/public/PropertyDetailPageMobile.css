@@ -108,6 +108,7 @@
     font-size: 1.6rem;
     font-weight: 900;
     margin: 4px 0;
+    color: var(--text-primary);
 }
 
 .mpd-city {
@@ -147,12 +148,52 @@
     font-size: 1.2rem;
     font-weight: 800;
     margin-bottom: 12px;
+    color: var(--text-primary);
 }
 
 .mpd-desc p {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.6;
+}
+
+.mpd-map-wrap {
+    margin-top: 10px;
+}
+
+.mpd-map-wrap h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.mpd-map-container {
+    height: 220px;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-medium);
+    z-index: 10;
+}
+
+/* Inherit popup styles for embedded map if a popup was shown */
+.mpd-map-container .leaflet-popup-content-wrapper {
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+[data-theme="light"] .mpd-map-container .leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.85);
+    color: #1a1a1a;
+}
+.mpd-map-container .leaflet-popup-tip {
+    background: rgba(30, 30, 30, 0.85);
+}
+[data-theme="light"] .mpd-map-container .leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.85);
 }
 
 .mpd-agent-card {
@@ -183,6 +224,7 @@
 .mpd-agent-card strong {
     font-size: 1.05rem;
     font-weight: 800;
+    color: var(--text-primary);
 }
 
 .mpd-agent-card span {

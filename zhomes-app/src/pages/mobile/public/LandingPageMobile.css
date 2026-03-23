@@ -22,7 +22,10 @@
 
 .mlp-hero-bg {
     position: absolute;
-    inset: 12px;
+    top: calc(env(safe-area-inset-top) + 72px); /* Invisible protection space for header */
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
     background: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800') center/cover;
     border-radius: 36px;
     z-index: 0;
