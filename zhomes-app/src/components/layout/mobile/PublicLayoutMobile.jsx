@@ -14,7 +14,7 @@ export default function PublicLayoutMobile() {
     const lastScrollY = useRef(0)
 
     const handleScroll = (e) => {
-        const currentScrollY = e.target.scrollTop;
+        const currentScrollY = e.detail ? e.detail.scrollTop : e.target.scrollTop;
         if (currentScrollY > lastScrollY.current + 12 && currentScrollY > 60) {
             // Scrolling down significantly
             setShowHeader(false);
@@ -60,9 +60,11 @@ export default function PublicLayoutMobile() {
                 </IonToolbar>
             </IonHeader>
 
-            <main className="mobile-pub-main" onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '100px', paddingTop: 'calc(60px + env(safe-area-inset-top))' }}>
-                <Outlet />
-            </main>
+            <IonContent scrollEvents={true} onIonScroll={handleScroll} className="mobile-pub-main" style={{ '--background': 'transparent' }}>
+                <div style={{ paddingBottom: '100px', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+                    <Outlet />
+                </div>
+            </IonContent>
 
             <nav className="mobile-floating-nav">
                 {navs.map(n => {

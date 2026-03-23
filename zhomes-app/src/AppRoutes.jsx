@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 /* Mobile Components */
 import PublicLayoutMobile from './components/layout/mobile/PublicLayoutMobile'
 import DashboardLayoutMobile from './components/layout/mobile/DashboardLayoutMobile'
-import RealtorLayout from './components/layout/RealtorLayout'
+import RealtorLayoutMobile from './components/layout/mobile/RealtorLayoutMobile'
 
 import LandingPageMobile from './pages/mobile/public/LandingPageMobile'
 import PropertiesPageMobile from './pages/mobile/public/PropertiesPageMobile'
@@ -23,11 +23,11 @@ import BrokerMessagesMobile from './pages/mobile/dashboard/BrokerMessagesMobile'
 import AnalyticsPageMobile from './pages/mobile/dashboard/AnalyticsPageMobile'
 import BrokerTerminal from './pages/dashboard/BrokerTerminal'
 
-import RealtorDashboard from './pages/realtor/RealtorDashboard'
-import RealtorTransactions from './pages/realtor/RealtorTransactions'
-import RealtorCommissions from './pages/realtor/RealtorCommissions'
-import RealtorMessages from './pages/realtor/RealtorMessages'
-import RealtorDocuments from './pages/realtor/RealtorDocuments'
+import RealtorDashboardMobile from './pages/mobile/dashboard/RealtorDashboardMobile'
+import RealtorTransactionsMobile from './pages/mobile/dashboard/RealtorTransactionsMobile'
+import RealtorCommissionsMobile from './pages/mobile/dashboard/RealtorCommissionsMobile'
+import RealtorMessagesMobile from './pages/mobile/dashboard/RealtorMessagesMobile'
+import RealtorDocumentsMobile from './pages/mobile/dashboard/RealtorDocumentsMobile'
 import RealtorProfile from './pages/realtor/RealtorProfile'
 import CreatePropertyPage from './pages/realtor/CreatePropertyPage'
 
@@ -64,12 +64,12 @@ export default function AppRoutes() {
             </Route>
 
             {/* Portal Realtor */}
-            <Route element={<RealtorLayout />}>
-                <Route path="/realtor" element={<RealtorDashboard />} />
-                <Route path="/realtor/transacciones" element={<RealtorTransactions />} />
-                <Route path="/realtor/documentos" element={<RealtorDocuments />} />
-                <Route path="/realtor/comisiones" element={<RealtorCommissions />} />
-                <Route path="/realtor/mensajes" element={<RealtorMessages />} />
+            <Route element={<RealtorLayoutMobile />}>
+                <Route path="/realtor" element={<RealtorDashboardMobile />} />
+                <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
+                <Route path="/realtor/documentos" element={<RealtorDocumentsMobile />} />
+                <Route path="/realtor/comisiones" element={<RealtorCommissionsMobile />} />
+                <Route path="/realtor/mensajes" element={<RealtorMessagesMobile />} />
                 <Route path="/realtor/perfil" element={<RealtorProfile />} />
                 <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />
             </Route>

@@ -1,0 +1,134 @@
+/* Custom styles for Realtor Mobile Dashboard extending base concepts */
+
+/* XP Row */
+.m-xp-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 12px;
+}
+
+.m-xp-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+.m-xp-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.m-xp-info strong {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.m-xp-info span {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.m-xp-bar-container {
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+.m-xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    border-radius: 4px;
+}
+
+/* Streak Row */
+.m-streak-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.m-streak-icon {
+    font-size: 32px;
+}
+
+.m-streak-data {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.m-streak-data strong {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.m-streak-data span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Challenges List */
+.m-challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.m-challenge-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.m-challenge-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.m-challenge-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.m-challenge-text strong {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.m-challenge-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+}

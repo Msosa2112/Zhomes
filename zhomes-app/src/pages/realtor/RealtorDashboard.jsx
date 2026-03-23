@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import TransactionTimeline from '../../components/shared/TransactionTimeline'
 import AIInsightsWidget from '../../components/dashboard/AIInsightsWidget'
 import { REALTORS, REALTOR_TRANSACTIONS, REALTOR_COMMISSIONS } from '../../data/mockData'
+import '../dashboard/DashboardPage.css'
 import './RealtorDashboard.css'
 
 const CHALLENGES = [

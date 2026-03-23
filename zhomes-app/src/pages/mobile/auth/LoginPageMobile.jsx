@@ -5,11 +5,22 @@ import './LoginPageMobile.css'
 
 export default function LoginPageMobile() {
     const navigate = useNavigate()
-    const [role, setRole] = useState('broker')
+    const [role, setRole] = useState('realtor')
+    const [email, setEmail] = useState('valcarceljessy@gmail.com')
+
+    const handleRoleSwitch = (newRole) => {
+        setRole(newRole)
+        setEmail(newRole === 'broker' ? 'gilbert@zhomesre.com' : 'valcarceljessy@gmail.com')
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        navigate('/dashboard')
+        // Determine routing based on assigned info
+        if (role === 'realtor') {
+            navigate('/realtor')
+        } else {
+            navigate('/dashboard')
+        }
     }
 
     return (
@@ -24,10 +35,10 @@ export default function LoginPageMobile() {
                 </div>
 
                 <div className="ml-role-switcher">
-                    <button className={role === 'broker' ? 'active' : ''} onClick={() => setRole('broker')}>
+                    <button className={role === 'broker' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('broker')}>
                         <Building2 size={18} /> Broker
                     </button>
-                    <button className={role === 'realtor' ? 'active' : ''} onClick={() => setRole('realtor')}>
+                    <button className={role === 'realtor' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('realtor')}>
                         <User size={18} /> Realtor
                     </button>
                 </div>
@@ -35,7 +46,7 @@ export default function LoginPageMobile() {
                 <form className="ml-form" onSubmit={handleSubmit}>
                     <div className="ml-form-group">
                         <label>Email</label>
-                        <input type="email" placeholder="tu@zhomes.com" defaultValue={role === 'broker' ? 'gilbert@zhomesre.com' : 'valcarceljessy@gmail.com'} />
+                        <input type="email" placeholder="tu@zhomes.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="ml-form-group">
                         <label>Contraseña</label>

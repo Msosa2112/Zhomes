@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, Users, TrendingUp, Briefcase, Sun, Moon } from 'lucide-react'
+import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, PlusCircle, Briefcase, Sun, Moon } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
-import './DashboardLayoutMobile.css'
+import './DashboardLayoutMobile.css' // Reusing the identical layout styles
 
-export default function DashboardLayoutMobile() {
+export default function RealtorLayoutMobile() {
     const loc = useLocation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
@@ -24,16 +24,16 @@ export default function DashboardLayoutMobile() {
     }
 
     const navs = [
-        { path: '/dashboard', icon: Home, label: 'Inicio' },
-        { path: '/transacciones', icon: Briefcase, label: 'Pipeline' },
-        { path: '/documentos', icon: FileText, label: 'Docs' },
-        { path: '/mensajes', icon: MessageSquare, label: 'Chat' },
+        { path: '/realtor', icon: Home, label: 'Inicio' },
+        { path: '/realtor/transacciones', icon: Briefcase, label: 'Pipeline' },
+        { path: '/realtor/documentos', icon: FileText, label: 'Docs' },
+        { path: '/realtor/mensajes', icon: MessageSquare, label: 'Chat' },
     ]
 
     const extras = [
-        { path: '/comisiones', icon: CheckCircle2, label: 'Comis' },
-        { path: '/analytics', icon: TrendingUp, label: 'Analytics' },
-        { path: '/equipo', icon: Users, label: 'Equipo' },
+        { path: '/realtor/comisiones', icon: CheckCircle2, label: 'Comis' },
+        { path: '/realtor/crear-propiedad', icon: PlusCircle, label: 'Nueva' },
+        { path: '/realtor/perfil', icon: User, label: 'Perfil' },
     ]
 
     return (
@@ -52,7 +52,7 @@ export default function DashboardLayoutMobile() {
                     <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' }}>
                         <Link to="/" className="mobile-db-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', fontWeight: 'bold', textDecoration: 'none' }}>
                             <img src="/assets/logo/fav.png" alt="Z" style={{ height: '24px' }} />
-                            <span>ZHOMES Hub</span>
+                            <span>Realtor Hub</span>
                         </Link>
                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <button className="m-theme-toggle" onClick={toggleTheme} style={{ background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', padding: '8px' }}>
@@ -93,7 +93,7 @@ export default function DashboardLayoutMobile() {
 
             <nav className="mobile-floating-nav" style={{ zIndex: 1000 }}>
                 {navs.map(n => {
-                    const active = loc.pathname === n.path || (n.path !== '/dashboard' && loc.pathname.startsWith(n.path))
+                    const active = loc.pathname === n.path || (n.path !== '/realtor' && loc.pathname.startsWith(n.path))
                     return (
                         <Link key={n.path} to={n.path} className={`m-float-tab ${active ? 'active' : ''}`}>
                             <n.icon size={20} className="m-float-icon" />

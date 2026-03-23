@@ -7,8 +7,8 @@ import './LoginPage.css'
 export default function LoginPage() {
     const navigate = useNavigate()
     const [showPass, setShowPass] = useState(false)
-    const [role, setRole] = useState('broker')
-    const [email, setEmail] = useState('gilbert@zhomesre.com')
+    const [role, setRole] = useState('realtor')
+    const [email, setEmail] = useState('valcarceljessy@gmail.com')
 
     const handleRoleSwitch = (newRole) => {
         setRole(newRole)

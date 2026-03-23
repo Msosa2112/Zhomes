@@ -1,122 +1,182 @@
 .mobile-r-page {
+    position: relative;
+    background-color: #1a1b20;
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* Hide scrollbar universally for this app view */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar inside Ionic's Shadow DOM */
+ion-content::part(scroll)::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    background: transparent;
+}
+
+.mr-bg-left {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 45%;
+    height: 100vh;
+    z-index: 0;
+    /* Soft blend right edge into the dark background */
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+}
+
+.mr-bg-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background-image: url('/assets/agents/Gilbert Zaldivar/Gilbert Zaldivar.png');
+    background-size: cover;
+    background-position: center; 
+    transform: scaleX(-1);
+}
+
+.mr-content-right {
+    position: relative;
+    z-index: 1;
+    margin-left: 32%;
+    padding: calc(60px + env(safe-area-inset-top) + 2rem) 0 1rem 0.5rem; /* 0 right padding */
     display: flex;
     flex-direction: column;
-    background: var(--bg-primary);
-    min-height: 100vh;
-    padding: 1rem;
 }
 
 .mr-hero {
-    padding: 2rem 0;
-    text-align: center;
+    margin-bottom: 2rem;
+    text-align: right;
+    padding-right: 1.5rem; /* Let title keep some right spacing */
 }
 
 .mr-hero h1 {
-    font-size: 2rem;
-    font-weight: 900;
-    margin: 0 0 12px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    font-family: 'Times', 'Times New Roman', serif;
+    letter-spacing: 1px;
+    color: #f1f1f1;
 }
 
 .mr-hero p {
-    font-size: 1rem;
-    color: var(--text-tertiary);
+    font-size: 0.8rem;
+    color: #a0a0a0;
     margin: 0;
-    line-height: 1.4;
+    font-weight: 500;
 }
 
 .mr-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 14px;
 }
 
 .mr-card {
-    background: var(--bg-card);
-    border-radius: 24px;
-    border: 1px solid var(--border-medium);
-    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: none;
+    border-radius: 16px 0 0 16px;
+    padding: 12px 12px 12px 14px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 2rem 1.5rem;
-    text-align: center;
+    gap: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
+
+
 
 .mr-card-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+    width: 90px;
+    height: 110px;
+    border-radius: 12px;
     object-fit: cover;
-    border: 4px solid var(--bg-secondary);
-    margin-bottom: 1rem;
+    filter: grayscale(100%) contrast(1.1);
 }
 
-.mr-card h2 {
-    font-size: 1.4rem;
+.mr-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mr-name-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.mr-name-wrap h2 {
+    font-size: 1.05rem;
     font-weight: 800;
-    margin: 0 0 4px;
+    margin: 0 0 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
 }
 
 .mr-title {
-    font-size: 0.95rem;
-    color: var(--zhomes-gold);
-    font-weight: 700;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.mr-data-row {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.mr-exp {
-    font-size: 0.85rem;
-    color: var(--text-tertiary);
-    display: block;
-}
-
-.mr-lang {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.mr-bio {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 1.5rem;
+    font-size: 0.7rem;
+    color: #9aa0a6;
+    line-height: 1.2;
 }
 
 .mr-card-actions {
     display: flex;
-    gap: 12px;
-    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.mr-a-btn {
-    flex: 1;
-    background: var(--text-primary);
-    color: var(--bg-primary);
-    border: none;
-    padding: 14px;
-    border-radius: 16px;
-    font-weight: 800;
-    font-size: 1rem;
+.mr-a-btn-round {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
 }
 
-.mr-a-btn.oline {
-    background: transparent;
-    border: 2px solid var(--border-medium);
-    color: var(--text-primary);
+.mr-contact-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
+
+.mr-c-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.mr-c-label {
+    color: #8a8d91;
+    font-size: 0.65rem;
+    width: 14px;
+}
+
+.mr-c-val {
+    color: #e1e1e1;
+    font-size: 0.68rem;
+    font-weight: 500;
+}

@@ -31,24 +31,7 @@ export default function RealtorLayout() {
     return (
         <div className="dashboard-layout realtor-portal">
             <div className="dashboard-screen">
-                {/* WebGL animated background */}
-                <div className="grainient-bg">
-                    <Grainient
-                        color1={theme === 'dark' ? "#050505" : "#F7F8FA"}
-                        color2={theme === 'dark' ? "#61170f" : "#FFE082"}
-                        color3={theme === 'dark' ? "#190606" : "#FFFFFF"}
-                        timeSpeed={0.75}
-                        colorBalance={theme === 'dark' ? 0.13 : 0.6}
-                        warpStrength={2.25}
-                        warpFrequency={9.3} warpSpeed={2.8} warpAmplitude={50}
-                        blendAngle={0} blendSoftness={0.28} rotationAmount={500}
-                        noiseScale={2.55} grainAmount={0.1} grainScale={2}
-                        grainAnimated
-                        contrast={theme === 'dark' ? 1.5 : 1.1}
-                        gamma={1} saturation={1}
-                        centerX={0} centerY={0} zoom={0.9}
-                    />
-                </div>
+                {/* Removed animated background per user request for simplicity */}
                 <nav className="top-navbar">
                     <div className="navbar-nav navbar-nav-left">
                         {navItems.slice(0, 3).map(item => {
