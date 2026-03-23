@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 1.5rem;
     padding: 1rem;
+    padding-bottom: 120px; /* Previene la superposición de la navbar */
 }
 
 .mobile-dash-header h2 {
@@ -15,6 +16,42 @@
     font-size: 0.95rem;
     color: var(--text-tertiary);
     margin: 0;
+}
+
+.mobile-quick-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.m-quick-btn {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-secondary);
+}
+
+.m-quick-btn .mq-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+}
+
+.m-quick-btn span {
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .m-ai-widget {

@@ -1,4 +1,5 @@
-import { Brain, TrendingUp, Users, Target, Activity, AlertCircle } from 'lucide-react'
+import { Brain, TrendingUp, Users, Target, Activity, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import './DashboardPageMobile.css'
 
 export default function DashboardPageMobile() {
@@ -9,8 +10,23 @@ export default function DashboardPageMobile() {
                 <p>Aquí tienes el estado de tu agencia.</p>
             </div>
 
+    <div className="mobile-quick-actions">
+                <Link to="/comisiones" className="m-quick-btn">
+                    <div className="mq-icon"><CheckCircle2 size={24} /></div>
+                    <span>Comis</span>
+                </Link>
+                <Link to="/analytics" className="m-quick-btn">
+                    <div className="mq-icon"><TrendingUp size={24} /></div>
+                    <span>Analytics</span>
+                </Link>
+                <Link to="/equipo" className="m-quick-btn">
+                    <div className="mq-icon"><Users size={24} /></div>
+                    <span>Equipo</span>
+                </Link>
+            </div>
+
             <div className="m-ai-widget">
-                <div className="mai-head"><Brain size={18} /> AI Intel</div>
+                <div className="mai-head"><Brain size={18} /> ZhomesAI</div>
                 <p>El pipeline tiene 3 deals listos para cierre. Te recomiendo revisar urgente los documentos de Tremont Dr.</p>
             </div>
 
