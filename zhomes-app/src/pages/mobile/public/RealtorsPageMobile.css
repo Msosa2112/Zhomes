@@ -50,30 +50,31 @@ ion-content::part(scroll)::-webkit-scrollbar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 45%;
+    width: 48%; /* Slightly wider base for the body */
     height: 100vh;
-    z-index: 0;
-    /* Soft blend right edge into the dark background */
-    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
-    mask-image: linear-gradient(to right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+    z-index: 60; /* Places him OVER the header */
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to right, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%);
 }
 
 .mr-bg-left::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 200%;
+    left: calc(-15% + 20px); /* Pushed 20px exactly to the right */
+    width: 140%; 
     height: 100%;
-    background-image: url('/assets/agents/Gilbert Zaldivar/Gilbert Zaldivar.png');
-    background-size: cover;
-    background-position: center; 
+    background-image: url('/assets/agents/Gilbert Zaldivar/Gilbert Zaldivar HQ.png');
+    background-size: auto 175%; /* Massively larger */
+    background-repeat: no-repeat;
+    background-position: center calc(5% - 40px); /* Raised 5px more */
     transform: scaleX(-1);
 }
 
 .mr-content-right {
     position: relative;
-    z-index: 1;
+    z-index: 65; /* Must be larger than .mr-bg-left (60) to appear over it */
     margin-left: 32%;
     padding: calc(60px + env(safe-area-inset-top) + 2rem) 0 1rem 0.5rem; /* 0 right padding */
     display: flex;
@@ -88,10 +89,9 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 .mr-hero h1 {
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: 800; /* Made slightly heavier for sans-serif */
     margin: 0 0 4px;
-    font-family: 'Times', 'Times New Roman', serif;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     color: var(--p-text);
 }
 
@@ -129,7 +129,6 @@ ion-content::part(scroll)::-webkit-scrollbar {
     height: 110px;
     border-radius: 12px;
     object-fit: cover;
-    filter: grayscale(100%) contrast(1.1);
 }
 
 .mr-card-info {

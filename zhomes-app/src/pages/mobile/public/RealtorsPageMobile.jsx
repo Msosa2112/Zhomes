@@ -24,7 +24,15 @@ export default function RealtorsPageMobile() {
                             key={a.id}
                             className="mr-card"
                         >
-                            <img src={a.photo} alt={a.name} className="mr-card-img" />
+                            <motion.img 
+                                src={a.photo} 
+                                alt={a.name} 
+                                className="mr-card-img" 
+                                initial={{ filter: 'grayscale(100%) contrast(1.1)' }}
+                                whileInView={{ filter: 'grayscale(0%) contrast(1.1)' }}
+                                viewport={{ margin: '-35% 0px -35% 0px' }}
+                                transition={{ duration: 0.4 }}
+                            />
                             <div className="mr-card-info">
                                 <div className="mr-name-wrap">
                                     <h2>{a.name}</h2>
