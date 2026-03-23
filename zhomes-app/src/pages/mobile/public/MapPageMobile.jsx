@@ -1,9 +1,10 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
+import { SparkService } from '../../../services/sparkService'
 import { useTheme } from '../../../context/ThemeContext'
 import { Bed, Bath, Expand } from 'lucide-react'
 import './MapPageMobile.css'
@@ -47,18 +48,43 @@ export default function MapPageMobile() {
     // Default center to Louisville, KY based on mock data address locations
     const centerPosition = [38.2180, -85.6580];
 
-    // Generate/Use map points
-    const properties = useMemo(() => {
-        return (MOCK_PROPERTIES || []).map(p => {
-            const lat = Number(p.lat);
-            const lng = Number(p.lng);
-            return {
-                ...p,
-                lat: !isNaN(lat) ? lat : (38.15 + ((p.id || 0) * 0.012)),
-                lng: !isNaN(lng) ? lng : (-85.7 + ((p.id || 0) * 0.015)),
-                price: p.price || 0
-            }
-        })
+    const [properties, setProperties] = useState([]);
+
+    useEffect(() => {
+        SparkService.getActiveListings("MlsStatus Eq 'Active'", 50)
+            .then(data => {
+                const results = data.D?.Results;
+                if (results && results.length > 0) {
+                    setProperties(results.map(p => ({
+                        id: String(p.Id),
+                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
+                        price: p.StandardFields.ListPrice || 0,
+                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                        beds: p.StandardFields.BedsTotal || 0,
+                        baths: p.StandardFields.BathsTotal || 0,
+                        sqft: p.StandardFields.BuildingAreaTotal || 0,
+                        lat: p.StandardFields.Latitude || (38.15 + (Math.random() * 0.1)),
+                        lng: p.StandardFields.Longitude || (-85.7 + (Math.random() * 0.1)),
+                        title: p.StandardFields.UnparsedAddress,
+                        exclusive: false
+                    })));
+                } else {
+                    throw new Error("No data returned from Spark API");
+                }
+            })
+            .catch(err => {
+                console.warn("Spark API Failed (App Pending Approval). Falling back to mock data.", err);
+                setProperties((MOCK_PROPERTIES || []).map(p => {
+                    const lat = Number(p.lat);
+                    const lng = Number(p.lng);
+                    return {
+                        ...p,
+                        lat: !isNaN(lat) ? lat : (38.15 + ((p.id || 0) * 0.012)),
+                        lng: !isNaN(lng) ? lng : (-85.7 + ((p.id || 0) * 0.015)),
+                        price: p.price || 0
+                    }
+                }));
+            });
     }, []);
 
     // Selection of tiles depending on theme

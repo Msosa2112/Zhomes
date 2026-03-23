@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, MapPin, Share, Heart, Play, BedDouble, Bath, Maximize, Star } from 'lucide-react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'motion/react'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useEffect } from 'react'
 import { useTheme } from '../../../context/ThemeContext'
 import { MOCK_PROPERTIES, REALTORS } from '../../../data/mockData'
+import { SparkService } from '../../../services/sparkService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
 import './PropertyDetailPageMobile.css'
 
@@ -24,7 +24,8 @@ function MapResizer() {
 export default function PropertyDetailPageMobile() {
     const { id } = useParams()
     const navigate = useNavigate()
-    const property = MOCK_PROPERTIES.find(p => p.id === parseInt(id))
+    const [property, setProperty] = useState(null)
+    const [loading, setLoading] = useState(true)
     const [realtorSelectorOpen, setRealtorSelectorOpen] = useState(false)
     const [viewerOpen, setViewerOpen] = useState(false)
     const [selectedRealtor, setSelectedRealtor] = useState(null)
@@ -50,6 +51,44 @@ export default function PropertyDetailPageMobile() {
         iconAnchor: [16, 32]
     })
 
+    useEffect(() => {
+        setLoading(true);
+        SparkService.getListingDetails(id)
+            .then(data => {
+                const results = data.D?.Results;
+                if (results && results.length > 0) {
+                    const p = results[0];
+                    setProperty({
+                        id: String(p.Id),
+                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
+                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
+                        price: p.StandardFields.ListPrice || 0,
+                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                        beds: p.StandardFields.BedsTotal || 0,
+                        baths: p.StandardFields.BathsTotal || 0,
+                        sqft: p.StandardFields.BuildingAreaTotal || 0,
+                        lat: p.StandardFields.Latitude || null,
+                        lng: p.StandardFields.Longitude || null,
+                        desc: p.StandardFields.PublicRemarks || 'Descripción no disponible',
+                        exclusive: false
+                    });
+                } else {
+                    throw new Error("Property not found in Spark or not format matched");
+                }
+            })
+            .catch(err => {
+                console.warn("Spark API error or token disabled. Fallback to mock data.", err);
+                const fallbackProp = MOCK_PROPERTIES.find(p => p.id === parseInt(id)) || MOCK_PROPERTIES[0];
+                setProperty({
+                    ...fallbackProp,
+                    id: String(fallbackProp.id),
+                    desc: 'Hermosa casa completamente renovada en una de las mejores zonas de la ciudad. Cuenta con acabados modernos, concina concepto abierto con topes de granito y un patio trasero amplio ideal para el entretenimiento. Electrodomésticos de acero inoxidable incluidos.'
+                });
+            })
+            .finally(() => setLoading(false));
+    }, [id]);
+
+    if (loading) return <div style={{padding:'4rem 2rem', textAlign:'center', color:'#888'}}>Cargando detalles...</div>;
     if (!property) return null
 
     const activeRealtor = selectedRealtor
@@ -122,7 +161,7 @@ export default function PropertyDetailPageMobile() {
 
                 <div className="mpd-desc">
                     <h2>Acerca de esta propiedad</h2>
-                    <p>Hermosa casa completamente renovada en una de las mejores zonas de la ciudad. Cuenta con acabados modernos, concina concepto abierto con topes de granito y un patio trasero amplio ideal para el entretenimiento. Electrodomésticos de acero inoxidable incluidos.</p>
+                    <p>{property.desc}</p>
                 </div>
 
                 <div className="mpd-map-wrap">

@@ -3,7 +3,7 @@
     flex-direction: column;
     background: var(--bg-primary);
     min-height: 100vh;
-    padding-top: 16px;
+    padding-top: 76px; /* Offset to prevent overlap with the transparent global header */
 }
 
 .mpp-top-info {

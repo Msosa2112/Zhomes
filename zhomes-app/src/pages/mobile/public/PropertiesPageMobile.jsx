@@ -1,12 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { SparkService } from '../../../services/sparkService'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
 import './PropertiesPageMobile.css'
 
 export default function PropertiesPageMobile() {
-    const [filter, setFilter] = useState('Apartamentos')
+    const [filter, setFilter] = useState('Casas');
+    const [properties, setProperties] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        let sparkFilter = "MlsStatus Eq 'Active'";
+        if (filter === 'Apartamentos') sparkFilter += " And PropertySubType Eq 'Condominium'";
+        if (filter === 'Casas') sparkFilter += " And PropertySubType Eq 'Single Family Residence'";
+        if (filter === 'Lotes') sparkFilter += " And PropertyType Eq 'Land'";
+
+        setLoading(true);
+        SparkService.getActiveListings(sparkFilter, 20)
+            .then(data => {
+                const results = data.D?.Results;
+                if (results && results.length > 0) {
+                    setProperties(results.map(p => ({
+                        id: String(p.Id),
+                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
+                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
+                        price: p.StandardFields.ListPrice || 0,
+                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                    })));
+                } else {
+                    throw new Error("No data returned from Spark API");
+                }
+            })
+            .catch(err => {
+                console.warn("Spark API Failed (App Pending Approval). Falling back to mock data.", err);
+                setProperties(MOCK_PROPERTIES.sort(() => 0.5 - Math.random()).slice(0, 8));
+            })
+            .finally(() => setLoading(false));
+    }, [filter]);
 
     return (
         <div className="mobile-props-page">
@@ -36,7 +68,9 @@ export default function PropertiesPageMobile() {
             </div>
 
             <div className="mpp-list">
-                {MOCK_PROPERTIES.map((p, i) => (
+                {loading && <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>Buscando propiedades en tiempo real...</div>}
+                {!loading && properties.length === 0 && <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>No se encontraron propiedades.</div>}
+                {!loading && properties.map((p, i) => (
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
