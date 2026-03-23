@@ -37,10 +37,10 @@ export default function RealtorsPageMobile() {
 
                                 <div className="mr-card-actions">
                                     <button className="mr-a-btn-round" onClick={() => window.location.href = `tel:${a.phone}`}>
-                                        <Phone size={14} fill="white" />
+                                        <Phone size={14} className="mr-action-svg" />
                                     </button>
                                     <button className="mr-a-btn-round" onClick={() => window.location.href = `mailto:${a.email}`}>
-                                        <MessageCircle size={14} fill="white" />
+                                        <MessageCircle size={14} className="mr-action-svg" />
                                     </button>
                                 </div>
                             </div>

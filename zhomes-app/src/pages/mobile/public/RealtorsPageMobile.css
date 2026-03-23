@@ -1,9 +1,32 @@
 .mobile-r-page {
+    --p-bg: #1a1b20;
+    --p-text: #ffffff;
+    --p-text-secondary: #a0a0a0;
+    --p-card-bg: rgba(255, 255, 255, 0.04);
+    --p-card-border: rgba(255, 255, 255, 0.1);
+    --p-btn-bg: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    --p-btn-border: rgba(255,255,255,0.1);
+    --p-btn-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.3);
+    --p-icon-fill: #ffffff;
+
     position: relative;
-    background-color: #1a1b20;
+    background-color: var(--p-bg);
     min-height: 100vh;
-    color: white;
+    color: var(--p-text);
     overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="light"] .mobile-r-page {
+    --p-bg: var(--bg-primary);
+    --p-text: var(--text-primary);
+    --p-text-secondary: var(--text-secondary);
+    --p-card-bg: rgba(0, 0, 0, 0.03); 
+    --p-card-border: rgba(0, 0, 0, 0.1);
+    --p-btn-bg: linear-gradient(145deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02));
+    --p-btn-border: rgba(0, 0, 0, 0.1);
+    --p-btn-shadow: inset 0 1px 1px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.05);
+    --p-icon-fill: var(--text-primary);
 }
 
 /* Hide scrollbar universally for this app view */
@@ -69,12 +92,12 @@ ion-content::part(scroll)::-webkit-scrollbar {
     margin: 0 0 4px;
     font-family: 'Times', 'Times New Roman', serif;
     letter-spacing: 1px;
-    color: #f1f1f1;
+    color: var(--p-text);
 }
 
 .mr-hero p {
     font-size: 0.8rem;
-    color: #a0a0a0;
+    color: var(--p-text-secondary);
     margin: 0;
     font-weight: 500;
 }
@@ -86,10 +109,10 @@ ion-content::part(scroll)::-webkit-scrollbar {
 }
 
 .mr-card {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--p-card-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--p-card-border);
     border-right: none;
     border-radius: 16px 0 0 16px;
     padding: 12px 12px 12px 14px;
@@ -132,7 +155,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 .mr-title {
     font-size: 0.7rem;
-    color: #9aa0a6;
+    color: var(--p-text-secondary);
     line-height: 1.2;
 }
 
@@ -146,14 +169,18 @@ ion-content::part(scroll)::-webkit-scrollbar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-    border: 1px solid rgba(255,255,255,0.1);
-    color: white;
+    background: var(--p-btn-bg);
+    border: 1px solid var(--p-btn-border);
+    color: var(--p-text);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: var(--p-btn-shadow);
     cursor: pointer;
+}
+
+.mr-action-svg {
+    fill: var(--p-icon-fill);
 }
 
 .mr-contact-rows {
@@ -170,13 +197,13 @@ ion-content::part(scroll)::-webkit-scrollbar {
 }
 
 .mr-c-label {
-    color: #8a8d91;
+    color: var(--p-text-secondary);
     font-size: 0.65rem;
     width: 14px;
 }
 
 .mr-c-val {
-    color: #e1e1e1;
+    color: var(--p-text);
     font-size: 0.68rem;
     font-weight: 500;
 }
