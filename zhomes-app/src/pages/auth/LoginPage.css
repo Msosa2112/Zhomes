@@ -1,0 +1,195 @@
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #F7F8FA 0%, #FFF5F5 30%, #F7F8FA 100%);
+}
+
+.login-bg {
+    position: absolute;
+    inset: 0;
+}
+
+.login-gradient {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 30% 50%, rgba(227, 30, 36, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 30%, rgba(245, 166, 35, 0.03) 0%, transparent 60%);
+}
+
+.login-particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.login-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 440px;
+    padding: var(--space-10);
+    border-radius: var(--radius-xl);
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-xl) !important;
+    backdrop-filter: none !important;
+}
+
+.login-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-8);
+    transition: color var(--transition-fast);
+}
+
+.login-back:hover {
+    color: var(--zhomes-red);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-4);
+}
+
+.login-header h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.login-header p {
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+}
+
+/* ---- Role Switcher ---- */
+.role-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    padding: 4px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+}
+
+.role-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.role-btn.active {
+    background: var(--bg-card);
+    color: var(--zhomes-red);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.role-btn:not(.active):hover {
+    color: var(--text-secondary);
+}
+
+/* ---- Form ---- */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--text-primary);
+}
+
+.pass-wrap {
+    position: relative;
+}
+
+.pass-wrap .input {
+    padding-right: 44px;
+}
+
+.pass-toggle {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+}
+
+.login-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--space-2);
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: var(--space-6);
+    font-size: var(--text-xs);
+}
+
+.text-tertiary {
+    color: var(--text-tertiary);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+    .login-page {
+        padding: var(--space-4);
+        align-items: flex-start;
+        padding-top: var(--space-12);
+    }
+
+    .login-card {
+        padding: var(--space-6);
+    }
+
+    .login-header h1 {
+        font-size: var(--text-2xl);
+    }
+
+    .login-logo {
+        width: 48px;
+        height: 48px;
+    }
+
+    .login-back {
+        margin-bottom: var(--space-5);
+    }
+
+    .role-btn {
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-3);
+    }
+}

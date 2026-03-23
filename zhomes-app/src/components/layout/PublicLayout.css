@@ -1,0 +1,255 @@
+/* ---- Public Layout — Squishy Overrides ---- */
+
+/* Overriding global dashboard-screen for the clean vibe */
+.public-layout .grainient-bg {
+    opacity: 0.2;
+    /* Subdue the grainient to let the clean background shine */
+    mix-blend-mode: multiply;
+}
+
+[data-theme="dark"] .public-layout .grainient-bg {
+    opacity: 0.15;
+    mix-blend-mode: screen;
+}
+
+.public-layout .dashboard-screen {
+    background-color: var(--bg-primary, #f8f9fa) !important;
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px) !important;
+    background-size: 24px 24px !important;
+    border-radius: 48px !important;
+    margin: 12px;
+    height: calc(100vh - 24px);
+    box-shadow: 0 40px 80px -20px rgba(0, 20, 40, 0.08) !important;
+}
+
+[data-theme="dark"] .public-layout .dashboard-screen {
+    background-color: #0f172a !important;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px) !important;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Navbar Squishy Override */
+.public-layout .top-navbar {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 32px !important;
+    margin: 24px 24px 0 24px;
+    padding: 12px 24px !important;
+    height: auto !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="dark"] .public-layout .top-navbar {
+    background: rgba(30, 41, 59, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.public-layout .nav-link {
+    color: #64748b !important;
+    font-weight: 700 !important;
+    border-radius: 16px !important;
+    padding: 8px 16px !important;
+}
+
+.public-layout .nav-link:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #1e293b !important;
+}
+
+.public-layout .nav-link.active {
+    background: #ffffff !important;
+    color: #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .public-layout .nav-link {
+    color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .public-layout .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .public-layout .nav-link.active {
+    background: #334155 !important;
+    color: white !important;
+}
+
+/* CTA button in frame actions */
+.public-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    background: #3b82f6;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: none;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+.public-cta-btn:hover {
+    background: #2563eb;
+    box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Public main — pulled up to extend behind the notch actions row */
+.public-main {
+    padding: 0 !important;
+    margin-top: -54px;
+}
+
+/* ---- Footer (inside the scrollable screen) ---- */
+.public-footer {
+    padding: 60px 48px 48px;
+    margin-top: 80px;
+    transition: all var(--transition-base);
+    background: #ffffff !important;
+    border-radius: 48px 48px 0 0;
+    box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+}
+
+.dark .public-footer,
+[data-theme="dark"] .public-footer {
+    background: #1e293b !important;
+    border-color: #334155;
+    box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .public-footer {
+    color: #475569;
+}
+
+.footer-grid {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: var(--space-10);
+    margin-bottom: var(--space-12);
+}
+
+.footer-brand img {
+    height: 32px;
+    margin-bottom: var(--space-4);
+    filter: brightness(0.2);
+}
+
+[data-theme="dark"] .footer-brand img {
+    filter: brightness(1) invert(0);
+}
+
+.footer-brand p {
+    font-size: var(--text-sm);
+    color: #64748b;
+    max-width: 280px;
+}
+
+[data-theme="dark"] .footer-brand p {
+    color: #94a3b8;
+}
+
+.footer-links h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+    color: #1e293b;
+}
+
+[data-theme="dark"] .footer-links h4 {
+    color: white;
+}
+
+.footer-links a {
+    display: block;
+    font-size: var(--text-sm);
+    color: #64748b;
+    padding: var(--space-1) 0;
+    transition: color var(--transition-fast);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+[data-theme="dark"] .footer-links a {
+    color: #94a3b8;
+}
+
+.footer-links a:hover {
+    color: #3b82f6;
+}
+
+.footer-bottom {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    text-align: center;
+    padding-top: var(--space-8);
+    border-top: 2px solid #f1f5f9;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .footer-bottom {
+    border-top-color: #334155;
+    color: #64748b;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-8);
+    }
+}
+
+@media (max-width: 768px) {
+    .public-layout .dashboard-screen {
+        margin: 0;
+        border-radius: 0 !important;
+        height: 100vh;
+    }
+
+    .public-layout .top-navbar {
+        margin: 12px;
+        border-radius: 24px !important;
+    }
+
+    .public-cta-btn {
+        display: none;
+    }
+
+    .public-main {
+        margin-top: 0 !important;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    .public-footer {
+        padding: 40px 24px 120px;
+        border-radius: 36px 36px 0 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .public-footer {
+        padding: 40px 20px 100px;
+    }
+
+    .footer-grid {
+        gap: var(--space-5);
+    }
+}

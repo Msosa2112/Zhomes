@@ -1,0 +1,247 @@
+.mobile-pdetail {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    min-height: 100vh;
+    position: relative;
+}
+
+.mpd-nav {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: calc(1rem + env(safe-area-inset-top)) 1rem 1rem;
+    z-index: 100;
+}
+
+.mpd-nav-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mpd-icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mpd-hero {
+    height: 45vh;
+    position: relative;
+}
+
+.mpd-hero-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mpd-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.mpd-accessories-row {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    /* Alineación por debajo para respetar el margen exacto contra la caja (flecha roja inferior) */
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.mpd-play-btn {
+    pointer-events: auto;
+    /* Margen geométrico estricto dictado por las flechas de tu captura: */
+    /* Izq: 24px (línea azul), Abajo: 24px (flecha roja inf), Derecha: 24px (flecha roja der) */
+    margin: 0 24px 24px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-family: var(--font-heading), inherit;
+    text-transform: uppercase;
+    /* Forzar a llenar el espacio para que la distancia derecha se cumpla exactamente a 24px */
+    flex: 1;
+    justify-content: center;
+}
+
+.mpd-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem; /* Reducido de 2rem para compactar los espacios */
+    margin-top: -20px;
+    background: var(--bg-primary);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 0; /* Plano para que empate perfectamente con la lengüeta */
+    position: relative;
+    z-index: 20;
+}
+
+.mpd-price {
+    display: none;
+}
+
+.mpd-addr {
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin: 4px 0;
+}
+
+.mpd-city {
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mpd-specs-inline {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0;
+}
+
+.mpd-spec-mini {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.mpd-spec-mini strong {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.mpd-spec-mini span {
+    font-size: 0.95rem;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+.mpd-desc h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.mpd-desc p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.mpd-agent-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 8px 16px;
+    align-self: center;
+    border-radius: 50px;
+    border: 1px solid var(--border-medium);
+    cursor: pointer;
+}
+
+.mpd-agent-card img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.mpd-agent-card div {
+    display: flex;
+    flex-direction: column;
+}
+
+.mpd-agent-card strong {
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.mpd-agent-card span {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.mpd-contact-btn {
+    background: var(--zhomes-gold);
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.mpd-price-tab {
+    position: relative;
+    pointer-events: auto;
+    background: var(--bg-primary);
+    padding: 12px 24px 12px 24px;
+    border-radius: 24px 24px 0 0; /* Geometría para curva invertida */
+    color: var(--zhomes-red);
+    font-size: 2.2rem;
+    font-family: var(--font-heading), inherit; /* Forzada la tipografía propia de la App, NO la del png viejo */
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 21;
+    margin-left: auto; /* Empuja el tab hacia la derecha completamente */
+}
+
+/* Curvatura hacia afuera (Curva Invertida Perfecta con Máscara Vectorial) */
+.mpd-price-tab::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -24px;   /* Justo a la izquierda de la pestaña */
+    width: 24px;
+    height: 24px;
+    background: var(--bg-primary);
+    /* Cortamos un circulo perfecto en la esquina superior izquierda del cuadrado dejando rellenado solo abajo a la derecha */
+    -webkit-mask-image: radial-gradient(circle at 0 0, transparent 24px, black 24.5px);
+    mask-image: radial-gradient(circle at 0 0, transparent 24px, black 24.5px);
+}
+
+.mpd-fa-est {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.mpd-buy-btn {
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 1rem;
+}

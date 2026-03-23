@@ -1,0 +1,160 @@
+/* ============================================
+   STACKED ALERTS — Hover-to-expand cards
+   ============================================ */
+
+.stacked-alerts {
+    border-radius: var(--radius-xl);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    padding: var(--space-3);
+    cursor: default;
+    transition: box-shadow 0.3s ease;
+}
+
+.stacked-alerts:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* ---- Cards Stack ---- */
+.sa-cards {
+    display: flex;
+    flex-direction: column;
+}
+
+.sa-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    transition: box-shadow 0.2s ease;
+}
+
+.sa-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* ---- Card Icon ---- */
+.sa-card-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+
+/* ---- Card Body ---- */
+.sa-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.sa-card-text {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.sa-card-time {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ---- Footer ---- */
+.sa-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-1) 0;
+}
+
+.sa-count {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.sa-footer-text-wrap {
+    display: grid;
+}
+
+.sa-footer-text {
+    grid-row: 1;
+    grid-column: 1;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.sa-footer-viewall {
+    cursor: pointer;
+    color: var(--zhomes-red);
+}
+
+.sa-footer-viewall:hover {
+    text-decoration: underline;
+}
+
+/* ---- Compact variant ---- */
+.stacked-alerts.compact {
+    padding: var(--space-2);
+}
+
+.stacked-alerts.compact .sa-card {
+    padding: var(--space-2) var(--space-3);
+}
+
+.stacked-alerts.compact .sa-card-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.stacked-alerts.compact .sa-card-text {
+    font-size: var(--text-xs);
+}
+
+/* ---- Dark theme support (for modals/overlays) ---- */
+.stacked-alerts.dark {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stacked-alerts.dark .sa-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.stacked-alerts.dark .sa-card-text {
+    color: white;
+}
+
+.stacked-alerts.dark .sa-card-time {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.stacked-alerts.dark .sa-footer-text {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stacked-alerts.dark .sa-footer-viewall {
+    color: var(--zhomes-gold);
+}

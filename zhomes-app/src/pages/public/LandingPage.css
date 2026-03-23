@@ -1,0 +1,413 @@
+/* ---- Landing Page — Clean Squishy Vibe ---- */
+.squishy-vibe {
+    overflow: hidden;
+    position: relative;
+    background-color: var(--bg-primary, #f8f9fa);
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    font-family: var(--font-body);
+}
+
+.dark .squishy-vibe {
+    background-color: #0f172a;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Hero Section */
+.hero-section-squishy {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-20) var(--space-8);
+    background: transparent;
+    overflow: hidden;
+}
+
+.hero-squishy-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 48px;
+    box-shadow: 0 40px 80px -20px rgba(0, 20, 40, 0.08);
+    padding: 60px 40px;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+
+.dark .hero-squishy-card {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.5);
+}
+
+.squishy-eyebrow {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 6px 16px;
+    border-radius: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+.dark .squishy-eyebrow {
+    background: #0f172a;
+    color: #94a3b8;
+}
+
+.text-blue-accent {
+    color: #3b82f6;
+}
+
+.hero-text h1 {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+}
+
+.hero-text p {
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto 32px;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-primary-squishy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #3b82f6;
+    color: white;
+    padding: 16px 32px;
+    border-radius: 24px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    border: none;
+    text-decoration: none;
+}
+
+.btn-primary-squishy:hover {
+    background: #2563eb;
+    box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-ghost-squishy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: #64748b;
+    padding: 16px 32px;
+    border-radius: 24px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.2s;
+    border: 2px solid #e2e8f0;
+    text-decoration: none;
+}
+
+.dark .btn-ghost-squishy {
+    color: #94a3b8;
+    border-color: #334155;
+}
+
+.btn-ghost-squishy:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.dark .btn-ghost-squishy:hover {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+/* Stats */
+.stats-section {
+    padding: 80px 24px;
+    background: transparent;
+}
+
+.stats-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.stat-card-squishy {
+    text-align: center;
+    padding: 40px 24px;
+    border-radius: 36px;
+    background: #ffffff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.dark .stat-card-squishy {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: #f0f9ff;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.dark .stat-icon-wrapper {
+    background: #0f172a;
+}
+
+.stat-number {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+
+/* Featured */
+.featured-section {
+    padding: 80px 24px;
+    background: transparent;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-header h2 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 900;
+}
+
+.featured-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+.featured-card-squishy {
+    display: block;
+    border-radius: 40px;
+    overflow: hidden;
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    text-decoration: none;
+}
+
+.dark .featured-card-squishy {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.featured-image-squishy {
+    position: relative;
+    aspect-ratio: 4/3;
+    border-radius: 28px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.featured-image-squishy img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.featured-card-squishy:hover .featured-image-squishy img {
+    transform: scale(1.05);
+}
+
+.featured-price-squishy {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    color: #1e293b;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dark .featured-price-squishy {
+    background: rgba(15, 23, 42, 0.9);
+    color: white;
+}
+
+.featured-info {
+    padding: 0 12px 12px;
+}
+
+.featured-info h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+.featured-specs {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.dark .featured-info h3 {
+    color: white;
+}
+
+/* CTA Section */
+.squishy-cta {
+    padding: 100px 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.cta-card-squishy {
+    background: #ffffff;
+    border-radius: 48px;
+    padding: 80px 40px;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 40px 80px -20px rgba(0, 20, 40, 0.08);
+}
+
+.dark .cta-card-squishy {
+    background: #1e293b;
+    box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.4);
+}
+
+.cta-card-squishy h2 {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+}
+
+.cta-card-squishy p {
+    font-size: 1.25rem;
+    margin-bottom: 40px;
+}
+
+.dark .cta-card-squishy h2 {
+    color: white;
+}
+
+.dark .cta-card-squishy p {
+    color: #94a3b8;
+}
+
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .header-squishy {
+        margin: 16px;
+        padding: 16px 24px;
+    }
+
+    .hero-text h1 {
+        font-size: 3.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-squishy-card {
+        padding: 40px 20px;
+        border-radius: 36px;
+    }
+
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-primary-squishy,
+    .btn-ghost-squishy {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-card-squishy {
+        padding: 40px 20px;
+        border-radius: 36px;
+    }
+
+    .cta-card-squishy h2 {
+        font-size: 2.5rem;
+    }
+}

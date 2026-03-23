@@ -1,0 +1,29 @@
+.grainient-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.grainient-container canvas {
+    pointer-events: none;
+}
+
+/* Absolute background, clipped by .dashboard-screen's overflow:hidden + border-radius */
+/* Sticky background to cover full scrollable area */
+.grainient-bg {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    margin-bottom: -100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.grainient-bg .grainient-container {
+    position: absolute;
+    inset: 0;
+}

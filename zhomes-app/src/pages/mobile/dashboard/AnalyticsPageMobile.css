@@ -1,0 +1,193 @@
+.mobile-analytics-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.mobile-analytics-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
+
+.mobile-analytics-header p {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin: 0 0 1rem;
+}
+
+.mobile-analytics-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.mobile-analytics-tabs button {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.mobile-analytics-tabs button.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.mobile-card-kpi {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-card-kpi.span-full {
+    grid-column: span 2;
+}
+
+.mobile-card-kpi.highlight {
+    background: linear-gradient(135deg, rgba(227, 30, 36, 0.1) 0%, transparent 100%);
+    border-color: rgba(227, 30, 36, 0.2);
+}
+
+.kpi-label {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.kpi-trend {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+}
+
+.kpi-trend.pos {
+    color: #10B981;
+}
+
+.kpi-icon {
+    margin-bottom: 12px;
+}
+
+.kpi-icon.blue {
+    color: #3B82F6;
+}
+
+.kpi-icon.green {
+    color: #10B981;
+}
+
+.mobile-analytics-section h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.mobile-agent-perf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mobile-agent-perf-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+}
+
+.map-agent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.map-agent img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.map-agent div {
+    display: flex;
+    flex-direction: column;
+}
+
+.map-agent div strong {
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.map-agent div span {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.score {
+    font-weight: 900;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.score.max {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+}
+
+.score.high {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+}
+
+.mobile-zones-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.m-zone-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+}
+
+.zone-name {
+    font-weight: 700;
+}
+
+.zone-vol {
+    font-weight: 900;
+    color: var(--zhomes-red);
+}

@@ -1,0 +1,117 @@
+.m-team-page {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.m-team-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0;
+    text-align: center;
+}
+
+.m-podium-section {
+    display: flex;
+    justify-content: center;
+}
+
+.m-podium-card {
+    background: linear-gradient(to bottom, rgba(245, 158, 11, 0.1), transparent);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    position: relative;
+}
+
+.m-trophy {
+    position: absolute;
+    top: -20px;
+    filter: drop-shadow(0 4px 6px rgba(245, 158, 11, 0.4));
+}
+
+.m-pod-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #F59E0B;
+    margin: 16px 0 8px;
+}
+
+.m-podium-card h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
+
+.m-podium-card span {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    font-weight: 700;
+}
+
+.m-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.m-team-list h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.m-agent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+}
+
+.m-rank {
+    font-weight: 900;
+    color: var(--text-tertiary);
+    font-size: 1.1rem;
+    width: 30px;
+    text-align: center;
+}
+
+.m-agent-row img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.m-ainfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.m-ainfo strong {
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.m-ainfo span {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.m-avol {
+    font-weight: 900;
+    color: #10B981;
+}

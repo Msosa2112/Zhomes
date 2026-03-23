@@ -1,0 +1,12 @@
+/* ---- Realtor Portal — minimal overrides ---- */
+.realtor-badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--zhomes-red);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(227, 30, 36, 0.08);
+    border: 1px solid rgba(227, 30, 36, 0.15);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+}

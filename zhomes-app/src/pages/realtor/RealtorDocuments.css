@@ -1,0 +1,382 @@
+/* ---- Realtor Documents Page — Folder-based ---- */
+.rdoc-page {
+    padding: 0;
+}
+
+/* Stats pills */
+.rdoc-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.rdoc-stat-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+}
+
+.rdoc-stat-pill.total {
+    color: var(--text-primary);
+}
+
+.rdoc-stat-pill.approved {
+    color: #10B981;
+    border-color: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.04);
+}
+
+.rdoc-stat-pill.uploaded {
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.2);
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.rdoc-stat-pill.pending {
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.04);
+}
+
+/* Filter tabs */
+.rdoc-filter-tabs {
+    display: flex;
+    gap: var(--space-1);
+    padding: 3px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-6);
+    width: fit-content;
+}
+
+.rdoc-filter-btn {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rdoc-filter-btn:hover {
+    color: var(--text-primary);
+}
+
+.rdoc-filter-btn.active {
+    background: var(--bg-card);
+    color: var(--zhomes-red);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ---- Folders ---- */
+.rdoc-folders {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.rdoc-folder {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.rdoc-folder:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.rdoc-folder.open {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Folder header */
+.rdoc-folder-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease;
+}
+
+.rdoc-folder-header:hover {
+    background: var(--bg-secondary);
+}
+
+.rdoc-folder-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    background: rgba(227, 30, 36, 0.06);
+    color: var(--zhomes-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.rdoc-folder.open .rdoc-folder-icon-wrap {
+    background: var(--zhomes-red);
+    color: white;
+}
+
+.rdoc-folder-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rdoc-folder-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: 4px;
+}
+
+.rdoc-folder-name {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.rdoc-folder-status {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+.rdoc-folder-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+.rdoc-folder-sep {
+    margin: 0 var(--space-1);
+    opacity: 0.4;
+}
+
+/* Progress in header */
+.rdoc-folder-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.rdoc-progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.rdoc-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.rdoc-progress-pct {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--text-tertiary);
+    min-width: 32px;
+    text-align: right;
+}
+
+.rdoc-folder-chevron {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+/* Folder body */
+.rdoc-folder-body {
+    border-top: 1px solid var(--border-subtle);
+    padding: var(--space-4) var(--space-5);
+}
+
+/* Per-folder dropzone */
+.rdoc-folder-dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 2px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rdoc-folder-dropzone:hover {
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+    background: rgba(227, 30, 36, 0.02);
+}
+
+.rdoc-folder-dropzone strong {
+    color: var(--text-primary);
+}
+
+/* File list inside an open folder */
+.rdoc-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.rdoc-empty {
+    text-align: center;
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+.rdoc-file-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    transition: background 0.2s ease;
+}
+
+.rdoc-file-row:hover {
+    background: var(--bg-tertiary);
+}
+
+.rdoc-file-row.approved {
+    background: rgba(16, 185, 129, 0.04);
+}
+
+.rdoc-file-row.uploaded {
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.rdoc-file-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: rgba(227, 30, 36, 0.06);
+    color: var(--zhomes-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rdoc-file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rdoc-file-name {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.rdoc-file-type {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+.rdoc-file-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.rdoc-file-actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.rdoc-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rdoc-action-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.rdoc-action-btn.upload-action {
+    color: var(--zhomes-red);
+    border-color: rgba(227, 30, 36, 0.2);
+    background: rgba(227, 30, 36, 0.04);
+}
+
+.rdoc-action-btn.upload-action:hover {
+    background: rgba(227, 30, 36, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rdoc-folder-header {
+        flex-wrap: wrap;
+        padding: var(--space-3);
+    }
+
+    .rdoc-folder-progress {
+        width: 100%;
+        order: 5;
+    }
+
+    .rdoc-folder-meta {
+        flex-wrap: wrap;
+    }
+}

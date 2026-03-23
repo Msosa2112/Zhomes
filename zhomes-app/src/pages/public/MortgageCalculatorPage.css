@@ -1,0 +1,331 @@
+/* ═══════════════════════════════════════
+   MORTGAGE CALCULATOR PAGE
+   ═══════════════════════════════════════ */
+
+.mortgage-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+/* ── Header ── */
+.mortgage-header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+}
+
+.mortgage-header .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.mortgage-header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-3);
+    line-height: 1.1;
+}
+
+.mortgage-header p {
+    color: var(--text-tertiary);
+    font-size: var(--text-base);
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ── Card ── */
+.mortgage-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    backdrop-filter: blur(8px);
+    transition: box-shadow 0.3s ease;
+}
+
+.mortgage-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.mortgage-card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.mortgage-card-title svg {
+    color: var(--zhomes-red);
+}
+
+/* ── Grid Layout ── */
+.mortgage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.mortgage-inputs-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.mortgage-results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* ── Down Payment callout ── */
+.mortgage-down-amount {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: -8px;
+    margin-bottom: var(--space-3);
+    padding-left: 2px;
+}
+
+.mortgage-down-amount strong {
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+/* ── Term tabs ── */
+.mortgage-term-group {
+    margin-top: var(--space-3);
+}
+
+.mortgage-term-group .mortgage-slider-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    display: block;
+}
+
+.mortgage-term-tabs {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.mortgage-term-tab {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mortgage-term-tab:hover {
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+}
+
+.mortgage-term-tab.active {
+    background: var(--zhomes-red);
+    border-color: var(--zhomes-red);
+    color: white;
+    box-shadow: 0 2px 8px rgba(215, 38, 61, 0.25);
+}
+
+/* ── Total Card ── */
+.mortgage-total-card {
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+    border: 1.5px solid var(--border-subtle);
+}
+
+.mortgage-total-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+}
+
+.mortgage-total-amount {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+}
+
+.mortgage-total-loan {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.mortgage-pmi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: var(--space-3);
+    padding: var(--space-1) var(--space-3);
+    background: #FFA07A22;
+    color: #E67E22;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .mortgage-pmi-badge {
+    background: #FFA07A18;
+}
+
+/* ── Summary Cards ── */
+.mortgage-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+}
+
+.mortgage-summary-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.mortgage-summary-card.highlight {
+    border-color: var(--zhomes-gold);
+    background: linear-gradient(135deg, var(--bg-card), rgba(212, 175, 55, 0.06));
+}
+
+.summary-icon {
+    color: var(--zhomes-red);
+    margin-bottom: var(--space-2);
+}
+
+.summary-icon.interest {
+    color: #FF6B6B;
+}
+
+.summary-icon.saved {
+    color: var(--zhomes-gold);
+}
+
+.summary-value {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.summary-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+.summary-sub {
+    font-size: 11px;
+    color: var(--zhomes-gold);
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* ── Amortization Section ── */
+.mortgage-amortization {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.mortgage-amortization .amort-table-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* ── Animations ── */
+.animate-fadeInDown {
+    animation: fadeInDown 0.5s ease-out both;
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out both;
+}
+
+.delay-1 {
+    animation-delay: 0.1s;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .mortgage-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mortgage-page {
+        padding: var(--space-5) var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .mortgage-page {
+        padding: var(--space-4) var(--space-3);
+    }
+
+    .mortgage-card {
+        padding: var(--space-4);
+    }
+
+    .mortgage-total-amount {
+        font-size: 2rem;
+    }
+
+    .mortgage-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mortgage-term-tabs {
+        gap: var(--space-1);
+    }
+
+    .mortgage-term-tab {
+        padding: var(--space-2);
+        font-size: 12px;
+    }
+}

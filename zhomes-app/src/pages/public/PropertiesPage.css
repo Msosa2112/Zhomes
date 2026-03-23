@@ -1,0 +1,910 @@
+.properties-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+.properties-hero {
+    text-align: center;
+    padding: var(--space-12) 0;
+}
+
+.properties-hero h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-5xl);
+    font-weight: 900;
+    margin-bottom: var(--space-4);
+    color: var(--text-primary);
+}
+
+.properties-hero p {
+    color: var(--text-secondary);
+    font-size: var(--text-lg);
+}
+
+/* ---- Filters ---- */
+.filters-bar {
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: none !important;
+}
+
+.filters-main {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-tertiary);
+}
+
+.search-box .input {
+    border: none;
+    background: transparent;
+    padding: var(--space-2) 0;
+}
+
+.search-box .input:focus {
+    box-shadow: none;
+}
+
+/* View Toggle */
+.view-toggle {
+    display: flex;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-medium);
+}
+
+.view-btn {
+    padding: var(--space-2) var(--space-3);
+    color: var(--text-tertiary);
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+}
+
+.view-btn.active {
+    background: var(--bg-dark);
+    color: white;
+}
+
+.view-btn:hover:not(.active) {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Toggle */
+.zhomes-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.toggle-track {
+    width: 44px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-medium);
+    position: relative;
+    transition: all var(--transition-base);
+}
+
+.toggle-track.active {
+    background: rgba(227, 30, 36, 0.1);
+    border-color: var(--zhomes-red);
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-full);
+    background: var(--text-tertiary);
+    transition: all var(--transition-base);
+}
+
+.toggle-track.active .toggle-thumb {
+    left: 22px;
+    background: var(--zhomes-red);
+}
+
+.toggle-label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+}
+
+.toggle-label.active {
+    color: var(--zhomes-red);
+}
+
+/* Expanded Filters */
+.filters-expanded {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.filter-group label {
+    display: block;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-2);
+}
+
+.range-input {
+    width: 100%;
+    accent-color: var(--zhomes-red);
+    margin-bottom: var(--space-1);
+}
+
+.range-value {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--zhomes-red);
+}
+
+.filter-chips {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.chip {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    border: 1px solid var(--border-medium);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    background: transparent;
+}
+
+.chip:hover,
+.chip.active {
+    background: rgba(227, 30, 36, 0.06);
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+}
+
+.results-count {
+    margin-bottom: var(--space-6);
+}
+
+.results-count p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+/* ==================================================
+   PROPERTY CARDS — Estilo Referencia (Clean / Light)
+   ================================================== */
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+}
+
+.property-card {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition-base);
+}
+
+
+
+.property-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* Imagen grande tipo referencia */
+.property-image {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+}
+
+.property-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.property-card:hover .property-image img {
+    transform: scale(1.05);
+}
+
+/* Botón favorito */
+.fav-btn {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    transition: all var(--transition-fast);
+    z-index: 2;
+}
+
+.fav-btn:hover {
+    transform: scale(1.1);
+}
+
+.fav-btn.active {
+    color: var(--zhomes-red);
+}
+
+/* Badge exclusiva ZHOMES */
+.exclusive-badge {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background: var(--zhomes-red);
+    border-radius: var(--radius-full);
+    z-index: 2;
+}
+
+.exclusive-badge img {
+    width: 14px;
+    height: 14px;
+}
+
+.exclusive-badge span {
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.05em;
+}
+
+/* Info panel — estilo referencia */
+.property-info {
+    padding: var(--space-5);
+}
+
+/* Row: nombre + precio */
+.property-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+}
+
+.property-info h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    color: var(--text-primary);
+}
+
+.property-price {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.property-city {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-4);
+}
+
+/* Specs como pills/badges tipo referencia */
+.property-specs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.spec {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-medium);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.spec svg {
+    color: var(--text-tertiary);
+}
+
+/* Bottom row: botón View Detail + heart */
+.property-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.property-detail-btn {
+    flex: 1;
+    padding: var(--space-3) var(--space-5);
+    background: var(--bg-dark);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    text-align: center;
+    transition: all var(--transition-base);
+    border: none;
+    cursor: pointer;
+}
+
+.property-detail-btn:hover {
+    background: #2D3348;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.property-heart-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    background: var(--bg-card);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.property-heart-btn:hover {
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+}
+
+.property-heart-btn.active {
+    background: rgba(227, 30, 36, 0.06);
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+}
+
+/* CTA Contactar Realtor (debajo de acciones) */
+.property-contact-btn {
+    width: 100%;
+    margin-top: var(--space-3);
+    font-size: var(--text-xs) !important;
+    padding: var(--space-2) var(--space-4) !important;
+    border-radius: var(--radius-md) !important;
+    gap: var(--space-2) !important;
+    background: var(--gradient-red) !important;
+    color: white !important;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all var(--transition-base) !important;
+}
+
+.property-card:hover .property-contact-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============ MAP SECTION ============ */
+.map-section {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: var(--space-4);
+    height: 600px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+}
+
+.map-wrapper {
+    height: 100%;
+    position: relative;
+}
+
+.map-wrapper .leaflet-container {
+    height: 100%;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    background: var(--bg-primary);
+}
+
+/* Leaflet overrides for light theme */
+.map-wrapper .leaflet-popup-content-wrapper {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-subtle);
+    padding: 0;
+    overflow: hidden;
+}
+
+.map-wrapper .leaflet-popup-tip {
+    background: var(--bg-secondary);
+}
+
+.map-wrapper .leaflet-popup-content {
+    margin: 0;
+    min-width: 240px;
+}
+
+.map-wrapper .leaflet-popup-close-button {
+    color: var(--text-tertiary) !important;
+    font-size: 18px !important;
+    top: 6px !important;
+    right: 8px !important;
+}
+
+/* Custom price marker */
+.map-price-marker {
+    background: none !important;
+    border: none !important;
+}
+
+.price-pin {
+    background: var(--bg-card);
+    border: 2px solid var(--border-medium);
+    color: var(--text-primary);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.price-pin:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.price-pin.exclusive {
+    background: var(--zhomes-red);
+    color: white;
+    border-color: var(--zhomes-red);
+    box-shadow: var(--shadow-glow-red);
+}
+
+/* Map Popup */
+.map-popup img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.map-popup-info {
+    padding: var(--space-3) var(--space-4);
+}
+
+.map-popup-info h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    margin-bottom: 2px;
+}
+
+.map-popup-info p {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-2);
+}
+
+.map-popup-price {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-lg);
+    color: var(--zhomes-red);
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+.map-popup-specs {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.map-popup-btn {
+    width: 100%;
+    font-size: 11px !important;
+    padding: var(--space-2) var(--space-3) !important;
+    border-radius: var(--radius-md) !important;
+    gap: var(--space-2) !important;
+}
+
+/* Map side list */
+.map-side-list {
+    overflow-y: auto;
+    padding: var(--space-3);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.map-list-card {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.map-list-card:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-medium);
+}
+
+.map-list-card img {
+    width: 64px;
+    height: 52px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.mlc-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mlc-price {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+}
+
+.mlc-address {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-secondary);
+}
+
+.mlc-specs {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+
+.mlc-badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    width: 18px;
+    height: 18px;
+    background: var(--zhomes-red);
+    border-radius: var(--radius-full);
+    font-size: 9px;
+    font-weight: 900;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+    .properties-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters-expanded {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .map-section {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .map-wrapper {
+        height: 450px;
+    }
+
+    .map-side-list {
+        flex-direction: row;
+        overflow-x: auto;
+        max-height: 120px;
+    }
+
+    .map-list-card {
+        min-width: 220px;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .properties-page {
+        padding: var(--space-4) var(--space-3);
+    }
+
+    .properties-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-main {
+        flex-wrap: wrap;
+    }
+
+    .filters-expanded {
+        grid-template-columns: 1fr;
+    }
+
+    .map-wrapper {
+        height: 300px;
+    }
+
+    .map-side-list {
+        max-height: 100px;
+    }
+
+    .properties-hero h1 {
+        font-size: var(--text-3xl);
+    }
+
+    .properties-hero p {
+        font-size: var(--text-base);
+    }
+
+    .filters-bar {
+        padding: var(--space-3) var(--space-4);
+    }
+
+    /* Always show contact btn on touch devices */
+    .property-contact-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .properties-hero {
+        padding: var(--space-6) 0;
+    }
+
+    .properties-hero h1 {
+        font-size: var(--text-2xl);
+    }
+
+    .property-info {
+        padding: var(--space-4);
+    }
+
+    .property-header {
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+
+    .property-specs {
+        gap: var(--space-1);
+    }
+
+    .spec {
+        font-size: 10px;
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .zhomes-toggle .toggle-label {
+        display: none;
+    }
+}
+
+/* =========================================
+   PREMIUM MAP STYLES (Glassmorphism)
+   ========================================= */
+
+/* Map Container */
+.map-view-container {
+    height: calc(100vh - var(--header-height));
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.map-wrapper {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* Side List (Desktop) */
+.map-side-list {
+    width: 400px;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-subtle);
+    overflow-y: auto;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    z-index: 2;
+    backdrop-filter: blur(10px);
+}
+
+/* Custom Price Marker */
+.map-price-marker .price-pin {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+}
+
+.map-price-marker .price-pin:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    background: var(--text-primary);
+    color: var(--bg-secondary);
+    cursor: pointer;
+}
+
+.map-price-marker .price-pin.exclusive {
+    background: var(--zhomes-red);
+    color: white;
+    border-color: var(--zhomes-red-dark);
+}
+
+.map-price-marker .price-pin.exclusive:hover {
+    background: var(--zhomes-red-dark);
+}
+
+/* Leaflet Popup Premium Override */
+.leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+/* Dark Mode Popup */
+[data-theme="dark"] .leaflet-popup-content-wrapper {
+    background: rgba(30, 30, 30, 0.75) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .leaflet-popup-tip {
+    background: rgba(30, 30, 30, 0.75) !important;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+    width: 280px !important;
+}
+
+/* Popup Inner Content */
+.map-popup img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+.map-popup-info {
+    padding: var(--space-4);
+}
+
+.map-popup-info h4 {
+    font-size: var(--text-base);
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .map-popup-info h4 {
+    color: white;
+}
+
+.map-popup-info p {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.map-popup-price {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: var(--space-2);
+}
+
+[data-theme="dark"] .map-popup-price {
+    color: white;
+}
+
+.map-popup-specs {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.map-popup-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+}

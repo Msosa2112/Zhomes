@@ -1,0 +1,248 @@
+// Datos reales del equipo ZHOMES Real Estate — Louisville, KY
+// Fundado en 2014 por Gilbert Zaldivar | 7520 Preston Hwy, Louisville, KY 40219
+
+export const COMPANY = {
+    name: 'ZHomes Real Estate',
+    address: '7520 Preston Hwy, Louisville, KY 40219',
+    phone: '(502) 641-6623',
+    email: 'gilbert@zhomesre.com',
+    website: 'https://zhomesre.com',
+    founded: 2014,
+    broker: 'Gilbert R Zaldivar',
+}
+
+export const BROKER = {
+    id: 0,
+    name: 'Gilbert R Zaldivar',
+    photo: '/assets/agents/Gilbert Zaldivar-Broker.png',
+    title: 'Principal Broker · Fundador',
+    phone: '(502) 641-6623',
+    email: 'micasa.gilbert@gmail.com',
+    languages: ['🇺🇸 EN', '🇲🇽 ES', '🇮🇹 IT'],
+    experience: '9 años',
+}
+
+// Agentes con foto disponible (datos del Excel real)
+export const REALTORS = [
+    {
+        id: 1,
+        name: 'Jessica Hernandez',
+        photo: '/assets/agents/Jessica Hernandez/Jessica Hernandez.png',
+        profilePhoto: '/assets/agents/Jessica Hernandez/perfil.png',
+        video: '/assets/agents/Jessica Hernandez/Jessica video mov.webm',
+        title: 'Asesora Residencial',
+        specialty: 'Primera Vivienda & Familias',
+        bio: 'Jessica combina su pasión por el servicio con un conocimiento sólido del mercado residencial de Louisville. Su enfoque cercano y bilingüe la convierte en una aliada ideal para familias hispanas buscando su primer hogar.',
+        rating: 4.9,
+        sales: 28,
+        experience: '1 año',
+        languages: ['🇺🇸 EN', '🇲🇽 ES'],
+        topProducer: false,
+        phone: '(502) 381-3781',
+        email: 'valcarceljessy@gmail.com',
+        social: { instagram: 'https://instagram.com/jessica.zhomes', facebook: 'https://facebook.com/jessica.zhomes' },
+    },
+    {
+        id: 2,
+        name: 'Judith Gonzalez',
+        photo: '/assets/agents/Judith Gonzalez/Imagen de WhatsApp 2025-11-08 a las 12.55.35_4541512b-Photoroom.png',
+        profilePhoto: '/assets/agents/Judith Gonzalez/perfil.png',
+        title: 'Asesora Residencial',
+        specialty: 'Reubicación & Nuevos Residentes',
+        bio: 'Judith está comenzando su carrera en real estate con energía y dedicación. Su calidez y compromiso con cada cliente la hacen destacar desde el primer día.',
+        rating: 4.8,
+        sales: 12,
+        experience: 'Nuevo talento',
+        languages: ['🇺🇸 EN', '🇲🇽 ES'],
+        topProducer: false,
+        phone: '(502) 767-5658',
+        email: 'judithgonzalezrealestate@gmail.com',
+        social: { instagram: 'https://instagram.com/judith.zhomes', facebook: 'https://facebook.com/judith.zhomes' },
+    },
+    {
+        id: 3,
+        name: 'Miriam C Castaño',
+        photo: '/assets/agents/Miriam Castano/Miriam Castano.png',
+        profilePhoto: '/assets/agents/Miriam Castano/perfil.png',
+        title: 'Top Producer · Asesora Senior',
+        specialty: 'Propiedades de Lujo & Inversión',
+        bio: 'Con 6 años de experiencia, Miriam es una de las agentes más experimentadas del equipo. Su conocimiento profundo del mercado de Louisville y habilidades de negociación la convierten en la opción ideal para transacciones de alto valor.',
+        rating: 5.0,
+        sales: 94,
+        experience: '6 años',
+        languages: ['🇺🇸 EN', '🇲🇽 ES'],
+        topProducer: true,
+        phone: '(502) 821-9977',
+        email: 'realtormiriamcastano@gmail.com',
+        social: { instagram: 'https://instagram.com/miriam.zhomes', facebook: 'https://facebook.com/miriam.zhomes' },
+    },
+    {
+        id: 4,
+        name: 'Yusleidy Perez',
+        photo: '/assets/agents/Yusleidy Perez/H40A6121-Photoroom.png',
+        profilePhoto: '/assets/agents/Yusleidy Perez/perfil.png',
+        title: 'Relocation Specialist',
+        specialty: 'Reubicación & Nuevos Residentes',
+        bio: 'Especialista en familias que se mudan a Kentucky desde otros estados y países. Yusleidy ofrece un servicio integral que incluye orientación sobre escuelas, comunidades y todo lo necesario para comenzar una nueva vida.',
+        rating: 4.9,
+        sales: 41,
+        experience: '0 años',
+        languages: ['🇺🇸 EN', '🇲🇽 ES'],
+        topProducer: false,
+        phone: '(502) 310-2204',
+        email: 'yusleidyrealtor@gmail.com',
+        social: { instagram: 'https://instagram.com/yusleidy.zhomes', facebook: 'https://facebook.com/yusleidy.zhomes' },
+    },
+    { id: 5, name: 'Alan Hernandez', photo: '/assets/agents/Alan Hernandez/Imagen de WhatsApp 2025-08-09 a las 22.48.44_d20393ff-Photoroom.png', profilePhoto: '/assets/agents/Alan Hernandez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Agente comprometido con el servicio al cliente.', rating: 4.5, sales: 5, experience: '2 años', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 296-1588', email: 'alan-6920@hotmail.com', social: {} },
+    { id: 6, name: 'Celia Hernandez', photo: '/assets/agents/Celia Hernandez/Imagen de WhatsApp 2025-08-09 a las 22.48.44_9b9c15e4-Photoroom.png', profilePhoto: '/assets/agents/Celia Hernandez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Dedicada a encontrar el hogar perfecto.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 365-0718', email: 'celiadhernandez17@gmail.com', social: {} },
+    { id: 7, name: 'Dario Hernandez', photo: '/assets/agents/Dario Hernandez/H40A6413-Photoroom.png', profilePhoto: '/assets/agents/Dario Hernandez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Asesoría de calidad para cada cliente.', rating: 4.7, sales: 15, experience: '3 años', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 389-1023', email: 'betterhomesdario@gmail.com', social: {} },
+    { id: 8, name: 'Ernesto Cougil', photo: '/assets/agents/Ernesto Cougil/H40A6422-Photoroom.png', profilePhoto: '/assets/agents/Ernesto Cougil/perfil.png', title: 'Broker Associate', specialty: 'Residential', bio: 'Experiencia y profesionalismo en cada etapa.', rating: 4.9, sales: 30, experience: '4 años', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 526-2896', email: 'ernestotoprealtor@gmail.com', social: {} },
+    { id: 9, name: 'Gilbert Zaldivar', photo: '/assets/agents/Gilbert Zaldivar/Gilbert Zaldivar.png', profilePhoto: '/assets/agents/Gilbert Zaldivar/perfil.png', title: 'Principal Broker', specialty: 'Luxury & Investment', bio: 'Líder del equipo ZHOMES, enfocado en el éxito.', rating: 5.0, sales: 150, experience: '9 años', languages: ['🇺🇸 EN', '🇲🇽 ES', '🇮🇹 IT'], topProducer: true, phone: '(502) 641-6623', email: 'micasa.gilbert@gmail.com', social: {} },
+    { id: 10, name: 'Leidys Herrera', photo: '/assets/agents/Leidys Herrera/_DSC0060-Photoroom.png', profilePhoto: '/assets/agents/Leidys Herrera/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Acompañando a las familias a cumplir sus sueños.', rating: 4.8, sales: 25, experience: '5 años', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 356-7264', email: 'lhtopagent@gmail.com', social: {} },
+    { id: 11, name: 'Lisbeisy Echeverria', photo: '/assets/agents/Lisbeisy Echeverria/H40A6181-Photoroom.png', profilePhoto: '/assets/agents/Lisbeisy Echeverria/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Asesora enfocada en resultados positivos.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 435-2496', email: 'lisbeisyrealestate@gmail.com', social: {} },
+    { id: 12, name: 'Maria Mendez', photo: '/assets/agents/Maria Mendez/H40A6104-Photoroom.png', profilePhoto: '/assets/agents/Maria Mendez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Dedicación y esfuerzo al servicio de mis clientes.', rating: 4.8, sales: 20, experience: '4 años', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(305) 923-7367', email: 'mtm60bayona@gmail.com', social: {} },
+    { id: 13, name: 'Mariam Rodriguez', photo: '/assets/agents/Mariam Rodriguez/H40A6148-Photoroom.png', profilePhoto: '/assets/agents/Mariam Rodriguez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Con pasión por el real estate.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 915-6437', email: 'mariamrealtor24@gmail.com', social: {} },
+    { id: 14, name: 'Maylin Rodriguez', photo: '/assets/agents/Maylin Rodriguez/Imagen de WhatsApp 2025-03-28 a las 00.25.51_e36cac97-Photoroom.png', profilePhoto: '/assets/agents/Maylin Rodriguez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Tu hogar ideal es mi prioridad.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 202-1597', email: 'maylinkyrealtor@gmail.com', social: {} },
+
+    { id: 16, name: 'Rocio Martinez', photo: '/assets/agents/Rocio Martinez/H40A6352-Photoroom.png', profilePhoto: '/assets/agents/Rocio Martinez/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Asesorando a la comunidad un hogar a la vez.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(786) 383-9236', email: 'rociomartinez.realtor@gmail.com', social: {} },
+    { id: 17, name: 'Ronney Aguiar', photo: '/assets/agents/Ronney Aguiar/Imagen de WhatsApp 2025-08-09 a las 22.48.44_06ed62ca-Photoroom.png', profilePhoto: '/assets/agents/Ronney Aguiar/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Energía y compromiso con mis clientes.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 915-1568', email: 'ronneyaguiar96@gmail.com', social: {} },
+    { id: 18, name: 'Sidalg Nieves', photo: '/assets/agents/Sidalg Nieves/Imagen de WhatsApp 2025-08-09 a las 22.48.44_d02bf26b-Photoroom.png', profilePhoto: '/assets/agents/Sidalg Nieves/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Preparado para ayudarte a realizar tu inversión.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 794-9894', email: 'sidalgnievesrealtor@gmail.com', social: {} },
+    { id: 19, name: 'Yeimy Ortiz', photo: '/assets/agents/Yeimy Ortiz/H40A6214-Photoroom.png', profilePhoto: '/assets/agents/Yeimy Ortiz/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Buscando siempre las mejores opciones del mercado.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 640-4036', email: 'yeimykyrealtor@gmail.com', social: {} },
+    { id: 20, name: 'Yurisbel Garcia', photo: '/assets/agents/Yurisbel Garcia/H40A6136-Photoroom.png', profilePhoto: '/assets/agents/Yurisbel Garcia/perfil.png', title: 'Agent', specialty: 'Residential', bio: 'Profesionalismo a tu alcance.', rating: 4.5, sales: 0, experience: 'Nuevo talento', languages: ['🇺🇸 EN', '🇲🇽 ES'], topProducer: false, phone: '(502) 592-1390', email: 'yurrealestate@gmail.com', social: {} },
+]
+
+// Todos los agentes del brokeraje (para TeamPage del broker)
+export const ALL_AGENTS = [
+    { name: 'Gilbert R Zaldivar', role: 'Principal Broker', phone: '(502) 641-6623', email: 'micasa.gilbert@gmail.com', languages: 'English, Spanish, Italian', experience: 9, photo: '/assets/agents/Gilbert Zaldivar-Broker.png', hasPhoto: true },
+    { name: 'Ernesto Cougil', role: 'Broker Associate', phone: '(502) 526-2896', email: 'ernestotoprealtor@gmail.com', languages: 'English, Spanish', experience: 4, photo: null, hasPhoto: true },
+    { name: 'Miriam C Castaño', role: 'Top Producer', phone: '(502) 821-9977', email: 'realtormiriamcastano@gmail.com', languages: 'English, Spanish', experience: 6, photo: '/assets/agents/Miriam Castano.png', hasPhoto: true },
+
+    { name: 'Teresa Verdecia', role: 'Senior Agent', phone: '(502) 314-4344', email: 'teresa.verdecia@hotmail.com', languages: 'English, Spanish', experience: 6, photo: null, hasPhoto: true },
+    { name: 'Leidys Herrera', role: 'Agent', phone: '(502) 356-7264', email: 'lhtopagent@gmail.com', languages: 'English, Spanish', experience: 5, photo: null, hasPhoto: true },
+    { name: 'Maria T Mendez', role: 'Agent', phone: '(305) 923-7367', email: 'mtm60bayona@gmail.com', languages: 'English, Spanish', experience: 4, photo: null, hasPhoto: true },
+    { name: 'Dario Hernandez', role: 'Agent', phone: '(502) 389-1023', email: 'betterhomesdario@gmail.com', languages: 'English, Spanish', experience: 3, photo: null, hasPhoto: true },
+    { name: 'Yusleidy Perez', role: 'Agent', phone: '(502) 310-2204', email: 'yusleidyrealtor@gmail.com', languages: 'English, Spanish', experience: 3, photo: '/assets/agents/Yusleidy Perez.png', hasPhoto: true },
+    { name: 'Alan J Hernandez', role: 'Agent', phone: '(502) 296-1588', email: 'alan-6920@hotmail.com', languages: 'English, Spanish', experience: 2, photo: null, hasPhoto: false },
+    { name: 'Jorge Betancourt', role: 'Agent', phone: '(502) 432-9588', email: 'jorgeale90bet@gmail.com', languages: 'English, Spanish', experience: 2, photo: null, hasPhoto: false },
+    { name: 'Stanis Shimiyimana', role: 'Agent', phone: '(270) 935-7360', email: 'stanisrealty@gmail.com', languages: 'English, French', experience: 2, photo: null, hasPhoto: false },
+    { name: 'Jessica Hernandez', role: 'Agent', phone: '(502) 381-3781', email: 'valcarceljessy@gmail.com', languages: 'English, Spanish', experience: 1, photo: '/assets/agents/Jessica Hernandez.png', hasPhoto: true },
+    { name: 'Betsy S Zaldivar', role: 'Agent', phone: '(502) 310-6049', email: 'betsyszaldivar1016@icloud.com', languages: 'English, Spanish', experience: 1, photo: null, hasPhoto: false },
+    { name: 'Judith Gonzalez', role: 'Agent', phone: '(502) 767-5658', email: 'judithgonzalezrealestate@gmail.com', languages: 'English, Spanish', experience: 0, photo: '/assets/agents/Judith Gonzalez.png', hasPhoto: true },
+    { name: 'Maylin Rodriguez', role: 'Agent', phone: '(502) 202-1597', email: 'maylinkyrealtor@gmail.com', languages: 'English, Spanish', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Claudia Preciado', role: 'Agent', phone: '(502) 751-6630', email: 'claudiakyrealtor@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Rocio Martinez', role: 'Agent', phone: '(786) 383-9236', email: 'rociomartinez.realtor@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Yeimy Ortiz', role: 'Agent', phone: '(502) 640-4036', email: 'yeimykyrealtor@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Sidalg Nieves', role: 'Agent', phone: '(502) 794-9894', email: 'sidalgnievesrealtor@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Mariam Rodriguez', role: 'Agent', phone: '(502) 915-6437', email: 'mariamrealtor24@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Lisbeisy Echeverria', role: 'Agent', phone: '(502) 435-2496', email: 'lisbeisyrealestate@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Geraldine Santiago', role: 'Agent', phone: '(502) 321-0671', email: 'geraldine10realtor@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Roxana Arias', role: 'Agent', phone: '(502) 641-7470', email: 'roxanakyrealestate@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Ronney Aguiar', role: 'Agent', phone: '(502) 915-1568', email: 'ronneyaguiar96@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Celia Hernandez', role: 'Agent', phone: '(502) 365-0718', email: '', languages: '', experience: 0, photo: null, hasPhoto: false },
+    { name: 'Yurisbel Garcia', role: 'Agent', phone: '(502) 592-1390', email: 'yurrealestate@gmail.com', languages: '', experience: 0, photo: null, hasPhoto: false },
+]
+
+// Datos mock de propiedades con coordenadas para el mapa
+export const MOCK_PROPERTIES = [
+    { id: 1, image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600', price: 425000, address: '8708 Denise Dr', city: 'Louisville, KY', beds: 4, baths: 3, sqft: 2450, exclusive: true, lat: 38.2180, lng: -85.6580 },
+    { id: 2, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600', price: 289000, address: '4411 Lambert Rd', city: 'Louisville, KY', beds: 3, baths: 2, sqft: 1800, exclusive: false, lat: 38.2350, lng: -85.7120 },
+    { id: 3, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600', price: 567000, address: '2215 Tremont Dr', city: 'Louisville, KY', beds: 5, baths: 4, sqft: 3200, exclusive: true, lat: 38.2520, lng: -85.7640 },
+    { id: 4, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600', price: 199000, address: '9320 Galene Dr', city: 'Louisville, KY', beds: 2, baths: 1, sqft: 1200, exclusive: false, lat: 38.1890, lng: -85.6450 },
+    { id: 5, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600', price: 715000, address: '1850 Lakewood Hills', city: 'Prospect, KY', beds: 6, baths: 5, sqft: 4100, exclusive: true, lat: 38.3420, lng: -85.6130 },
+    { id: 6, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600', price: 345000, address: '3744 Springhurst Blvd', city: 'Louisville, KY', beds: 3, baths: 3, sqft: 2100, exclusive: false, lat: 38.2930, lng: -85.5970 },
+    { id: 7, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600', price: 489000, address: '7821 Norbourne Ave', city: 'St. Matthews, KY', beds: 4, baths: 3, sqft: 2800, exclusive: true, lat: 38.2530, lng: -85.6530 },
+    { id: 8, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600', price: 225000, address: '5506 Preston Hwy', city: 'Louisville, KY', beds: 3, baths: 2, sqft: 1600, exclusive: false, lat: 38.1740, lng: -85.7050 },
+    { id: 9, image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600', price: 899000, address: '220 River Rd', city: 'Anchorage, KY', beds: 5, baths: 4, sqft: 5200, exclusive: true, lat: 38.2680, lng: -85.5320 },
+]
+
+// Usuarios demo para login
+export const DEMO_USERS = {
+    'gilbert@zhomesre.com': { role: 'broker', name: 'Gilbert R Zaldivar', avatar: '/assets/agents/Gilbert Zaldivar-Broker.png' },
+    'valcarceljessy@gmail.com': { role: 'realtor', realtorId: 1, name: 'Jessica Hernandez', avatar: '/assets/agents/Jessica Hernandez.png' },
+    'judithgonzalezrealestate@gmail.com': { role: 'realtor', realtorId: 2, name: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png' },
+    'realtormiriamcastano@gmail.com': { role: 'realtor', realtorId: 3, name: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png' },
+    'yusleidyrealtor@gmail.com': { role: 'realtor', realtorId: 4, name: 'Yusleidy Perez', avatar: '/assets/agents/Yusleidy Perez.png' },
+}
+
+// Transacciones asignadas a Jessica (realtorId: 1) para demo
+export const REALTOR_TRANSACTIONS = [
+    {
+        id: 101, address: '8708 Denise Dr', city: 'Louisville, KY', price: 425000,
+        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400',
+        status: 'pre_close', statusLabel: 'Pre-Cierre', statusColor: '#10B981',
+        daysOnMarket: 48, listDate: '2025-12-28',
+        realtorId: 1,
+        documents: [
+            { name: 'Contrato de Compra-Venta', status: 'approved' },
+            { name: 'Disclosure del Vendedor', status: 'approved' },
+            { name: 'Inspección de Propiedad', status: 'uploaded' },
+            { name: 'Tasación', status: 'pending' },
+            { name: 'HUD Statement', status: 'pending' },
+            { name: 'Title Insurance', status: 'pending' },
+        ],
+    },
+    {
+        id: 102, address: '1850 Lakewood Hills', city: 'Prospect, KY', price: 715000,
+        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400',
+        status: 'inspection', statusLabel: 'Inspección', statusColor: '#F59E0B',
+        daysOnMarket: 22, listDate: '2026-01-23',
+        realtorId: 1,
+        documents: [
+            { name: 'Contrato de Compra-Venta', status: 'approved' },
+            { name: 'Disclosure del Vendedor', status: 'uploaded' },
+            { name: 'Inspección de Propiedad', status: 'pending' },
+            { name: 'Tasación', status: 'pending' },
+        ],
+    },
+    {
+        id: 103, address: '7821 Norbourne Ave', city: 'St. Matthews, KY', price: 489000,
+        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400',
+        status: 'listed', statusLabel: 'Listada', statusColor: '#3B82F6',
+        daysOnMarket: 12, listDate: '2026-02-02',
+        realtorId: 1,
+        documents: [
+            { name: 'Contrato de Listado', status: 'approved' },
+            { name: 'Disclosure del Vendedor', status: 'pending' },
+        ],
+    },
+    {
+        id: 104, address: '220 River Rd', city: 'Anchorage, KY', price: 899000,
+        image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400',
+        status: 'under_contract', statusLabel: 'Bajo Contrato', statusColor: '#8B5CF6',
+        daysOnMarket: 35, listDate: '2026-01-10',
+        realtorId: 1,
+        documents: [
+            { name: 'Contrato de Compra-Venta', status: 'approved' },
+            { name: 'Disclosure del Vendedor', status: 'approved' },
+            { name: 'Inspección de Propiedad', status: 'uploaded' },
+            { name: 'Tasación', status: 'pending' },
+            { name: 'HUD Statement', status: 'pending' },
+        ],
+    },
+    {
+        id: 105, address: '3744 Springhurst Blvd', city: 'Louisville, KY', price: 345000,
+        image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400',
+        status: 'closed', statusLabel: 'Cerrada', statusColor: '#06B6D4',
+        daysOnMarket: 60, listDate: '2025-12-16',
+        realtorId: 1,
+        documents: [
+            { name: 'Contrato de Compra-Venta', status: 'approved' },
+            { name: 'Disclosure del Vendedor', status: 'approved' },
+            { name: 'Inspección de Propiedad', status: 'approved' },
+            { name: 'Tasación', status: 'approved' },
+            { name: 'HUD Statement', status: 'approved' },
+            { name: 'Title Insurance', status: 'approved' },
+            { name: 'Commission Disbursement', status: 'approved' },
+        ],
+    },
+]
+
+// Comisiones de Jessica
+export const REALTOR_COMMISSIONS = [
+    { id: 201, address: '3744 Springhurst Blvd', salePrice: 345000, commissionPct: 3, split: 70, grossAmount: 10350, brokerFee: 3105, netAmount: 7245, status: 'paid', paidDate: '2026-02-01' },
+    { id: 202, address: '5506 Preston Hwy', salePrice: 225000, commissionPct: 3, split: 70, grossAmount: 6750, brokerFee: 2025, netAmount: 4725, status: 'paid', paidDate: '2026-01-15' },
+    { id: 203, address: '8708 Denise Dr', salePrice: 425000, commissionPct: 3, split: 70, grossAmount: 12750, brokerFee: 3825, netAmount: 8925, status: 'approved', paidDate: null },
+    { id: 204, address: '220 River Rd', salePrice: 899000, commissionPct: 2.5, split: 70, grossAmount: 22475, brokerFee: 6742, netAmount: 15733, status: 'pending', paidDate: null },
+    { id: 205, address: '1850 Lakewood Hills', salePrice: 715000, commissionPct: 3, split: 70, grossAmount: 21450, brokerFee: 6435, netAmount: 15015, status: 'pending', paidDate: null },
+    { id: 206, address: '9320 Galene Dr', salePrice: 199000, commissionPct: 3, split: 70, grossAmount: 5970, brokerFee: 1791, netAmount: 4179, status: 'paid', paidDate: '2025-12-20' },
+]

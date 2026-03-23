@@ -1,0 +1,24 @@
+/* ---- Broker Documents — uses shared rdoc- classes from RealtorDocuments ---- */
+/* Importing RealtorDocuments.css gives us all the folder styles. */
+/* Only adding broker-specific overrides here. */
+@import '../realtor/RealtorDocuments.css';
+
+/* Broker realtor avatar in folder meta */
+.rdoc-realtor-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: var(--space-1);
+}
+
+/* Approve button (broker only) */
+.rdoc-action-btn.approve-action {
+    color: #10B981;
+    border-color: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.04);
+}
+
+.rdoc-action-btn.approve-action:hover {
+    background: rgba(16, 185, 129, 0.1);
+}

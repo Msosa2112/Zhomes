@@ -1,0 +1,522 @@
+/* RealtorRevealModal.css */
+.marvel-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+    font-family: var(--font-body);
+    /* Fondo transparente para que se vea la pagina de fondo */
+    background-color: transparent;
+}
+
+.marvel-layout {
+    /* Frame transparente, delegamos el borde al pseudo-elemento para que no pinte el centro */
+    background-color: transparent !important;
+}
+
+.marvel-layout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: var(--frame-pad, 14px) solid var(--frame-color);
+    z-index: 50;
+    /* Above the screen behind the notch */
+}
+
+.marvel-screen {
+    /* The screen itself inside gets the glassmorphism 50% translucent */
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: relative;
+    border-radius: var(--screen-radius) !important;
+    overflow: hidden !important;
+    z-index: 1;
+    /* Keep it below the layout border */
+}
+
+[data-theme="dark"] .marvel-screen,
+[data-theme="dark"] .marvel-layout .marvel-screen {
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.marvel-overlay:not(.active) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.marvel-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    color: var(--text-on-dark);
+}
+
+/* Base UI Fades */
+.fade-out {
+    opacity: 0 !important;
+    pointer-events: none;
+    transform: scale(0.95);
+}
+
+
+/* Watermark Background */
+.marvel-watermark-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    /* Detrás de la interacción de tarjetas */
+    pointer-events: none;
+    transition: all 0.5s ease;
+}
+
+.marvel-watermark-layer.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.marvel-watermark-text {
+    position: absolute;
+    top: 5vh;
+    font-size: clamp(3rem, 10vw, 15rem);
+    font-weight: 900;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    color: var(--text-primary);
+    opacity: 1;
+    white-space: nowrap;
+    z-index: 2;
+    user-select: none;
+    pointer-events: none;
+}
+
+.marvel-bottom-text {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 12px;
+    color: var(--text-tertiary);
+    transition: all 0.4s ease;
+    z-index: 10;
+    text-transform: uppercase;
+}
+
+.marvel-nav-arrows {
+    position: absolute;
+    bottom: 12vh;
+    right: 50px;
+    display: flex;
+    gap: 15px;
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+
+.marvel-nav-arrows button {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-on-dark);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.marvel-nav-arrows button:hover {
+    background: var(--text-on-dark);
+    color: var(--bg-dark);
+    transform: translateY(-2px);
+}
+
+/* Interaction Layer & Carousel */
+.marvel-interaction-layer {
+    position: absolute;
+    inset: 0;
+    z-index: auto; /* Removed explicit z-index to allow children to interleave with panels-container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1200px;
+    padding-top: 80px;
+    /* Leave space for the Notch */
+    padding-bottom: 50px;
+}
+
+.marvel-char-card {
+    position: absolute;
+    height: 70vh;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    transform-origin: bottom center;
+    will-change: transform, opacity;
+}
+
+.marvel-char-card img,
+.marvel-char-card video {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    pointer-events: none; /* Allows clicks to pass through transparent video areas to buttons below! */
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+.marvel-char-label {
+    position: absolute;
+    bottom: -15px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: var(--font-display);
+    letter-spacing: 1px;
+    background: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 6px 18px;
+    border-radius: var(--radius-full);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.marvel-char-label.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Detail Panels */
+.marvel-panels-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Let clicks pass to interaction layer except inside panel */
+    z-index: 20;
+    overflow: hidden;
+}
+
+.marvel-back-global {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    padding: 8px 20px;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.marvel-back-global.hidden {
+    opacity: 0;
+    transform: translateX(-20px);
+    pointer-events: none;
+}
+
+.marvel-back-global:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    transform: translateX(-5px);
+}
+
+.marvel-detail-panel {
+    position: absolute;
+    left: 53%;
+    top: 15vh;
+    bottom: 12vh;
+    width: 35vw;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    will-change: transform, opacity;
+}
+
+.panel-subtitle {
+    color: var(--zhomes-red);
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.panel-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 900;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    margin: 0 0 20px 0;
+    line-height: 1.1;
+    background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Tabla UI Futurista */
+.panel-data-table {
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 15px 0;
+    margin-bottom: 25px;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-subtle);
+}
+
+.data-row:last-child {
+    border-bottom: none;
+}
+
+.data-row .label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.data-row .value {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Posters / Appearances */
+.panel-appearances .label {
+    color: var(--zhomes-red);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.posters-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.poster-slot {
+    width: 70px;
+    height: 90px;
+    background-color: var(--bg-card);
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.poster-slot:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow-red);
+    border-color: rgba(227, 30, 36, 0.4);
+}
+
+.panel-contact {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+}
+
+.marvel-action-btn {
+    pointer-events: auto;
+    flex: 1;
+    padding: 12px 24px;
+    font-size: 0.85rem;
+}
+
+.marvel-action-btn {
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    font-weight: 800;
+    padding: 15px 30px;
+    border-radius: 30px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.marvel-action-btn:hover {
+    background: white;
+    color: #0f172a;
+}
+
+.marvel-action-btn.solid {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.marvel-action-btn.solid:hover {
+    background: #f87171;
+    border-color: #f87171;
+}
+
+@media (max-width: 768px) {
+    .marvel-watermark-text {
+        font-size: 3.5rem;
+        top: 10vh;
+        white-space: normal;
+        text-align: center;
+        line-height: 1;
+        width: 100%;
+        padding: 0 1rem;
+    }
+
+    .marvel-interaction-layer {
+        padding-top: 120px;
+        padding-bottom: 0;
+    }
+
+    .marvel-char-card {
+        height: 75vh;
+        max-height: auto;
+    }
+    
+    .marvel-char-card img,
+    .marvel-char-card video {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .marvel-bottom-text {
+        bottom: 140px;
+        font-size: 1rem;
+        letter-spacing: 8px;
+    }
+
+    .marvel-nav-arrows {
+        bottom: 120px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .marvel-detail-panel {
+        right: 0;
+        left: 0;
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        max-width: 100%;
+        
+        background-color: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border-top: 1px solid rgba(255, 255, 255, 0.7);
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
+        height: 92vh;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .marvel-detail-panel.expanded {
+        background-color: rgba(255, 255, 255, 1);
+    }
+
+    [data-theme="dark"] .marvel-detail-panel {
+        background-color: rgba(15, 15, 15, 0.65);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    [data-theme="dark"] .marvel-detail-panel.expanded {
+        background-color: rgba(15, 15, 15, 1);
+    }
+
+    .sheet-handle-zone {
+        padding: 18px 20px 10px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid transparent;
+        flex-shrink: 0;
+    }
+    .expanded .sheet-handle-zone {
+        border-bottom: 1px solid var(--border-subtle);
+    }
+    .sheet-pill {
+        width: 64px;
+        height: 20px;
+        margin-bottom: 2px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 16' fill='none' stroke='%23d1d5db' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='44 13 24 5 4 13'%3E%3C/polyline%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Animated arrow pointing down when expanded */
+    .expanded .sheet-pill {
+        transform: rotate(180deg);
+    }
+    .sheet-scroll-content {
+        padding: 20px 20px 250px;
+        overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .panel-data-table {
+        margin-bottom: 20px;
+        padding: 0 0 10px 0;
+        border-top: none;
+    }
+
+    .panel-title {
+        font-size: min(10vw, calc(135vw / var(--char-count, 15)));
+        margin-bottom: 0px;
+        text-align: center;
+        width: 100%;
+        line-height: 1;
+        letter-spacing: 0px;
+        white-space: nowrap;
+    }
+
+    .marvel-back-global {
+        top: 20px;
+        left: 20px;
+        padding: 8px 16px;
+    }
+}

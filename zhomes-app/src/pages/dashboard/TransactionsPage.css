@@ -1,0 +1,200 @@
+/* ---- Transactions Page ---- */
+.transactions-page {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Toolbar */
+.transactions-toolbar {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.transactions-toolbar .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-tertiary);
+}
+
+.transactions-toolbar .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: var(--space-3) 0;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    width: 100%;
+}
+
+/* Table Container */
+.transactions-table {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+/* Header Row */
+.table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr 1.2fr 1fr 48px;
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.table-header span {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+}
+
+/* Data Row */
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr 1.2fr 1fr 48px;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.2s;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row:hover {
+    background: rgba(227, 30, 36, 0.02);
+}
+
+/* Property Cell */
+.cell-property {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.cell-address {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cell-city {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* Price */
+.cell-price {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border: 1px solid;
+}
+
+/* Realtor Cell */
+.cell-realtor {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.cell-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    object-position: top;
+    flex-shrink: 0;
+    border: 2px solid var(--border-subtle);
+}
+
+/* Documents Progress */
+.cell-docs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.docs-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    max-width: 80px;
+}
+
+.docs-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, #F59E0B, #10B981);
+    transition: width 0.8s ease;
+}
+
+.docs-text {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    min-width: 28px;
+}
+
+/* Date */
+.cell-date {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .transactions-table {
+        overflow-x: auto;
+    }
+
+    .table-header,
+    .table-row {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: 768px) {
+    .transactions-toolbar {
+        flex-direction: column;
+    }
+}

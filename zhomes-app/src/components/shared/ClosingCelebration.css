@@ -1,0 +1,432 @@
+/* ============================================
+   CLOSING CELEBRATION — Cinematic Finale
+   ============================================ */
+
+/* ---- Overlay ---- */
+.cc-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    overflow-y: auto;
+    padding: var(--space-6);
+}
+
+.cc-overlay.active {
+    opacity: 1;
+}
+
+.cc-close {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    z-index: 100;
+    transition: all var(--transition-fast);
+}
+
+.cc-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* ---- Confetti ---- */
+.cc-confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+}
+
+/* ---- Intro Phase ---- */
+.cc-intro {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    text-align: center;
+    z-index: 60;
+    transition: all 0.8s ease;
+}
+
+.cc-intro.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.cc-intro.hidden {
+    opacity: 0;
+    transform: scale(1.2);
+    pointer-events: none;
+}
+
+.cc-intro-icon {
+    color: #F59E0B;
+    animation: cc-key-float 2s ease-in-out infinite;
+}
+
+@keyframes cc-key-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.cc-intro-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.02em;
+    animation: cc-title-in 1s ease-out 0.3s both;
+}
+
+@keyframes cc-title-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cc-intro-sub {
+    font-size: var(--text-lg);
+    color: rgba(255, 255, 255, 0.6);
+    animation: cc-title-in 1s ease-out 0.6s both;
+}
+
+/* ---- Content ---- */
+.cc-content {
+    position: relative;
+    z-index: 60;
+    width: 100%;
+    max-width: 520px;
+    transition: all 0.8s ease;
+}
+
+.cc-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cc-content.hidden {
+    opacity: 0;
+    transform: translateY(40px);
+    pointer-events: none;
+}
+
+.cc-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Hero ---- */
+.cc-hero {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.cc-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cc-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--space-6);
+    color: white;
+    text-align: center;
+}
+
+.cc-hero-overlay h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    margin-top: var(--space-2);
+}
+
+.cc-hero-address {
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin-top: var(--space-1);
+}
+
+.cc-hero-city {
+    font-size: var(--text-sm);
+    opacity: 0.7;
+}
+
+/* ---- Journey ---- */
+.cc-journey {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.cc-section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+.cc-journey-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.cc-journey-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-tertiary);
+}
+
+.cc-journey-item>div {
+    display: flex;
+    flex-direction: column;
+}
+
+.cc-j-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+.cc-j-value {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cc-j-highlight {
+    color: #10B981;
+}
+
+/* ---- Realtor Card ---- */
+.cc-realtor {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+}
+
+.cc-realtor.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cc-realtor-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--zhomes-red);
+}
+
+.cc-realtor-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.cc-realtor-name {
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+}
+
+.cc-realtor-role {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* ---- Review Section ---- */
+.cc-review {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease 0.2s;
+}
+
+.cc-review.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cc-stars {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+    margin-bottom: var(--space-4);
+}
+
+.cc-star {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: all 0.2s ease;
+    padding: var(--space-1);
+}
+
+.cc-star:hover {
+    transform: scale(1.2);
+}
+
+.cc-star.active {
+    color: #F59E0B;
+    animation: cc-star-pop 0.3s ease;
+}
+
+@keyframes cc-star-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cc-review-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.cc-review-form textarea {
+    width: 100%;
+    padding: var(--space-3);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    resize: vertical;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.cc-review-form textarea:focus {
+    border-color: var(--zhomes-red);
+}
+
+.cc-submit-btn {
+    align-self: flex-end;
+}
+
+/* ---- Share Section ---- */
+.cc-share {
+    padding: var(--space-4) var(--space-6);
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.5s ease 0.4s;
+}
+
+.cc-share.visible {
+    opacity: 1;
+}
+
+.cc-share-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-medium);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cc-share-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--zhomes-red);
+    color: var(--zhomes-red);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .cc-overlay {
+        padding: var(--space-4);
+        align-items: flex-start;
+        padding-top: var(--space-16);
+    }
+
+    .cc-hero {
+        height: 160px;
+    }
+
+    .cc-journey,
+    .cc-review,
+    .cc-share {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+
+    .cc-intro-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cc-hero {
+        height: 140px;
+    }
+
+    .cc-hero-overlay h2 {
+        font-size: var(--text-xl);
+    }
+
+    .cc-stars {
+        gap: var(--space-1);
+    }
+}

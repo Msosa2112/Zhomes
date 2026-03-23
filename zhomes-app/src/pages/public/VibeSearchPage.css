@@ -1,0 +1,104 @@
+.vibe-search-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+.vibe-search-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid var(--border-subtle);
+}
+
+.vs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.vs-step {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--zhomes-teal, #10b981);
+    text-transform: uppercase;
+}
+
+.vs-icon {
+    color: var(--text-tertiary);
+    width: 20px;
+    height: 20px;
+}
+
+.vs-container {
+    overflow: hidden;
+    position: relative;
+    min-height: 350px;
+}
+
+.vs-slide {
+    width: 100%;
+}
+
+.vs-question {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    line-height: 1.2;
+}
+
+.vs-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vs-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.vs-option-btn:hover {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.vs-opt-icon-wrap {
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.vs-option-btn:hover .vs-opt-icon-wrap {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    transform: scale(1.05);
+}
+
+.vs-opt-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.vs-opt-label {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}

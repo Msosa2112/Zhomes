@@ -1,0 +1,186 @@
+.realtor-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.realtor-modal-container {
+    width: 100%;
+    max-width: 800px;
+    background: linear-gradient(145deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 3rem;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.btn-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.rm-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.rm-header h2 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.rm-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.realtors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.realtor-card-select {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.realtor-card-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.realtor-card-select.selected {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10B981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.r-avatar {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.r-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.realtor-card-select.selected .r-avatar img {
+    border-color: #10B981;
+}
+
+.check-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.r-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.r-stats {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.r-tags {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-tertiary);
+}
+
+.rm-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-confirm-realtor {
+    background: linear-gradient(135deg, #D4AF37 0%, #FDB931 100%);
+    color: black;
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.btn-confirm-realtor:not(:disabled) {
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+.btn-confirm-realtor:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+}

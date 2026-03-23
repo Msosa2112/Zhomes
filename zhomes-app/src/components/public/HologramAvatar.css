@@ -1,0 +1,100 @@
+/* ============================================
+   HOLOGRAM AVATAR — Clean Transparent Video
+   ============================================ */
+
+.hologram-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.hologram-avatar.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ---- Sizes ---- */
+.holo-sm .holo-figure {
+    width: 120px;
+    height: 120px;
+}
+
+.holo-md .holo-figure {
+    width: 200px;
+    height: 200px;
+}
+
+.holo-lg .holo-figure {
+    width: 340px;
+    height: 420px;
+}
+
+/* ---- Figure Container ---- */
+.holo-figure {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+}
+
+/* ---- Video ---- */
+.holo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: transparent;
+}
+
+/* ---- Photo Fallback ---- */
+.holo-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+}
+
+/* ---- Name Badge ---- */
+.holo-name {
+    text-align: center;
+}
+
+.holo-name-text {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.02em;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .holo-md .holo-figure {
+        width: 160px;
+        height: 160px;
+    }
+
+    .holo-lg .holo-figure {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .holo-md .holo-figure {
+        width: 130px;
+        height: 130px;
+    }
+
+    .holo-lg .holo-figure {
+        width: 180px;
+        height: 180px;
+    }
+}
