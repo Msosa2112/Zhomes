@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
 import { MapPin, Heart, ExternalLink, ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import './SharedCollectionPageMobile.css'
 
 export default function SharedCollectionPageMobile() {
