@@ -2,30 +2,56 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_PROPERTIES } from '../../../data/mockData';
+import { useProperties } from '../../../context/PropertyContext';
 import './VibeFeedMobile.css';
 
-// Adding some vertical-friendly high-res images to MOCK_PROPERTIES for the demo
-const ENHANCED_VIBES = MOCK_PROPERTIES.slice(0, 5).map((prop, idx) => {
+export default function VibeFeedMobile() {
+    const navigate = useNavigate();
+    const { properties } = useProperties();
+    const [activeIndex, setActiveIndex] = useState(0);
+    const containerRef = useRef(null);
+    const [selectedRealtor, setSelectedRealtor] = useState(null);
+    const audioRef = useRef(null);
+
     const verticalImages = [
         'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ];
-    return {
-        ...prop,
-        vibeMedia: verticalImages[idx % verticalImages.length],
-        realtorPic: '/assets/agents/Jessica%20Hernandez/Jessica%20Hernandez.png'
-    };
-});
 
-export default function VibeFeedMobile() {
-    const navigate = useNavigate();
-    const [activeIndex, setActiveIndex] = useState(0);
-    const containerRef = useRef(null);
-    const [selectedRealtor, setSelectedRealtor] = useState(null);
+    // Map the real estate data properties but inject the stunning vertical 'videos' for Vibe experience
+    const vibeProperties = properties
+        .filter(p => p.price > 0)
+        .slice(0, 20)
+        .map((prop, idx) => ({
+            ...prop,
+            vibeMedia: verticalImages[idx % verticalImages.length], // Restore the beautiful vertical views
+            realtorPic: '/assets/agents/Jessica%20Hernandez/Jessica%20Hernandez.png'
+        }));
+
+    useEffect(() => {
+        // Attempt to play audio immediately when entering the feed
+        if (audioRef.current) {
+            audioRef.current.volume = 1.0;
+            audioRef.current.play().catch(e => console.log('Autoplay audio blocked:', e));
+        }
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+        }
+    }, []);
+
+    // Lower background music volume slightly when realtor video shows
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = selectedRealtor ? 0.3 : 1.0;
+        }
+    }, [selectedRealtor]);
 
     const handleScroll = () => {
         if (!containerRef.current) return;
@@ -37,6 +63,14 @@ export default function VibeFeedMobile() {
 
     return (
         <div className="vibe-feed-container">
+            {/* Background Audio */}
+            <audio 
+                ref={audioRef} 
+                src="/assets/audio/Dreamscapes_Driveways.mp3" 
+                loop 
+                crossOrigin="anonymous"
+            />
+
             {/* Top Navigation Overlay */}
             <div className="vibe-top-nav">
                 <button className="vibe-back-btn" onClick={() => navigate(-1)}>
@@ -48,7 +82,7 @@ export default function VibeFeedMobile() {
 
             {/* Scrollable Feed */}
             <div className="vibe-scroll-area" ref={containerRef} onScroll={handleScroll}>
-                {ENHANCED_VIBES.map((property, index) => (
+                {vibeProperties.map((property, index) => (
                     <VibePost 
                         key={property.id} 
                         property={property} 
