@@ -167,12 +167,6 @@ export default function PropertyDetailPageMobile() {
         <div className="mobile-pdetail">
             <nav className="mpd-nav">
                 <button onClick={() => navigate(-1)} className="mpd-icon-btn"><ArrowLeft size={20} /></button>
-                <div className="mpd-nav-actions">
-                    <button className="mpd-icon-btn"><Share size={18} /></button>
-                    <button className="mpd-icon-btn" onClick={handleToggleFavorite} disabled={togglingFav}>
-                        <Heart size={18} fill={isFavorite ? "var(--zhomes-red)" : "transparent"} color={isFavorite ? "var(--zhomes-red)" : "currentColor"} />
-                    </button>
-                </div>
             </nav>
 
             <header className="mpd-hero" onClick={() => setPhotoViewerOpen(true)} style={{ cursor: 'pointer' }}>
@@ -185,7 +179,13 @@ export default function PropertyDetailPageMobile() {
             <main className="mpd-content">
                 <div className="mpd-accessories-row">
                     <button className="mpd-play-btn" onClick={() => {}}>
-                        <Play fill="white" size={20} /> VIDEO TOUR
+                        <Play fill="white" size={16} /> VIDEO
+                    </button>
+                    <button className="mpd-acc-icon-btn" onClick={() => {}}>
+                        <Share size={18} />
+                    </button>
+                    <button className="mpd-acc-icon-btn" onClick={handleToggleFavorite} disabled={togglingFav}>
+                        <Heart size={18} fill={isFavorite ? "var(--zhomes-red)" : "transparent"} color={isFavorite ? "var(--zhomes-red)" : "white"} />
                     </button>
                     <div className="mpd-price-tab">
                         {formatPriceK(property.price)}

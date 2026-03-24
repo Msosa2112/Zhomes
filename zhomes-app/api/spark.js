@@ -13,18 +13,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Endpoint is required' });
   }
 
-  // Credenciales desde variables de entorno (Ocultas al cliente)
-  const SPARK_API_KEY = process.env.SPARK_API_KEY;
+  // Credenciales desde variables de entorno con fallback al token provisto
+  const SPARK_API_KEY = process.env.VITE_SPARK_API_KEY || process.env.SPARK_API_KEY || 'ayj1thvzmwsmpbn1ami7c8z85';
 
   if (!SPARK_API_KEY) {
     return res.status(500).json({ 
-      error: 'Missing Spark API Credentials in Vercel Environment Variables' 
+      error: 'Missing Spark API Credentials' 
     });
   }
 
-  // Reconstruir la ruta para Spark API
-  // Ejemplo: /api/spark?endpoint=listings&_filter=PropertyType Eq 'Residential'
-  const sparkBaseUrl = 'https://api.sparkapi.com/v1';
+  // Reso Web API v3 Endpoint provisto
+  const sparkBaseUrl = 'https://replication.sparkapi.com/Version/3/Reso/OData';
   
   try {
     // Aquí iría el flujo de autenticación si Spark requiere un accessToken 
@@ -35,12 +34,11 @@ export default async function handler(req, res) {
     // NOTA: Si Spark usa OAuth2, se debe hacer un POST a /oauth2/token primero
     // y almacenar el token en memoria (ej. variable global o redis) con expiración.
     
-    // Authorization header structure can vary based on Spark config.
+    // El endpoint normalmente será algo como 'Property' para listados
     const response = await fetch(`${sparkBaseUrl}/${endpoint}?` + new URLSearchParams(queryParams), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${SPARK_API_KEY}`,
-        'X-SparkApi-User-Agent': 'ZhomesApp/1.0',
         'Accept': 'application/json'
       }
     });

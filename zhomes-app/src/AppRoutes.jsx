@@ -12,7 +12,7 @@ import RealtorsPageMobile from './pages/mobile/public/RealtorsPageMobile'
 import MapPageMobile from './pages/mobile/public/MapPageMobile'
 import MortgageCalculatorPageMobile from './pages/mobile/public/MortgageCalculatorPageMobile'
 import LoginPageMobile from './pages/mobile/auth/LoginPageMobile'
-import VibeSearchPage from './pages/public/VibeSearchPage'
+import VibeFeedMobile from './pages/mobile/public/VibeFeedMobile'
 import UserProfileMobile from './pages/mobile/public/UserProfileMobile'
 import SwipeModePageMobile from './pages/mobile/public/SwipeModePageMobile'
 import SharedCollectionPageMobile from './pages/mobile/public/SharedCollectionPageMobile'
@@ -51,7 +51,7 @@ export default function AppRoutes() {
                 <Route path="/mapa" element={<MapPageMobile />} />
                 <Route path="/realtors" element={<RealtorsPageMobile />} />
                 <Route path="/calculadora" element={<MortgageCalculatorPageMobile />} />
-                <Route path="/vibe" element={<VibeSearchPage />} />
+                <Route path="/vibe" element={<VibeFeedMobile />} />
                 <Route path="/login" element={<LoginPageMobile />} />
                 <Route path="/coleccion/:userId" element={<SharedCollectionPageMobile />} />
             </Route>

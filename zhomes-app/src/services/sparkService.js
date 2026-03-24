@@ -31,11 +31,11 @@ export const SparkService = {
      * Trae los listados activos de la MLS.
      * Permite pasar filtros opcionales de OData ($filter, $top, etc.).
      */
-    async getActiveListings(filter = "PropertyType Eq 'A' And MlsStatus Eq 'Active'", limit = 20) {
-        return fetchFromSpark('listings', {
-            _filter: filter,
-            _limit: limit,
-            _expand: 'Photos,PrimaryPhoto' // Si la doc indica cómo expandir media a priori
+    async getActiveListings(filter = "PropertyType eq 'Residential' and StandardStatus eq 'Active'", limit = 20) {
+        return fetchFromSpark('Property', {
+            $filter: filter,
+            $top: limit,
+            $expand: 'Media' // RESO Web API usually uses Media for photos
         });
     },
 
@@ -43,20 +43,23 @@ export const SparkService = {
      * Trae los detalles exactos de una propiedad por su ID en Spark.
      */
     async getListingDetails(listingId) {
-        return fetchFromSpark(`listings/${listingId}`);
+        return fetchFromSpark(`Property('${listingId}')`);
     },
 
     /**
      * Trae la galería fotográfica de alta definición de una propiedad específica.
      */
     async getListingPhotos(listingId) {
-        return fetchFromSpark(`listings/${listingId}/photos`);
+        // RESO Web API usually fetches photos passing ResourceRecordKey
+        return fetchFromSpark('Media', {
+            $filter: `ResourceRecordKey eq '${listingId}'`
+        });
     },
 
     /**
      * (Opcional) Trae agentes registrados bajo la oficina de la broker.
      */
     async getOfficeAgents() {
-        return fetchFromSpark('contacts'); 
+        return fetchFromSpark('Member'); 
     }
 };

@@ -88,8 +88,8 @@
 }
 
 .mobile-floating-nav {
-    position: absolute;
-    bottom: calc(54px + env(safe-area-inset-bottom));
+    position: fixed;
+    bottom: calc(10px + env(safe-area-inset-bottom));
     left: 24px;
     right: 24px;
     height: 64px;

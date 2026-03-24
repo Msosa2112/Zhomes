@@ -32,6 +32,8 @@ export default function PublicLayoutMobile() {
         { path: '/perfil', icon: Users, label: 'Perfil' },
     ]
 
+    const isPropertyDetail = loc.pathname.startsWith('/propiedades/') && loc.pathname.length > '/propiedades/'.length;
+
     return (
         <IonPage className="mobile-public-layout">
             <IonHeader className="ion-no-border" style={{ 
@@ -42,7 +44,8 @@ export default function PublicLayoutMobile() {
                 padding: 'env(safe-area-inset-top) 0 0',
                 transform: showHeader ? 'translateY(0)' : 'translateY(-100%)',
                 transition: 'transform 0.4s cubic-bezier(0.3, 1, 0.3, 1)',
-                pointerEvents: showHeader ? 'auto' : 'none'
+                pointerEvents: showHeader ? 'auto' : 'none',
+                display: isPropertyDetail ? 'none' : 'block'
             }}>
                 <IonToolbar style={{ '--background': 'transparent' }}>
                     <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' }}>

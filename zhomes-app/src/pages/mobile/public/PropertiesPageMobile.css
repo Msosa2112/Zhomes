@@ -115,6 +115,8 @@
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.2s;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .mpp-filter-btn:active {
@@ -124,12 +126,9 @@
 .mpp-quick-filters {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 32px 24px 24px 24px;
-    margin-top: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding: 16px 6px 17px 6px;
+    margin-top: 0;
     width: 100%;
     box-sizing: border-box;
 }
@@ -138,20 +137,194 @@
     display: none;
 }
 
-.mpp-quick-filters button {
+.mpp-secondary-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px 16px 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-width: none;
+}
+
+.mpp-secondary-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.mpp-sec-filter-btn {
     flex: 0 0 auto;
-    scroll-snap-align: start;
-    padding: 14px 28px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.mpp-sec-filter-btn.active {
+    background: var(--zhomes-red);
+    color: white;
+    border-color: var(--zhomes-red);
+}
+
+.mpp-filter-panel {
+    margin: 0 20px 16px;
+    padding: 16px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-subtle);
+}
+
+.mpp-panel-content h3 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.mpp-panel-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mpp-panel-options button {
+    flex: 1 1 calc(33.333% - 8px);
+    padding: 8px 0;
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.mpp-panel-options button.active {
+    background: #18181A;
+    color: white;
+    border-color: #18181A;
+}
+[data-theme="dark"] .mpp-panel-options button.active {
+    background: white;
+    color: black;
+    border-color: white;
+}
+
+.mpp-dual-slider {
+    position: relative;
+    width: calc(100% - 10px);
+    margin: 12px 5px 24px;
+    height: 40px;
+}
+.mpp-slider-track {
+    position: absolute;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border-subtle);
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+}
+.mpp-slider-range {
+    position: absolute;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--zhomes-red);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+.mpp-dual-slider input[type="range"] {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+    background: transparent;
+    margin: 0;
+}
+.mpp-dual-slider input[type="range"]::-webkit-slider-thumb {
+    pointer-events: auto;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--zhomes-red);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 2;
+}
+.mpp-dual-slider input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+}
+
+.mpp-exact-inputs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.mpp-exact-inputs label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    gap: 4px;
+}
+.mpp-exact-inputs input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    outline: none;
+}
+.mpp-exact-inputs span {
+    font-weight: bold;
+    color: var(--text-secondary);
+    margin-top: 18px;
+}
+
+.mpp-apply-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 12px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.mpp-quick-filters button {
+    flex: 1;
+    padding: 12px 0;
     border-radius: 40px;
     background: var(--bg-card);
     border: none;
     color: var(--text-primary);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: clamp(0.7rem, 3.2vw, 0.95rem);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 6px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     cursor: pointer;
@@ -174,6 +347,119 @@
 }
 .mpp-quick-filters button.active .filter-icon {
     opacity: 1;
+}
+
+.mpp-dropdown-overlay {
+    position: fixed;
+    top: 68px; left: 0; right: 0; bottom: 0;
+    z-index: 999;
+    backdrop-filter: blur(2px);
+    background: rgba(0,0,0,0.2);
+}
+
+.mpp-adv-dropdown-menu {
+    position: absolute;
+    top: 68px; /* Just below the search bar */
+    left: 12px;
+    right: 12px;
+    width: auto;
+    background: var(--bg-card);
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    border: 1px solid var(--border-subtle);
+    z-index: 1000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mpp-adv-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.mpp-adv-dropdown-header button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.mpp-adv-dropdown-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.mpp-adv-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.mpp-adv-select, .mpp-adv-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.mpp-adv-checkboxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.mpp-adv-checkplate {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-secondary);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    font-weight: 500 !important;
+    color: var(--text-primary);
+    font-size: 0.9rem !important;
+    cursor: pointer;
+    margin-bottom: 0 !important;
+}
+.mpp-adv-checkplate input {
+    accent-color: var(--zhomes-red);
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.mpp-adv-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--zhomes-red);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(227,30,36,0.3);
+    margin-top: 4px;
 }
 
 .mpp-list-header {
