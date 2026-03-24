@@ -144,6 +144,78 @@
     font-weight: 500;
 }
 
+.mpd-vibe-match {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-secondary);
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid rgba(227, 30, 36, 0.1);
+}
+
+.vibe-score-circle {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.vibe-circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 250px;
+}
+
+.vibe-circle-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 2.5;
+}
+
+.vibe-circle {
+    fill: none;
+    stroke: var(--zhomes-red);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    animation: vibeFill 1.5s ease-out forwards;
+}
+
+@keyframes vibeFill {
+    0% { stroke-dasharray: 0, 100; }
+}
+
+.vibe-percentage {
+    fill: var(--text-primary);
+    font-family: var(--font-heading), sans-serif;
+    font-size: 0.5rem;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+.vibe-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.vibe-text h3::before {
+    content: "✨";
+    font-size: 1rem;
+}
+
+.vibe-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
 .mpd-desc h2 {
     font-size: 1.2rem;
     font-weight: 800;

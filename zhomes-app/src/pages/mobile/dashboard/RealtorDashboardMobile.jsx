@@ -1,6 +1,7 @@
-import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { REALTORS, REALTOR_TRANSACTIONS, REALTOR_COMMISSIONS } from '../../../data/mockData'
+import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { supabase } from '../../../lib/supabaseClient'
 import './RealtorDashboardMobile.css'
 
 const CHALLENGES = [
@@ -12,23 +13,64 @@ const XP = { current: 2450, level: 7, levelName: 'Rising Star', nextAt: 3000, pr
 const STREAK = 12
 
 export default function RealtorDashboardMobile() {
-    const realtor = REALTORS[0]
-    const activeTransactions = REALTOR_TRANSACTIONS.filter(t => t.status !== 'closed')
-    const pendingDocs = REALTOR_TRANSACTIONS.reduce((acc, t) => acc + t.documents.filter(d => d.status === 'pending').length, 0)
-    const totalEarned = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').reduce((acc, c) => acc + c.netAmount, 0)
+    const navigate = useNavigate()
+    const [user, setUser] = useState(null)
+    const [myListings, setMyListings] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session?.user) {
+                setUser(session.user)
+            }
+
+            // Fetch real dummy listings from Supabase to simulate CRM properties
+            const { data: listings, error } = await supabase
+                .from('property_listings')
+                .select('id, unparsed_address, current_price_public, status')
+                .limit(5)
+            
+            if (!error && listings) {
+                setMyListings(listings)
+            }
+            setLoading(false)
+        }
+
+        fetchDashboardData()
+    }, [])
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut()
+        navigate('/login')
+    }
+
+    if (loading) {
+        return <div className="mobile-dash-page" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh'}}>Cargando CRM...</div>
+    }
+
+    const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Agente'
+    const activeTransactions = myListings.length
+    const pendingDocs = 3 // Simulated 
+    const totalEarned = 15800 // Simulated for now
     
     const xpPct = Math.round(((XP.current - XP.prevAt) / (XP.nextAt - XP.prevAt)) * 100)
 
     const ALERTS = [
         { type: 'warning', icon: AlertCircle, text: 'Faltan 3 documentos para 8708 Denise Dr', time: 'Hace 2 horas', color: '#EF4444' },
-        { type: 'success', icon: CheckCircle2, text: 'Comisión de $8,925 aprobada para 8708...', time: 'Hace 1 día', color: '#10B981' },
+        { type: 'success', icon: CheckCircle2, text: 'Comisión de $8,925 aprobada', time: 'Hace 1 día', color: '#10B981' },
     ]
 
     return (
         <div className="mobile-dash-page">
-            <div className="mobile-dash-header">
-                <h2>Hola, {realtor.name.split(' ')[0]} 👋</h2>
-                <p>Aquí tienes el estado de tu actividad.</p>
+            <div className="mobile-dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                    <h2>Hola, {userName} 👋</h2>
+                    <p>Aquí tienes tu Centro de Mando en vivo.</p>
+                </div>
+                <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: 'var(--zhomes-red)' }}>
+                    <LogOut size={20} />
+                </button>
             </div>
 
             <div className="mobile-quick-actions">
@@ -48,14 +90,14 @@ export default function RealtorDashboardMobile() {
 
             <div className="m-ai-widget">
                 <div className="mai-head"><Brain size={18} /> ZhomesAI</div>
-                <p>Tu performance está en el <strong style={{color: '#10B981'}}>Top 5%</strong> del equipo. ¡Sigue cerrando contratos para llegar al nivel 8!</p>
+                <p>He analizado tu base de datos en Supabase. Tienes <strong>{activeTransactions}</strong> tratos activos. ¡Buen trabajo liderando la zona!</p>
             </div>
 
             <div className="m-kpi-scroller">
                 <div className="mk-card">
                     <FileText size={20} className="kblue" />
-                    <span>Activas</span>
-                    <strong>{activeTransactions.length}</strong>
+                    <span>Mis Tratos</span>
+                    <strong>{activeTransactions}</strong>
                 </div>
                 <div className="mk-card">
                     <Clock size={20} className="kyellow" />
@@ -82,36 +124,23 @@ export default function RealtorDashboardMobile() {
                         <span>Faltan {XP.nextAt - XP.current} XP para el nivel {XP.level + 1}</span>
                     </div>
                 </div>
-
-                <div className="m-streak-row">
-                    <div className="m-streak-icon">🔥</div>
-                    <div className="m-streak-data">
-                        <strong>{STREAK} Días seguidos</strong>
-                        <span>Racha de conexión</span>
-                    </div>
-                </div>
             </div>
 
             <div className="m-dash-section">
-                <h3>Desafíos de la Semana</h3>
-                <div className="m-challenges-list">
-                    {CHALLENGES.map((ch, idx) => (
-                        <div className="m-challenge-item" key={idx}>
-                            <div className="m-challenge-icon" style={{background: `${ch.color}15`, color: ch.color}}>{ch.emoji}</div>
-                            <div className="m-challenge-text">
-                                <strong>{ch.name} <span style={{color: ch.color, fontSize: '10px', float: 'right'}}>+{ch.xp} XP</span></strong>
-                                <div className="pbar" style={{marginTop: '4px', marginBottom: '4px'}}>
-                                    <div style={{ width: `${(ch.current/ch.total)*100}%`, background: ch.color }}></div>
-                                </div>
-                                <span className="m-challenge-desc">{ch.current}/{ch.total} - {ch.desc}</span>
-                            </div>
+                <h3>Mis Propiedades Activas (Supabase)</h3>
+                <div className="m-alerts-list">
+                    {myListings.map((prop, idx) => (
+                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
+                            <strong style={{ fontSize: '14px', marginBottom: '4px' }}>{prop.unparsed_address}</strong>
+                            <span style={{ fontSize: '12px', color: '#10B981' }}>${prop.current_price_public?.toLocaleString()}</span>
                         </div>
                     ))}
+                    {myListings.length === 0 && <p style={{fontSize:'12px', color:'var(--text-tertiary)'}}>No tienes propiedades asignadas aún.</p>}
                 </div>
             </div>
 
-            <div className="m-dash-section">
-                <h3>Alertas <span className="m-badge-red">2</span></h3>
+            <div className="m-dash-section" style={{marginBottom: '30px'}}>
+                <h3>Alertas Automáticas <span className="m-badge-red">2</span></h3>
                 <div className="m-alerts-list">
                     {ALERTS.map((al, idx) => (
                         <div className="m-alert" key={idx}>

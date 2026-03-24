@@ -1,0 +1,164 @@
+.swipe-page {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: max(env(safe-area-inset-top), 20px);
+}
+
+.swipe-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--zhomes-red);
+    margin: 1rem 0 0.5rem 0;
+    text-align: center;
+}
+
+.swipe-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 2rem 0;
+    text-align: center;
+    max-width: 80%;
+}
+
+.swipe-card-container {
+    position: relative;
+    width: 90vw;
+    max-width: 400px;
+    height: 60vh;
+    max-height: 600px;
+}
+
+.swipe-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    touch-action: none;
+    cursor: grab;
+}
+
+.swipe-card:active {
+    cursor: grabbing;
+}
+
+.sc-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.sc-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 50%, transparent 100%);
+    color: white;
+    pointer-events: none;
+}
+
+.sc-price {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.sc-address {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+}
+
+.sc-city {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.sc-specs {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.swipe-actions {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    width: 100%;
+    z-index: 10;
+}
+
+.sa-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sa-btn:active {
+    transform: scale(0.9);
+}
+
+.sa-btn.no {
+    color: #ff4d4d;
+}
+
+.sa-btn.yes {
+    color: #4CAF50;
+}
+
+.swipe-loading, .swipe-empty {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    text-align: center;
+    padding: 2rem;
+}
+
+.swipe-empty h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--zhomes-red);
+}
+
+.swipe-return-btn {
+    margin-top: 2rem;
+    padding: 14px 28px;
+    border-radius: 24px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+}

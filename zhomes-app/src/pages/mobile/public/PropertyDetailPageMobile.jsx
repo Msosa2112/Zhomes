@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, MapPin, Share, Heart, Play, BedDouble, Bath, Maximize, Star } from 'lucide-react'
+import { ArrowLeft, MapPin, Share, Heart, Play, BedDouble, Bath, Maximize, Star, HeartCrack } from 'lucide-react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'motion/react'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
@@ -8,7 +8,9 @@ import 'leaflet/dist/leaflet.css'
 import { useTheme } from '../../../context/ThemeContext'
 import { MOCK_PROPERTIES, REALTORS } from '../../../data/mockData'
 import { SparkService } from '../../../services/sparkService'
+import { supabase } from '../../../lib/supabaseClient'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
+import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import './PropertyDetailPageMobile.css'
 
 // Fix to clear map layout size 
@@ -28,8 +30,12 @@ export default function PropertyDetailPageMobile() {
     const [loading, setLoading] = useState(true)
     const [realtorSelectorOpen, setRealtorSelectorOpen] = useState(false)
     const [viewerOpen, setViewerOpen] = useState(false)
+    const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
     const [selectedRealtor, setSelectedRealtor] = useState(null)
     const { theme } = useTheme()
+
+    const [isFavorite, setIsFavorite] = useState(false)
+    const [togglingFav, setTogglingFav] = useState(false)
 
     const zhomesLogoMarker = new L.Icon({
         iconUrl: '/assets/logo/fav.png',
@@ -64,6 +70,7 @@ export default function PropertyDetailPageMobile() {
                         city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
                         price: p.StandardFields.ListPrice || 0,
                         image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                        photos: p.StandardFields.Photos?.map(ph => ph.Uri800) || ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
                         beds: p.StandardFields.BedsTotal || 0,
                         baths: p.StandardFields.BathsTotal || 0,
                         sqft: p.StandardFields.BuildingAreaTotal || 0,
@@ -82,11 +89,63 @@ export default function PropertyDetailPageMobile() {
                 setProperty({
                     ...fallbackProp,
                     id: String(fallbackProp.id),
+                    photos: fallbackProp.images || [fallbackProp.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
                     desc: 'Hermosa casa completamente renovada en una de las mejores zonas de la ciudad. Cuenta con acabados modernos, concina concepto abierto con topes de granito y un patio trasero amplio ideal para el entretenimiento. Electrodomésticos de acero inoxidable incluidos.'
                 });
             })
             .finally(() => setLoading(false));
     }, [id]);
+
+    useEffect(() => {
+        const checkFavoriteStatus = async () => {
+            if (!property?.id) return
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const { data } = await supabase
+                .from('user_favorites')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .eq('property_id', property.id)
+                .single()
+
+            if (data) setIsFavorite(true)
+        }
+        checkFavoriteStatus()
+    }, [property])
+
+    const handleToggleFavorite = async () => {
+        setTogglingFav(true)
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+            navigate('/login')
+            return
+        }
+
+        try {
+            if (isFavorite) {
+                await supabase
+                    .from('user_favorites')
+                    .delete()
+                    .eq('user_id', session.user.id)
+                    .eq('property_id', property.id)
+                setIsFavorite(false)
+            } else {
+                await supabase
+                    .from('user_favorites')
+                    .insert([{ 
+                        user_id: session.user.id, 
+                        property_id: property.id 
+                    }])
+                setIsFavorite(true)
+            }
+        } catch (error) {
+            console.error("Error toggling favorite:", error)
+        } finally {
+            setTogglingFav(false)
+        }
+    }
 
     if (loading) return <div style={{padding:'4rem 2rem', textAlign:'center', color:'#888'}}>Cargando detalles...</div>;
     if (!property) return null
@@ -110,11 +169,13 @@ export default function PropertyDetailPageMobile() {
                 <button onClick={() => navigate(-1)} className="mpd-icon-btn"><ArrowLeft size={20} /></button>
                 <div className="mpd-nav-actions">
                     <button className="mpd-icon-btn"><Share size={18} /></button>
-                    <button className="mpd-icon-btn"><Heart size={18} /></button>
+                    <button className="mpd-icon-btn" onClick={handleToggleFavorite} disabled={togglingFav}>
+                        <Heart size={18} fill={isFavorite ? "var(--zhomes-red)" : "transparent"} color={isFavorite ? "var(--zhomes-red)" : "currentColor"} />
+                    </button>
                 </div>
             </nav>
 
-            <header className="mpd-hero">
+            <header className="mpd-hero" onClick={() => setPhotoViewerOpen(true)} style={{ cursor: 'pointer' }}>
                 <img src={property.image} alt="Property" className="mpd-hero-bg" />
                 <div className="mpd-hero-overlay">
                     {/* Botón de video movido al layout de flexbox superior */}
@@ -157,6 +218,25 @@ export default function PropertyDetailPageMobile() {
                     <div className="mpd-spec-mini"><strong>{property.beds}</strong><span>habitaciones</span></div>
                     <div className="mpd-spec-mini"><strong>{property.baths}</strong><span>baños</span></div>
                     <div className="mpd-spec-mini"><strong>{property.sqft.toLocaleString()}</strong><span>sqft</span></div>
+                </div>
+
+                <div className="mpd-vibe-match">
+                    <div className="vibe-score-circle">
+                        <svg viewBox="0 0 36 36" className="vibe-circular-chart">
+                            <path className="vibe-circle-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path className="vibe-circle"
+                                strokeDasharray="92, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <text x="18" y="21.5" className="vibe-percentage">92%</text>
+                        </svg>
+                    </div>
+                    <div className="vibe-text">
+                        <h3>Vibe Match</h3>
+                        <p>Esta propiedad hace match con tu perfil lifestyle de Zhomes.</p>
+                    </div>
                 </div>
 
                 <div className="mpd-desc">
@@ -213,6 +293,12 @@ export default function PropertyDetailPageMobile() {
                     />
                 )}
             </AnimatePresence>
+
+            <PhotoViewerMobile
+                photos={property.photos || [property.image]}
+                isOpen={photoViewerOpen}
+                onClose={() => setPhotoViewerOpen(false)}
+            />
         </div>
     )
 }

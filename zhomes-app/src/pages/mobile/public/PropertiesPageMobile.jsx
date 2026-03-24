@@ -64,7 +64,9 @@ export default function PropertiesPageMobile() {
 
             <div className="mpp-list-header">
                 <h2>Top Propiedades</h2>
-                <button>Ver todo</button>
+                <Link to="/swipe" style={{display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--zhomes-red)', color: 'white', padding: '6px 12px', borderRadius: '20px', fontWeight: '600', fontSize: '0.85rem', textDecoration: 'none', boxShadow: '0 4px 10px rgba(227,30,36,0.3)'}}>
+                    <Heart size={14} fill="currentColor" /> Zhomes Match
+                </Link>
             </div>
 
             <div className="mpp-list">

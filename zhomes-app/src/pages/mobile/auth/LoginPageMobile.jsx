@@ -1,25 +1,66 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Building2, User } from 'lucide-react'
+import { Building2, User, Key, Mail, AlertCircle } from 'lucide-react'
+import { supabase } from '../../../lib/supabaseClient'
 import './LoginPageMobile.css'
 
 export default function LoginPageMobile() {
     const navigate = useNavigate()
     const [role, setRole] = useState('realtor')
-    const [email, setEmail] = useState('valcarceljessy@gmail.com')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const handleRoleSwitch = (newRole) => {
         setRole(newRole)
-        setEmail(newRole === 'broker' ? 'gilbert@zhomesre.com' : 'valcarceljessy@gmail.com')
+        setErrorMsg('')
     }
 
-    const handleSubmit = (e) => {
+    const handleEmailLogin = async (e) => {
         e.preventDefault()
-        // Determine routing based on assigned info
-        if (role === 'realtor') {
-            navigate('/realtor')
-        } else {
-            navigate('/dashboard')
+        if (!email || !password) {
+            setErrorMsg('Por favor ingresa email y contraseña.')
+            return
+        }
+        setLoading(true)
+        setErrorMsg('')
+        
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+            
+            if (error) throw error
+
+            // Si es exitoso, ruteamos según el rol
+            if (role === 'realtor') {
+                navigate('/realtor')
+            } else {
+                navigate('/dashboard')
+            }
+        } catch (error) {
+            setErrorMsg(error.message || 'Error al iniciar sesión.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleOAuthLogin = async (provider) => {
+        setLoading(true)
+        setErrorMsg('')
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: window.location.origin + (role === 'realtor' ? '/realtor' : '/dashboard')
+                }
+            })
+            if (error) throw error
+        } catch (error) {
+            setErrorMsg(`Error conectando con ${provider}.`)
+            setLoading(false)
         }
     }
 
@@ -41,24 +82,48 @@ export default function LoginPageMobile() {
                     <button className={role === 'realtor' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('realtor')}>
                         <User size={18} /> Realtor
                     </button>
+                    <button className={role === 'client' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('client')}>
+                        <User size={18} /> Cliente
+                    </button>
                 </div>
 
-                <form className="ml-form" onSubmit={handleSubmit}>
+                <form className="ml-form" onSubmit={handleEmailLogin}>
+                    {errorMsg && (
+                        <div style={{ background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '8px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                            <AlertCircle size={16} /> {errorMsg}
+                        </div>
+                    )}
+                    
                     <div className="ml-form-group">
-                        <label>Email</label>
-                        <input type="email" placeholder="tu@zhomes.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <label><Mail size={14}/> Email</label>
+                        <input type="email" placeholder="ejemplo@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
                     </div>
                     <div className="ml-form-group">
-                        <label>Contraseña</label>
-                        <input type="password" placeholder="••••••••" defaultValue="demo1234" />
+                        <label><Key size={14}/> Contraseña</label>
+                        <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
                     </div>
 
-                    <button type="submit" className="ml-submit-btn">
-                        Entrar a la App
+                    <button type="submit" className="ml-submit-btn" disabled={loading}>
+                        {loading ? 'Iniciando...' : 'Entrar con Email'}
                     </button>
                 </form>
 
-                <p className="ml-footer">Prototipo ZHOMES v1.0 Mobile</p>
+                <div className="ml-oauth-divider">
+                    <span>O continúa con</span>
+                </div>
+
+                <div className="ml-oauth-buttons">
+                    <button type="button" className="oauth-btn google-btn" onClick={() => handleOAuthLogin('google')} disabled={loading}>
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" />
+                        Google
+                    </button>
+                    <button type="button" className="oauth-btn apple-btn" onClick={() => handleOAuthLogin('apple')} disabled={loading}>
+                        <img src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" width="20" />
+                        Apple
+                    </button>
+                </div>
+
+                <p className="ml-footer" style={{ marginTop: '30px' }}>ZHOMES v1.0 Mobile Auth</p>
             </div>
         </div>
     )

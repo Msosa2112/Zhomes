@@ -15,6 +15,7 @@
     "@capacitor/core": "^8.2.0",
     "@capacitor/ios": "^8.2.0",
     "@ionic/react": "^8.8.1",
+    "@supabase/supabase-js": "^2.100.0",
     "ionicons": "^8.0.13",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.563.0",
@@ -28,6 +29,7 @@
     "recharts": "^3.7.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@eslint/js": "^9.39.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

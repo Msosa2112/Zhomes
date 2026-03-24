@@ -28,8 +28,8 @@ export default function PublicLayoutMobile() {
         { path: '/', icon: Home, label: 'Inicio' },
         { path: '/propiedades', icon: Search, label: 'Buscar' },
         { path: '/mapa', icon: Map, label: 'Mapa' },
-        { path: '/realtors', icon: Users, label: 'Equipo' },
-        { path: '/calculadora', icon: Calculator, label: 'Calcular' },
+        { path: '/vibe', icon: Sun, label: 'Vibe' },
+        { path: '/perfil', icon: Users, label: 'Perfil' },
     ]
 
     return (

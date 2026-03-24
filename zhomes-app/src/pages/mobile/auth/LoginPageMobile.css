@@ -135,3 +135,60 @@
     font-size: 0.8rem;
     margin: 2rem 0 0;
 }
+
+.ml-oauth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+}
+.ml-oauth-divider::before, .ml-oauth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-medium);
+}
+.ml-oauth-divider span {
+    padding: 0 10px;
+}
+
+.ml-oauth-buttons {
+    display: flex;
+    gap: 12px;
+}
+.oauth-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: 1px solid var(--border-medium);
+    transition: all 0.2s;
+}
+.oauth-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.oauth-btn:active {
+    transform: scale(0.98);
+}
+.google-btn {
+    background: #ffffff;
+    color: #333333;
+    border-color: #dddddd;
+}
+.apple-btn {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+}
+.mobile-login-page.light .apple-btn {
+    background: #000000;
+    color: #ffffff;
+}
