@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, Users, TrendingUp, Briefcase, Sun, Moon, UserPlus, Calendar, PenTool, BarChart3, MapPin, Target, Wallet } from 'lucide-react'
+import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, Users, TrendingUp, Briefcase, Sun, Moon, UserPlus, Calendar, PenTool, BarChart3, MapPin, Target, Wallet, ShieldAlert, Heart, HeartHandshake } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
 import './DashboardLayoutMobile.css'
@@ -41,6 +41,7 @@ export default function DashboardLayoutMobile() {
         { path: '/comisiones', icon: CheckCircle2, label: 'Comis' },
         { path: '/analytics', icon: MapPin, label: 'Analytics' },
         { path: '/equipo', icon: Users, label: 'Equipo' },
+        { path: '/admin/config', icon: ShieldAlert, label: 'Sistema' },
     ]
 
     return (

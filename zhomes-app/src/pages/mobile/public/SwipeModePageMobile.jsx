@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { Heart, X, MapPin } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useMotionValue, useTransform } from 'motion/react'
+import { Heart, X, MapPin, Star } from 'lucide-react'
 import { useProperties } from '../../../context/PropertyContext'
-import { MOCK_PROPERTIES } from '../../../data/mockData'
 import { supabase } from '../../../lib/supabaseClient'
 import { useNavigate } from 'react-router-dom'
 import './SwipeModePageMobile.css'
+
+const MAX_VISIBLE = 5 // How many cards visible in the 3D stack
 
 export default function SwipeModePageMobile() {
     const navigate = useNavigate()
@@ -14,7 +15,7 @@ export default function SwipeModePageMobile() {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
 
-    const { properties: globalProperties, loading: ctxLoading } = useProperties();
+    const { properties: globalProperties, closedListings, loading: ctxLoading } = useProperties();
 
     useEffect(() => {
         const initSwipe = async () => {
@@ -26,20 +27,24 @@ export default function SwipeModePageMobile() {
             setUser(session.user)
 
             if (!ctxLoading) {
-                 if (globalProperties && globalProperties.length > 0) {
-                     setProperties(globalProperties.slice(0, 50));
-                 } else {
-                     setProperties(MOCK_PROPERTIES.map(p => ({ ...p, id: String(p.id) })));
+                 const active = globalProperties || [];
+                 const closed = (closedListings || []).map(p => ({ ...p, offMarket: true }));
+                 const combined = [...active, ...closed];
+                 
+                 if (combined.length > 0) {
+                     const zhomes = combined.filter(p => p.exclusive && !p.offMarket);
+                     const otherActive = combined.filter(p => !p.exclusive && !p.offMarket).sort(() => Math.random() - 0.5);
+                     const offMarket = combined.filter(p => p.offMarket).sort(() => Math.random() - 0.5);
+                     setProperties([...zhomes, ...otherActive, ...offMarket].slice(0, 150));
                  }
                  setLoading(false);
             }
         }
         initSwipe()
-    }, [navigate, globalProperties, ctxLoading])
+    }, [navigate, globalProperties, closedListings, ctxLoading])
 
     const handleSwipe = async (direction, propertyId) => {
         if (direction === 'right' && user) {
-            // Guardar en favoritos
             try {
                 await supabase.from('user_favorites').insert([{
                     user_id: user.id,
@@ -69,37 +74,63 @@ export default function SwipeModePageMobile() {
             <h1 className="swipe-title">Zhomes Match</h1>
             <p className="swipe-subtitle">Desliza a la derecha si te gusta, a la izquierda si no.</p>
 
-            <div className="swipe-card-container">
-                <AnimatePresence>
-                    {properties.map((prop, idx) => {
-                        if (idx < currentIndex) return null;
-                        const isTop = idx === currentIndex;
-                        return (
-                            <SwipeCard 
-                                key={prop.id} 
-                                property={prop} 
-                                active={isTop}
+            <div className="swipe-carousel">
+                {properties.map((prop, idx) => {
+                    const offset = idx - currentIndex
+                    if (offset < -1 || offset >= MAX_VISIBLE) return null
+                    const isActive = offset === 0
+
+                    return (
+                        <div
+                            key={prop.id}
+                            className={`swipe-card-wrapper ${isActive ? 'active' : ''}`}
+                            style={{
+                                '--offset': offset,
+                                '--abs-offset': Math.abs(offset),
+                                '--direction': offset === 0 ? 0 : offset > 0 ? 1 : -1,
+                                zIndex: properties.length - Math.abs(offset)
+                            }}
+                        >
+                            <SwipeCard
+                                property={prop}
+                                active={isActive}
                                 onSwipe={(dir) => handleSwipe(dir, prop.id)}
-                                zIndex={properties.length - idx}
                             />
-                        )
-                    })}
-                </AnimatePresence>
+                        </div>
+                    )
+                })}
             </div>
 
             <div className="swipe-actions">
-                <button className="sa-btn no" onClick={() => handleSwipe('left', properties[currentIndex].id)}>
-                    <X size={28} />
+                <button className="sa-btn no" onClick={() => handleSwipe('left', properties[currentIndex]?.id)}>
+                    <X size={26} />
                 </button>
-                <button className="sa-btn yes" onClick={() => handleSwipe('right', properties[currentIndex].id)}>
-                    <Heart size={28} fill="currentColor" />
+                <button className="sa-btn yes" onClick={() => handleSwipe('right', properties[currentIndex]?.id)}>
+                    <Heart size={26} fill="currentColor" />
                 </button>
             </div>
         </div>
     )
 }
 
-function SwipeCard({ property, active, onSwipe, zIndex }) {
+function SwipeCard({ property, active, onSwipe }) {
+    const navigate = useNavigate()
+    const x = useMotionValue(0)
+    const rotate = useTransform(x, [-200, 200], [-12, 12])
+    const likeOpacity = useTransform(x, [20, 100], [0, 1])
+    const nopeOpacity = useTransform(x, [-20, -100], [0, 1])
+    const isDragging = useRef(false)
+    const pointerStart = useRef({ x: 0, y: 0 })
+
+    const handlePointerDown = (e) => {
+        isDragging.current = false
+        pointerStart.current = { x: e.clientX, y: e.clientY }
+    }
+
+    const handleDragStart = () => {
+        isDragging.current = true
+    }
+
     const handleDragEnd = (event, info) => {
         const offset = info.offset.x
         const velocity = info.velocity.x
@@ -111,21 +142,44 @@ function SwipeCard({ property, active, onSwipe, zIndex }) {
         }
     }
 
+    const handlePointerUp = (e) => {
+        if (isDragging.current) return
+        // Check total movement from pointer start
+        const dx = Math.abs(e.clientX - pointerStart.current.x)
+        const dy = Math.abs(e.clientY - pointerStart.current.y)
+        if (dx < 10 && dy < 10) {
+            navigate(`/propiedades/${property.id}`)
+        }
+    }
+
     return (
         <motion.div
             className="swipe-card"
-            style={{ zIndex }}
+            style={{ x, rotate }}
             drag={active ? "x" : false}
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0.8}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            initial={{ scale: 0.95, opacity: 0, y: 50 }}
-            animate={{ scale: active ? 1 : 0.95, opacity: 1, y: active ? 0 : 20 }}
-            exit={{ x: active ? 500 : 0, opacity: 0, transition: { duration: 0.2 } }}
-            whileDrag={{ scale: 1.05 }}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            whileDrag={{ scale: 1.03 }}
         >
             <img src={property.image} alt={property.address} className="sc-img" draggable="false" />
+            
+            {active && (
+                <>
+                    <motion.div className="swipe-stamp like" style={{ opacity: likeOpacity }}>LIKE</motion.div>
+                    <motion.div className="swipe-stamp nope" style={{ opacity: nopeOpacity }}>NOPE</motion.div>
+                </>
+            )}
+
             <div className="sc-overlay">
+                {property.exclusive && (
+                    <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--zhomes-red)', color: '#fff', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Star size={12} fill="currentColor" /> ZHomes
+                    </div>
+                )}
                 <h3 className="sc-price">${property.price?.toLocaleString()}</h3>
                 <h4 className="sc-address">{property.address}</h4>
                 <div className="sc-city"><MapPin size={14}/> {property.city}</div>
@@ -134,6 +188,9 @@ function SwipeCard({ property, active, onSwipe, zIndex }) {
                     <span>{property.baths} Baños</span>
                     <span>{property.sqft?.toLocaleString()} sqft</span>
                 </div>
+                {property.listAgentName && (
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginTop: '4px' }}>Agente: {property.listAgentName}</div>
+                )}
             </div>
         </motion.div>
     )

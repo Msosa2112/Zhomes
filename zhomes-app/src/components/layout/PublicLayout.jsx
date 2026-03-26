@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { Home, Building2, Users, LogIn, Sun, Moon, Calculator } from 'lucide-react'
+import { Home, Building2, Flame, LogIn, Sun, Moon, Calculator, User } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import Grainient from '../shared/Grainient'
 import '../layout/DashboardLayout.css'
@@ -15,7 +15,7 @@ export default function PublicLayout() {
     ]
 
     const navItemsRight = [
-        { path: '/realtors', label: 'Realtors', icon: Users },
+        { path: '/vibe', label: 'Vibe', icon: Flame },
         { path: '/calculadora', label: 'Calculadora', icon: Calculator },
     ]
 
@@ -132,8 +132,8 @@ export default function PublicLayout() {
                     </Link>
                 ))}
                 <Link to="/login" className={`mobile-nav-item`}>
-                    <LogIn size={20} />
-                    <span>Portal</span>
+                    <User size={20} />
+                    <span>Perfil</span>
                 </Link>
             </nav>
         </div>

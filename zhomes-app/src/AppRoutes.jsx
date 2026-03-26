@@ -16,6 +16,7 @@ import VibeFeedMobile from './pages/mobile/public/VibeFeedMobile'
 import UserProfileMobile from './pages/mobile/public/UserProfileMobile'
 import SwipeModePageMobile from './pages/mobile/public/SwipeModePageMobile'
 import SharedCollectionPageMobile from './pages/mobile/public/SharedCollectionPageMobile'
+import CoShoppingMobile from './pages/mobile/public/CoShoppingMobile'
 
 import DashboardPageMobile from './pages/mobile/dashboard/DashboardPageMobile'
 import TransactionsPageMobile from './pages/mobile/dashboard/TransactionsPageMobile'
@@ -34,6 +35,8 @@ import ProspectingMobile from './pages/mobile/dashboard/ProspectingMobile'
 import AccountingMobile from './pages/mobile/dashboard/AccountingMobile'
 import MarketReportsMobile from './pages/mobile/dashboard/MarketReportsMobile'
 
+import SuperAdminKeysMobile from './pages/admin/SuperAdminKeysMobile'
+
 import RealtorDashboardMobile from './pages/mobile/dashboard/RealtorDashboardMobile'
 import RealtorTransactionsMobile from './pages/mobile/dashboard/RealtorTransactionsMobile'
 import RealtorCommissionsMobile from './pages/mobile/dashboard/RealtorCommissionsMobile'
@@ -45,6 +48,7 @@ import RealtorOpenHousesMobile from './pages/mobile/dashboard/RealtorOpenHousesM
 import RealtorTasksMobile from './pages/mobile/dashboard/RealtorTasksMobile'
 import RealtorProfile from './pages/realtor/RealtorProfile'
 import CreatePropertyPage from './pages/realtor/CreatePropertyPage'
+import UploadVibeMobile from './pages/mobile/dashboard/UploadVibeMobile'
 
 import PageTransition from './components/layout/PageTransition'
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -71,8 +75,9 @@ export default function AppRoutes() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<PublicLayoutMobile />}>
                     <Route path="/perfil" element={<UserProfileMobile />} />
+                    <Route path="/swipe" element={<SwipeModePageMobile />} />
+                    <Route path="/pareja" element={<CoShoppingMobile />} />
                 </Route>
-                <Route path="/swipe" element={<SwipeModePageMobile />} />
             </Route>
 
             {/* RUTAS PROTEGIDAS PARA EL STAFF */}
@@ -97,6 +102,9 @@ export default function AppRoutes() {
                     <Route path="/contabilidad" element={<AccountingMobile />} />
                     <Route path="/mercado" element={<MarketReportsMobile />} />
                 </Route>
+                
+                {/* Admin Configurations */}
+                <Route path="/admin/config" element={<SuperAdminKeysMobile />} />
 
                 {/* Portal Realtor */}
                 <Route element={<RealtorLayoutMobile />}>
@@ -111,6 +119,7 @@ export default function AppRoutes() {
                     <Route path="/realtor/leads" element={<RealtorLeadsMobile />} />
                     <Route path="/realtor/open-houses" element={<RealtorOpenHousesMobile />} />
                     <Route path="/realtor/tareas" element={<RealtorTasksMobile />} />
+                    <Route path="/realtor/subir-vibe" element={<UploadVibeMobile />} />
                 </Route>
             </Route>
         </Routes>

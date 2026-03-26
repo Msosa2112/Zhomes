@@ -89,7 +89,7 @@ export default defineConfig(({ mode }) => {
               
               // Inyectar Headers de Autenticación
               // Key from Greater Louisville AOR - IDX Feed subscription
-              const sparkKey = 'ayj1thvzmwsmpbn1ami7c8z85';
+              const sparkKey = env.VITE_SPARK_API_KEY || '6ojczz7todkepnsvryhw7m8ka';
               console.log('[SPARK PROXY] Path:', proxyReq.path);
               proxyReq.setHeader('Authorization', `Bearer ${sparkKey}`);
               proxyReq.setHeader('X-SparkApi-User-Agent', 'ZhomesApp/1.0');

@@ -2,37 +2,73 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle, Pause, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useProperties } from '../../../context/PropertyContext';
+import { supabase } from '../../../lib/supabaseClient';
 import './VibeFeedMobile.css';
+
+// ZHomes Vibe videos - local .mp4 files (fallback)
+const LOCAL_VIDEOS = [
+    {
+        id: 'zhomes-vibe-1',
+        video: '/Videos/10906_Milwaukee_Way.mp4',
+        property_address: '10906 Milwaukee Way',
+        city: 'Louisville',
+        zip: '40272',
+        price: 189900,
+        beds: 3,
+        baths: '2.0',
+        sqft: 1450,
+        status: 'Active',
+        description: 'Newly remodeled flip investment property. Modern finishes throughout.',
+        realtor_name: 'ZHomes Real Estate',
+        is_zhomes: true,
+    },
+    {
+        id: 'zhomes-vibe-2',
+        video: '/Videos/zhomes_new_listing.mp4',
+        property_address: 'ZHomes New Listing',
+        city: 'Louisville',
+        zip: '40200',
+        price: 215000,
+        beds: 4,
+        baths: '2.0',
+        sqft: 1800,
+        status: 'Active',
+        description: 'New home, fully remodeled. Great investment opportunity by ZHomes.',
+        realtor_name: 'ZHomes Real Estate',
+        is_zhomes: true,
+    },
+];
 
 export default function VibeFeedMobile() {
     const navigate = useNavigate();
-    const { properties } = useProperties();
+    const [vibeProperties, setVibeProperties] = useState(LOCAL_VIDEOS);
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef(null);
     const [selectedRealtor, setSelectedRealtor] = useState(null);
     const [isPlaying, setIsPlaying] = useState(true);
     const audioRef = useRef(null);
 
-    const verticalImages = [
-        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-    ];
-
-    // Map the real estate data properties but inject the stunning vertical 'videos' for Vibe experience
-    const vibeProperties = properties
-        .filter(p => p.price > 0)
-        .slice(0, 20)
-        .map((prop, idx) => ({
-            ...prop,
-            vibeMedia: verticalImages[idx % verticalImages.length], // Restore the beautiful vertical views
-            realtorPic: '/assets/agents/Jessica%20Hernandez/Jessica%20Hernandez.png'
-        }));
+    // Load videos from Supabase and merge with local
+    useEffect(() => {
+        async function loadDbVideos() {
+            const { data } = await supabase
+                .from('vibe_videos')
+                .select('*')
+                .eq('status', 'active')
+                .order('created_at', { ascending: false });
+            
+            if (data && data.length > 0) {
+                const dbMapped = data.map(v => ({
+                    ...v,
+                    video: v.video_url,
+                    address: v.property_address,
+                }));
+                // DB videos first, then local fallbacks
+                setVibeProperties([...dbMapped, ...LOCAL_VIDEOS]);
+            }
+        }
+        loadDbVideos();
+    }, []);
 
     useEffect(() => {
         // Attempt to play audio immediately when entering the feed
@@ -71,6 +107,8 @@ export default function VibeFeedMobile() {
         }
         setIsPlaying(!isPlaying);
     };
+
+
 
     return (
         <div className="vibe-feed-container">
@@ -147,49 +185,40 @@ function VibePost({ property, isActive, onOpenRealtor }) {
     const [liked, setLiked] = useState(false);
     const [showMortgage, setShowMortgage] = useState(false);
     const navigate = useNavigate();
+    const videoRef = useRef(null);
 
-    // 1. Simulación de "Open House Live": 25% de las propiedades al azar
-    const isLiveOpenHouse = parseInt(property.id || 0) % 4 === 0;
-
-    // 2. Simulación de "Ruta al Trabajo" basada en coordenadas
-    const commuteMins = Math.floor(Math.random() * 15) + 10; 
-
-    // 3. IA Summaries extraídos mágicamente
     const aiBullets = extractAIHighlights(property.description);
 
-    // Track analytics (Simulated Tinder/Spotify algorithm tracking)
+    // Play/pause video based on active state
     useEffect(() => {
+        if (!videoRef.current) return;
         if (isActive) {
-            console.log(`[Algorithm Log] User is watching property ${property.id}. Watch time started...`);
-            // In a real app we'd trigger a 3-second timeout here to send a 'Viewed' event to Supabase
+            videoRef.current.play().catch(() => {});
+        } else {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
         }
-    }, [isActive, property.id]);
+    }, [isActive]);
 
     const handleLike = () => {
         setLiked(!liked);
-        if (!liked) console.log(`[Algorithm Log] User liked property ${property.id}. Learning preference: ${property.type}`);
     };
 
     return (
         <div className="vibe-post">
-            {/* Simulated Video Background using slow Ken Burns CSS animation */}
+            {/* Native Video Background */}
             <div className="vibe-media-wrapper">
-                <img 
-                    src={property.vibeMedia} 
-                    alt="Property Vibe" 
-                    className={`vibe-media-img ${isActive ? 'playing' : ''}`}
+                <video
+                    ref={videoRef}
+                    src={property.video}
+                    className="vibe-media-video"
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
                 />
                 <div className="vibe-gradient-overlay"></div>
             </div>
-
-            {/* 🔥 NEW: Open House Live Badge */}
-            <AnimatePresence>
-                {isLiveOpenHouse && (
-                    <motion.div initial={{opacity:0, scale:0.8}} animate={{opacity:1, scale:1}} className="vibe-open-house-badge">
-                        <span className="dot"></span> OPEN HOUSE HOY
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
 
 
@@ -198,7 +227,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
             <div className="vibe-action-col">
                 <div className="vibe-action-item" onClick={onOpenRealtor}>
                     <div className="vibe-realtor-profile">
-                        <img src={property.realtorPic} alt="Realtor" />
+                        <img src="/assets/logo/fav.png" alt="ZHomes" />
                         <button className="vibe-realtor-add">+</button>
                     </div>
                 </div>
@@ -238,7 +267,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                 <h2 className="vibe-price">${property.price?.toLocaleString()}</h2>
                 
                 <div className="vibe-location">
-                    <MapPin size={16} /> <span>{property.address}, {property.city}</span>
+                    <MapPin size={16} /> <span>{property.property_address || property.address}, {property.city}</span>
                 </div>
                 
                 <div className="vibe-stats">

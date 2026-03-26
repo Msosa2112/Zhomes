@@ -12,7 +12,10 @@ export default async function handler(req, res) {
     }
 
     try {
-        const apiKey = process.env.OPENAI_API_KEY || "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"; // Hardcoded temporarily for prototype
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ error: "OpenAI API Key not configured." });
+        }
         
         const openai = new OpenAI({
             apiKey: apiKey,

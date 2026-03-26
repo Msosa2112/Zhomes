@@ -1,21 +1,16 @@
-import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut, Activity, X, MessageSquare, Calendar, Users, MapPin } from 'lucide-react'
+import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut, Activity, X, MessageSquare, Calendar, Users, MapPin, Building2, Award } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabaseClient'
+import { useProperties } from '../../../context/PropertyContext'
 import './RealtorDashboardMobile.css'
 
-const CHALLENGES = [
-    { emoji: '📄', name: 'Upload Master', desc: 'Sube 5 documentos esta semana', current: 3, total: 5, xp: 150, color: '#3B82F6' },
-    { emoji: '💬', name: 'Comunicador', desc: 'Responde 10 mensajes del broker', current: 7, total: 10, xp: 100, color: '#8B5CF6' },
-]
-
 const XP = { current: 2450, level: 7, levelName: 'Rising Star', nextAt: 3000, prevAt: 2000 }
-const STREAK = 12
 
 export default function RealtorDashboardMobile() {
     const navigate = useNavigate()
+    const { zhomesListings, zhomesAgents, zhomesOffice, properties, closedListings, allZHomesHistory, agentStats, loading: propsLoading } = useProperties()
     const [user, setUser] = useState(null)
-    const [myListings, setMyListings] = useState([])
     const [loading, setLoading] = useState(true)
     
     // AI Modals State
@@ -70,19 +65,8 @@ export default function RealtorDashboardMobile() {
             if (session?.user) {
                 setUser(session.user)
             }
-
-            // Fetch real dummy listings from Supabase to simulate CRM properties
-            const { data: listings, error } = await supabase
-                .from('property_listings')
-                .select('id, unparsed_address, current_price_public, status')
-                .limit(5)
-            
-            if (!error && listings) {
-                setMyListings(listings)
-            }
             setLoading(false)
         }
-
         fetchDashboardData()
     }, [])
 
@@ -91,14 +75,17 @@ export default function RealtorDashboardMobile() {
         navigate('/login')
     }
 
-    if (loading) {
+    if (loading && propsLoading) {
         return <div className="mobile-dash-page" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh'}}>Cargando CRM...</div>
     }
 
     const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Agente'
-    const activeTransactions = myListings.length
-    const pendingDocs = 3 // Simulated 
-    const totalEarned = 15800 // Simulated for now
+    const activeListings = zhomesListings.length
+    const totalAgents = zhomesAgents.length
+    const totalMlsProperties = properties.length
+    const totalClosedDeals = agentStats.reduce((sum, a) => sum + a.totalClosed, 0)
+    const totalVolume = agentStats.reduce((sum, a) => sum + a.totalVolume, 0)
+    const totalHistory = allZHomesHistory.length
     
     const xpPct = Math.round(((XP.current - XP.prevAt) / (XP.nextAt - XP.prevAt)) * 100)
 
@@ -154,17 +141,17 @@ export default function RealtorDashboardMobile() {
 
             <div className="m-ai-widget">
                 <div className="mai-head"><Brain size={18} /> ZhomesAI</div>
-                <p>He analizado tu base de datos en Supabase. Tienes <strong>{activeTransactions}</strong> tratos activos. ¡Buen trabajo liderando la zona!</p>
+                <p>Tu oficina <strong>{zhomesOffice?.name || 'ZHomes Real Estate'}</strong> tiene <strong>{activeListings}</strong> listados activos, <strong>{totalAgents}</strong> agentes y acceso a <strong>{totalMlsProperties}</strong> propiedades en Louisville MLS.</p>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', padding: '0 20px', marginBottom: '24px' }}>
                 <button 
-                    onClick={() => setShowVibeStudio(true)}
+                    onClick={() => navigate('/realtor/subir-vibe')}
                     style={{ background: 'var(--bg-card)', border: '1px solid var(--zhomes-red)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}
                 >
                     <Upload size={24} color="var(--zhomes-red)" />
-                    <span style={{ fontSize: '13px', fontWeight: 'bold' }}>Vibe Creator</span>
-                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Generar Posts IA</span>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold' }}>Subir Vibe</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Video de Propiedad</span>
                 </button>
                 <button 
                     onClick={() => setShowSmartFollow(true)}
@@ -179,18 +166,28 @@ export default function RealtorDashboardMobile() {
             <div className="m-kpi-scroller">
                 <div className="mk-card">
                     <FileText size={20} className="kblue" />
-                    <span>Mis Tratos</span>
-                    <strong>{activeTransactions}</strong>
+                    <span>Activas</span>
+                    <strong>{activeListings}</strong>
                 </div>
                 <div className="mk-card">
-                    <Clock size={20} className="kyellow" />
-                    <span>Docs Pndts</span>
-                    <strong>{pendingDocs}</strong>
+                    <Trophy size={20} className="kyellow" />
+                    <span>Cierres</span>
+                    <strong>{totalClosedDeals}</strong>
                 </div>
                 <div className="mk-card">
-                    <TrendingUp size={20} className="kgreen" />
-                    <span>Ganancias</span>
-                    <strong>${(totalEarned / 1000).toFixed(1)}K</strong>
+                    <DollarSign size={20} className="kgreen" />
+                    <span>Volumen</span>
+                    <strong>${totalVolume >= 1000000 ? (totalVolume / 1000000).toFixed(1) + 'M' : (totalVolume / 1000).toFixed(0) + 'K'}</strong>
+                </div>
+                <div className="mk-card">
+                    <Users size={20} style={{color: '#EC4899'}} />
+                    <span>Agentes</span>
+                    <strong>{totalAgents}</strong>
+                </div>
+                <div className="mk-card">
+                    <Building2 size={20} style={{color: '#8B5CF6'}} />
+                    <span>Historial</span>
+                    <strong>{totalHistory}</strong>
                 </div>
             </div>
 
@@ -210,17 +207,62 @@ export default function RealtorDashboardMobile() {
             </div>
 
             <div className="m-dash-section">
-                <h3>Mis Propiedades Activas (Supabase)</h3>
+                <h3><Building2 size={16} color="var(--zhomes-red)" style={{marginRight:'6px'}}/> Propiedades ZHomes (MLS Real)</h3>
                 <div className="m-alerts-list">
-                    {myListings.map((prop, idx) => (
-                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column' }}>
-                            <strong style={{ fontSize: '14px', marginBottom: '4px' }}>{prop.unparsed_address}</strong>
-                            <span style={{ fontSize: '12px', color: '#10B981' }}>${prop.current_price_public?.toLocaleString()}</span>
+                    {zhomesListings.map((prop, idx) => (
+                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <img src={prop.image} alt="" style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                                <strong style={{ fontSize: '13px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.address}</strong>
+                                <span style={{ fontSize: '12px', color: '#10B981', fontWeight: 'bold' }}>${prop.price?.toLocaleString()}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{prop.beds}bd / {prop.baths}ba / {prop.sqft?.toLocaleString()} sqft — {prop.listAgentName}</span>
+                            </div>
                         </div>
                     ))}
-                    {myListings.length === 0 && <p style={{fontSize:'12px', color:'var(--text-tertiary)'}}>No tienes propiedades asignadas aún.</p>}
+                    {zhomesListings.length === 0 && <p style={{fontSize:'12px', color:'var(--text-tertiary)'}}>No hay listados activos de ZHomes en la MLS.</p>}
                 </div>
             </div>
+
+            {agentStats.length > 0 && (
+            <div className="m-dash-section">
+                <h3><Award size={16} color="#F59E0B" style={{marginRight:'6px'}}/> Top Performers</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {agentStats.filter(a => a.totalClosed > 0).map((agent, idx) => (
+                        <div key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: idx === 0 ? 'linear-gradient(135deg,#F59E0B,#EF4444)' : idx === 1 ? 'linear-gradient(135deg,#94A3B8,#64748B)' : 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', color: idx < 2 ? '#fff' : 'var(--text-secondary)', flexShrink: 0 }}>
+                                {idx + 1}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <strong style={{ fontSize: '13px', display: 'block' }}>{agent.name}</strong>
+                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{agent.totalClosed} cierres · Promedio ${(agent.avgPrice / 1000).toFixed(0)}K</span>
+                            </div>
+                            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                <strong style={{ fontSize: '14px', color: '#10B981', display: 'block' }}>${(agent.totalVolume / 1000).toFixed(0)}K</strong>
+                                <span style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>volumen</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            )}
+
+            {closedListings.length > 0 && (
+            <div className="m-dash-section">
+                <h3><CheckCircle2 size={16} color="#10B981" style={{marginRight:'6px'}}/> Cierres Recientes (Off-Market)</h3>
+                <div className="m-alerts-list">
+                    {closedListings.slice(0, 5).map((prop, idx) => (
+                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <img src={prop.image} alt="" style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                                <strong style={{ fontSize: '13px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.address}</strong>
+                                <span style={{ fontSize: '12px', color: '#10B981', fontWeight: 'bold' }}>Vendida: ${prop.closePrice?.toLocaleString()}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{prop.listAgentName} · {prop.closeDate ? new Date(prop.closeDate).toLocaleDateString('es-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            )}
 
             <div className="m-dash-section" style={{marginBottom: '30px'}}>
                 <h3>Alertas Automáticas <span className="m-badge-red">2</span></h3>

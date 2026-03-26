@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, Search, Users, Calculator, Building2, Sun, Moon, Map } from 'lucide-react'
+import { Home, Search, User, Calculator, Building2, Sun, Moon, Map, Flame, Heart } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton, IonButtons } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
 import './PublicLayoutMobile.css'
@@ -27,9 +27,9 @@ export default function PublicLayoutMobile() {
     const navs = [
         { path: '/', icon: Home, label: 'Inicio' },
         { path: '/propiedades', icon: Search, label: 'Buscar' },
+        { path: '/swipe', icon: Heart, label: 'Match' },
         { path: '/mapa', icon: Map, label: 'Mapa' },
-        { path: '/vibe', icon: Sun, label: 'Vibe' },
-        { path: '/perfil', icon: Users, label: 'Perfil' },
+        { path: '/vibe', icon: Flame, label: 'Vibe' },
     ]
 
     const isPropertyDetail = loc.pathname.startsWith('/propiedades/') && loc.pathname.length > '/propiedades/'.length;
@@ -57,7 +57,7 @@ export default function PublicLayoutMobile() {
                                 {theme === 'light' ? <Moon size={18} color="white" /> : <Sun size={18} color="white" />}
                             </button>
                             <Link to="/login" className="m-pub-login" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 'bold', color: 'white', background: 'var(--zhomes-red)', padding: '8px 14px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(227, 30, 36, 0.3)' }}>
-                                <Building2 size={16} /> Portal
+                                <User size={16} /> Perfil
                             </Link>
                         </div>
                     </div>

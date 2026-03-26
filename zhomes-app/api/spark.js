@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   // Credenciales desde variables de entorno con fallback al token provisto
-  const SPARK_API_KEY = process.env.VITE_SPARK_API_KEY || process.env.SPARK_API_KEY || 'ayj1thvzmwsmpbn1ami7c8z85';
+  const SPARK_API_KEY = process.env.VITE_SPARK_API_KEY || process.env.SPARK_API_KEY || '6ojczz7todkepnsvryhw7m8ka';
 
   if (!SPARK_API_KEY) {
     return res.status(500).json({ 

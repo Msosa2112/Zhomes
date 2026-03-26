@@ -41,17 +41,39 @@ export default function PropertiesPageMobile() {
 
     const getPercent = (val, min, max) => Math.round(((val - min) / (max - min)) * 100);
 
-    const { properties: globalProperties, loading: ctxLoading } = useProperties();
+    const { properties: globalProperties, closedListings, loading: ctxLoading } = useProperties();
 
     useEffect(() => {
         setLoading(true);
         try {
-            if (!globalProperties || globalProperties.length === 0) throw new Error("No global items");
+            // Combine active properties + closed/off-market for a full listing
+            const active = globalProperties || [];
+            const closed = (closedListings || []).map(p => ({ ...p, offMarket: true }));
+            // Deduplicate by ID — active takes priority over closed
+            const seen = new Set();
+            const allProps = [];
+            for (const p of [...active, ...closed]) {
+                const key = String(p.id);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    allProps.push(p);
+                }
+            }
+            
+            if (allProps.length === 0) throw new Error("No properties");
 
-            let filtered = [...globalProperties];
-            if (filter === 'Apartamentos') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('condo'));
-            if (filter === 'Casas') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('residential') || String(p.type || '').length === 0);
-            if (filter === 'Lotes') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('land'));
+            let filtered = [...allProps];
+            const typeStr = (p) => String(p.type || p.property_type || '').toLowerCase();
+            
+            if (filter === 'Casas') filtered = filtered.filter(p => {
+                const t = typeStr(p);
+                return t.includes('single') || t.includes('residence') || t.includes('residential') || t.includes('family') || t === '';
+            });
+            if (filter === 'Apartamentos') filtered = filtered.filter(p => {
+                const t = typeStr(p);
+                return t.includes('condo') || t.includes('apartment') || t.includes('townhouse');
+            });
+            if (filter === 'Lotes') filtered = filtered.filter(p => typeStr(p).includes('land'));
 
             setProperties(filtered.map(p => ({
                  id: String(p.id),
@@ -62,8 +84,11 @@ export default function PropertiesPageMobile() {
                  beds: p.beds || 0,
                  baths: p.baths || 0,
                  sqft: p.sqft || 0,
-                 aiBullets: extractAIHighlights(p.description),
-                 commuteMins: Math.floor(Math.random() * 20) + 12
+                 aiBullets: extractAIHighlights(p.description || p.remarks),
+                 commuteMins: Math.floor(Math.random() * 20) + 12,
+                 offMarket: p.offMarket || false,
+                 exclusive: p.exclusive || false,
+                 status: p.status || 'Active'
             })));
         } catch (err) {
             console.warn("Using Fallback data in PropertiesPageMobile");
@@ -75,7 +100,7 @@ export default function PropertiesPageMobile() {
         } finally {
             setLoading(false);
         }
-    }, [filter, globalProperties]);
+    }, [filter, globalProperties, closedListings]);
 
     return (
         <div className="mobile-props-page">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2 } from 'lucide-react'
+import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { SparkService } from '../../../services/sparkService'
@@ -152,6 +152,21 @@ export default function UserProfileMobile() {
                         <ArrowRight size={20} />
                     </div>
                 </div>
+
+                {/* Co-Shopping Card */}
+                <Link to="/pareja" className="up-ai-card" style={{marginTop: '16px', background: 'linear-gradient(135deg,rgb(170, 20, 26) 0%, rgb(170, 20, 25) 100%)', marginBottom: '24px'}}>
+                    <div className="up-ai-icon" style={{background: 'rgba(255,255,255,0.2)'}}>
+                        <Users size={26} color="#ffffff" />
+                    </div>
+                    <div className="up-ai-text">
+                        <h3 style={{color: 'white'}}>Modo Parejas (Co-Shopping)</h3>
+                        <p style={{color: 'rgba(255,255,255,0.9)'}}>Vincula tu cuenta con tu pareja y descubran sus "Matches".</p>
+                    </div>
+                    <div className="up-ai-arrow">
+                        <ArrowRight size={20} color="white" />
+                    </div>
+                </Link>
+
                 <div className="up-section-title">
                     <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                         <Heart size={20} color="var(--zhomes-red)" fill="var(--zhomes-red)" />
