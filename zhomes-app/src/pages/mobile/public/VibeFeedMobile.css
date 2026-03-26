@@ -167,7 +167,7 @@
 /* Bottom Info Area */
 .vibe-info-area {
     position: absolute;
-    bottom: calc(99px + env(safe-area-inset-bottom));
+    bottom: calc(104px + env(safe-area-inset-bottom));
     left: 0;
     right: 60px; /* leave space for right column */
     padding: 20px;
@@ -442,4 +442,98 @@
     -webkit-backdrop-filter: blur(8px);
     color: white;
     border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* New Innovative Features CSS */
+
+/* Open House Badge */
+.vibe-open-house-badge {
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    background: rgba(227, 30, 36, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: pulse-red 2s infinite;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(227, 30, 36, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(227, 30, 36, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(227, 30, 36, 0); }
+}
+
+/* Commute Badge */
+.vibe-commute-badge {
+    position: absolute;
+    top: 145px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+}
+
+/* AI Summaries - Fixed Layout to Natural Flow */
+.vibe-ai-summary {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 90%;
+    margin-bottom: 8px;
+}
+
+.ai-bullet {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: ai-slide-up 0.4s forwards;
+    width: fit-content;
+}
+
+.ai-bullet:nth-child(1) { animation-delay: 0.3s; }
+.ai-bullet:nth-child(2) { animation-delay: 0.5s; }
+.ai-bullet:nth-child(3) { animation-delay: 0.7s; }
+
+@keyframes ai-slide-up {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mortgage Tooltip */
+.v-stat.mortgage-clickable {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    position: relative;
+    padding: 4px 10px;
+    border-radius: 8px;
 }

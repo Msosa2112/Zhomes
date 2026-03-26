@@ -10,6 +10,17 @@ const CHATS = [
 
 export default function RealtorMessagesMobile() {
     const [view, setView] = useState('list')
+    const [msgs, setMsgs] = useState([
+        { id: 1, type: 'sent', text: 'Hola, la tasación ya llegó, todo OK 👍' },
+        { id: 2, type: 'rec', text: 'Excelente, sube el reporte al sistema por favor.' }
+    ])
+    const [inputStr, setInputStr] = useState('')
+
+    const sendMsg = () => {
+        if (!inputStr.trim()) return;
+        setMsgs([...msgs, { id: Date.now(), type: 'sent', text: inputStr }]);
+        setInputStr('');
+    }
 
     return (
         <div className="mobile-msgs-page">
@@ -47,12 +58,19 @@ export default function RealtorMessagesMobile() {
                         <div className="m-cd-title">Zhomes Broker</div>
                     </div>
                     <div className="m-cd-msgs">
-                        <div className="m-msg-bubble sent">Hola, la tasación ya llegó, todo OK 👍</div>
-                        <div className="m-msg-bubble rec">Excelente, sube el reporte al sistema por favor.</div>
+                        {msgs.map(m => (
+                            <div key={m.id} className={`m-msg-bubble ${m.type}`}>{m.text}</div>
+                        ))}
                     </div>
                     <div className="m-cd-input">
-                        <input type="text" placeholder="Escribe un mensaje..." />
-                        <button><Send size={18} /></button>
+                        <input 
+                            type="text" 
+                            placeholder="Escribe un mensaje..." 
+                            value={inputStr}
+                            onChange={(e) => setInputStr(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && sendMsg()}
+                        />
+                        <button onClick={sendMsg}><Send size={18} /></button>
                     </div>
                 </div>
             )}

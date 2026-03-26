@@ -132,7 +132,7 @@
     position: fixed;
     inset: 0;
     background: var(--bg-primary);
-    z-index: 200;
+    z-index: 1100;
 }
 
 .m-cd-header {
@@ -185,9 +185,10 @@
 }
 
 .m-cd-input {
-    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    padding: 1rem 1rem calc(150px + env(safe-area-inset-bottom));
     display: flex;
     gap: 8px;
+    align-items: center; /* ALINEACIÓN VERTICAL */
     border-top: 1px solid var(--border-subtle);
     background: var(--bg-card);
 }

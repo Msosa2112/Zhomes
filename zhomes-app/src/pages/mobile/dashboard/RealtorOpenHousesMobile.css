@@ -1,0 +1,353 @@
+.rt-open-house-page {
+    padding-top: 80px;
+    padding-bottom: 90px;
+    min-height: 100vh;
+    background: #FAFAFA;
+}
+
+.rt-oh-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 20px;
+}
+
+.rt-oh-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+}
+
+.rt-oh-header p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.rt-oh-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1A1A1A;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+}
+
+.rt-oh-tabs {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 16px;
+    border-bottom: 1px solid #F0F0F0;
+    margin-bottom: 16px;
+}
+
+.rt-tab {
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #999;
+    padding-bottom: 8px;
+    position: relative;
+    cursor: pointer;
+}
+
+.rt-tab.active {
+    color: #1A1A1A;
+}
+
+.rt-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #1A1A1A;
+    border-radius: 2px 2px 0 0;
+}
+
+.rt-oh-list {
+    padding: 0 20px;
+}
+
+.rt-oh-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: #999;
+    gap: 12px;
+}
+
+.rt-oh-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    cursor: pointer;
+}
+
+.rt-oh-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #F0F0F0;
+    padding-bottom: 12px;
+}
+
+.rt-oh-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rt-oh-title h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1A1A1A;
+}
+
+.rt-oh-status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+}
+.rt-oh-status-badge.upcoming { background: #EFF6FF; color: #3B82F6; }
+.rt-oh-status-badge.completed { background: #F3F4F6; color: #6B7280; }
+
+.rt-oh-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rt-oh-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.rt-oh-meta-item svg {
+    color: #999;
+}
+
+.rt-oh-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    background: #F9FAFB;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.rt-stat {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rt-stat strong {
+    font-size: 1.1rem;
+    color: #1A1A1A;
+}
+
+/* Modal details */
+.rt-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.rt-detail-cell {
+    background: #F9FAFB;
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rt-detail-cell span {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.rt-detail-cell strong {
+    font-size: 1.1rem;
+    color: #1A1A1A;
+}
+
+.rt-oh-tools h3, .rt-oh-roster h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1A1A1A;
+}
+
+.rt-tool-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rt-tool-item:active {
+    background: #F9FAFB;
+}
+
+.rt-tool-icon {
+    width: 40px;
+    height: 40px;
+    background: #EFF6FF;
+    color: #3B82F6;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rt-tool-info {
+    flex: 1;
+}
+
+.rt-tool-info h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+}
+
+.rt-tool-info p {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.rt-no-data {
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.rt-visitor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rt-visitor-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #F9FAFB;
+    border-radius: 12px;
+}
+
+.rt-visitor-avatar {
+    width: 36px;
+    height: 36px;
+    background: #1A1A1A;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rt-visitor-item strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #1A1A1A;
+}
+
+.rt-visitor-item span {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Center Modal for QR */
+.rt-modal-center {
+    background: white;
+    width: 90%;
+    max-width: 350px;
+    border-radius: 24px;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.rt-modal-center h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+}
+
+.rt-modal-center p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.rt-qr-placeholder {
+    width: 200px;
+    height: 200px;
+    background: #F9FAFB;
+    border: 1px solid #E5E5E5;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.rt-qr-instruction {
+    font-size: 0.85rem !important;
+    background: #FEF2F2;
+    color: #EF4444 !important;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.rt-time-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rt-time-row select {
+    flex: 1;
+}
+
+.rt-time-row span {
+    color: #666;
+    font-weight: 500;
+}

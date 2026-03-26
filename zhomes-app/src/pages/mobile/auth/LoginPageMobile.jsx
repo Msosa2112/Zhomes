@@ -37,8 +37,10 @@ export default function LoginPageMobile() {
             // Si es exitoso, ruteamos según el rol
             if (role === 'realtor') {
                 navigate('/realtor')
-            } else {
+            } else if (role === 'broker') {
                 navigate('/dashboard')
+            } else {
+                navigate('/perfil')
             }
         } catch (error) {
             setErrorMsg(error.message || 'Error al iniciar sesión.')
@@ -62,6 +64,21 @@ export default function LoginPageMobile() {
             setErrorMsg(`Error conectando con ${provider}.`)
             setLoading(false)
         }
+    }
+
+    const handleDemoLogin = () => {
+        // Bypass Supabase auth for demo purposes
+        const demoUsers = {
+            broker: { email: 'broker@zhomes.com', name: 'Gilbert Zaldivar', role: 'broker' },
+            realtor: { email: 'jessica@zhomes.com', name: 'Jessica Hernandez', role: 'realtor' },
+            client: { email: 'cliente@zhomes.com', name: 'Carlos Rivera', role: 'client' },
+        }
+        const user = demoUsers[role]
+        localStorage.setItem('zhomes_demo_user', JSON.stringify(user))
+        
+        if (role === 'realtor') navigate('/realtor')
+        else if (role === 'broker') navigate('/dashboard')
+        else navigate('/perfil')
     }
 
     return (
@@ -107,6 +124,21 @@ export default function LoginPageMobile() {
                         {loading ? 'Iniciando...' : 'Entrar con Email'}
                     </button>
                 </form>
+
+                {/* Demo mode button */}
+                <button 
+                    type="button" 
+                    onClick={handleDemoLogin}
+                    style={{
+                        width: '100%', padding: '14px', borderRadius: '12px',
+                        border: '2px dashed rgba(255,255,255,0.3)',
+                        background: 'transparent', color: '#fff',
+                        fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                        marginTop: '12px', letterSpacing: '0.5px'
+                    }}
+                >
+                    🚀 Entrar como {role === 'broker' ? 'Broker' : role === 'realtor' ? 'Realtor' : 'Cliente'} (Demo)
+                </button>
 
                 <div className="ml-oauth-divider">
                     <span>O continúa con</span>

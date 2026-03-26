@@ -1,0 +1,346 @@
+.showing-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.showing-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.showing-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.showing-title-row h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.showing-add-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.showing-stats {
+    display: flex;
+    gap: 8px;
+}
+
+.showing-stat {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.showing-stat svg { color: var(--text-tertiary); }
+.showing-stat strong { font-size: 1.2rem; font-weight: 900; }
+.showing-stat span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.showing-stat.warn { border-color: rgba(245, 158, 11, 0.3); }
+.showing-stat.warn svg { color: #F59E0B; }
+.showing-stat.warn strong { color: #F59E0B; }
+
+/* Calendar */
+.showing-calendar {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 20px 16px;
+}
+
+.cal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.cal-nav h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.cal-nav button {
+    background: var(--bg-secondary);
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.cal-day-name {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    padding: 6px 0;
+    text-transform: uppercase;
+}
+
+.cal-cell {
+    aspect-ratio: 1;
+    border: none;
+    background: none;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.2s;
+    position: relative;
+    padding: 0;
+}
+
+.cal-cell.empty { cursor: default; }
+
+.cal-cell.today {
+    font-weight: 800;
+    color: var(--zhomes-red);
+}
+
+.cal-cell.selected {
+    background: var(--zhomes-red);
+    color: white;
+}
+
+.cal-cell.selected.today { color: white; }
+
+.cal-dots {
+    display: flex;
+    gap: 3px;
+    position: absolute;
+    bottom: 4px;
+}
+
+.cal-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--zhomes-red);
+}
+
+.cal-cell.selected .cal-dot { background: white; }
+
+/* Day Section */
+.showing-day-section h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 8px 0 12px;
+    text-transform: capitalize;
+}
+
+.showing-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-tertiary);
+}
+
+.showing-empty p {
+    margin: 12px 0 0;
+    font-size: 0.9rem;
+}
+
+/* Timeline */
+.showing-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.showing-card {
+    display: flex;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.showing-card:active { transform: scale(0.98); }
+
+.showing-time-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 60px;
+    padding-top: 2px;
+}
+
+.showing-time {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.showing-duration {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+}
+
+.showing-info-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.showing-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.showing-card-top strong {
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.showing-price {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--zhomes-red);
+}
+
+.showing-addr {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin: 0 0 10px;
+}
+
+.showing-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.showing-agent-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.showing-agent-mini img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.showing-agent-mini span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.showing-status {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* Detail */
+.showing-detail-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.showing-detail-banner span:last-child {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.showing-feedback-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.showing-rating {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.showing-feedback-card p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.showing-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.showing-action-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.showing-action-btn.confirm {
+    background: #10B981;
+    color: white;
+}
+
+.showing-action-btn.cancel {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.showing-action-btn.complete {
+    background: #3B82F6;
+    color: white;
+}

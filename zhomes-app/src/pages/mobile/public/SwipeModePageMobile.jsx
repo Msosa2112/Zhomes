@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Heart, X, MapPin } from 'lucide-react'
-import { SparkService } from '../../../services/sparkService'
+import { useProperties } from '../../../context/PropertyContext'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
 import { supabase } from '../../../lib/supabaseClient'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +14,8 @@ export default function SwipeModePageMobile() {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
 
+    const { properties: globalProperties, loading: ctxLoading } = useProperties();
+
     useEffect(() => {
         const initSwipe = async () => {
             const { data: { session } } = await supabase.auth.getSession()
@@ -23,32 +25,17 @@ export default function SwipeModePageMobile() {
             }
             setUser(session.user)
 
-            try {
-                const data = await SparkService.getProperties({ limit: 15 })
-                const results = data.D?.Results || []
-                if (results.length > 0) {
-                    const mapped = results.map(p => ({
-                        id: String(p.Id),
-                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
-                        price: p.StandardFields.ListPrice || 0,
-                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                        beds: p.StandardFields.BedsTotal || 0,
-                        baths: p.StandardFields.BathsTotal || 0,
-                        sqft: p.StandardFields.BuildingAreaTotal || 0,
-                    }))
-                    setProperties(mapped)
-                } else {
-                    throw new Error("Empty Spark API response")
-                }
-            } catch (err) {
-                setProperties(MOCK_PROPERTIES.map(p => ({ ...p, id: String(p.id) })))
-            } finally {
-                setLoading(false)
+            if (!ctxLoading) {
+                 if (globalProperties && globalProperties.length > 0) {
+                     setProperties(globalProperties.slice(0, 50));
+                 } else {
+                     setProperties(MOCK_PROPERTIES.map(p => ({ ...p, id: String(p.id) })));
+                 }
+                 setLoading(false);
             }
         }
         initSwipe()
-    }, [navigate])
+    }, [navigate, globalProperties, ctxLoading])
 
     const handleSwipe = async (direction, propertyId) => {
         if (direction === 'right' && user) {

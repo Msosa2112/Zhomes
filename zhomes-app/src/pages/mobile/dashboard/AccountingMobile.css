@@ -1,0 +1,298 @@
+.accounting-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.accounting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accounting-header h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
+
+.accounting-period-tabs {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 3px;
+}
+
+.accounting-period-tabs button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: var(--text-tertiary);
+    font-weight: 700;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.accounting-period-tabs button.active {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+/* Main KPI */
+.acc-main-kpi {
+    margin-bottom: 4px;
+}
+
+.acc-kpi-large {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(59, 130, 246, 0.08));
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+}
+
+.acc-kpi-large span:first-child {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.acc-net-positive {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #10B981;
+    margin: 8px 0;
+}
+
+.acc-trend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.acc-trend.positive { color: #10B981; }
+.acc-trend.negative { color: #EF4444; }
+
+/* KPI Row */
+.acc-kpi-row {
+    display: flex;
+    gap: 8px;
+}
+
+.acc-kpi {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acc-kpi strong { font-size: 1.1rem; font-weight: 900; }
+.acc-kpi span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.acc-icon-green { color: #10B981; }
+.acc-icon-red { color: #EF4444; }
+.acc-icon-blue { color: #3B82F6; }
+
+/* Sections */
+.acc-section {
+    margin-top: 4px;
+}
+
+.acc-section h3 { font-size: 1rem; font-weight: 800; margin: 0 0 12px; }
+
+.acc-splits-subtitle { font-size: 0.8rem; color: var(--text-tertiary); margin: -8px 0 12px; }
+
+/* Monthly Rows */
+.acc-month-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.acc-month-info { min-width: 80px; }
+.acc-month-info strong { display: block; font-size: 0.85rem; font-weight: 700; }
+.acc-month-info span { font-size: 0.7rem; color: var(--text-tertiary); }
+
+.acc-month-bars { flex: 1; }
+
+.acc-bar-wrap {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.acc-bar.income { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #10B981, #3B82F6); }
+
+.acc-month-amounts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 60px;
+}
+
+.acc-income { font-size: 0.75rem; font-weight: 700; color: #10B981; }
+.acc-expense { font-size: 0.7rem; color: #EF4444; }
+
+/* Expense Breakdown */
+.acc-expense-list {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.acc-expense-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.acc-exp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.acc-exp-name { font-size: 0.8rem; font-weight: 600; min-width: 80px; }
+.acc-exp-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--bg-secondary); overflow: hidden; }
+.acc-exp-bar div { height: 100%; border-radius: 2px; }
+.acc-exp-amount { font-size: 0.8rem; font-weight: 700; min-width: 50px; text-align: right; }
+
+/* Transaction Cards */
+.acc-tx-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.acc-tx-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acc-tx-info { flex: 1; min-width: 0; }
+.acc-tx-info strong { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 2px; }
+.acc-tx-info > span { display: block; font-size: 0.7rem; color: var(--text-tertiary); }
+
+.acc-tx-agent {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 0.7rem !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+}
+
+.acc-tx-agent img {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.acc-tx-amount {
+    font-size: 0.9rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.acc-tx-amount.income { color: #10B981; }
+.acc-tx-amount.expense { color: #EF4444; }
+
+/* Split Cards */
+.acc-split-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+}
+
+.acc-split-top {
+    margin-bottom: 12px;
+}
+
+.acc-split-agent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.acc-split-agent img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.acc-split-agent strong { display: block; font-size: 0.9rem; font-weight: 800; }
+.acc-split-agent span { font-size: 0.75rem; color: var(--text-tertiary); }
+
+.acc-split-bar-wrap { margin-bottom: 12px; }
+
+.acc-split-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.acc-split-agent-fill { background: #10B981; }
+.acc-split-broker-fill { background: #3B82F6; }
+
+.acc-split-amounts {
+    display: flex;
+    gap: 10px;
+}
+
+.acc-split-col {
+    flex: 1;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.acc-split-col span { display: block; font-size: 0.65rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+.acc-split-col strong { font-size: 0.85rem; font-weight: 800; }
+.text-green { color: #10B981 !important; }
+.text-blue { color: #3B82F6 !important; }
+
+/* Export */
+.acc-export-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-top: 8px;
+}

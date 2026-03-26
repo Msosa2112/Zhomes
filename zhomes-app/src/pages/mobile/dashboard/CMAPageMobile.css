@@ -1,0 +1,240 @@
+.cma-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.cma-header h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
+.cma-header p { font-size: 0.9rem; color: var(--text-tertiary); margin: 4px 0 0; }
+
+.cma-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+.cma-search svg { color: var(--text-tertiary); flex-shrink: 0; }
+.cma-search input { flex: 1; background: none; border: none; color: var(--text-primary); font-size: 0.85rem; outline: none; }
+
+.cma-search-btn {
+    padding: 8px 16px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Subject Property */
+.cma-subject {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.cma-subject-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+}
+
+.cma-subject-header h3 { margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.cma-subject-info strong { display: block; font-size: 1.1rem; font-weight: 800; margin-bottom: 2px; }
+.cma-subject-info span { font-size: 0.8rem; color: var(--text-tertiary); }
+
+.cma-subject-specs {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cma-spec {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.cma-spec svg { color: var(--text-tertiary); }
+
+/* Suggested Price */
+.cma-price-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(59, 130, 246, 0.08));
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+}
+
+.cma-price-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cma-suggested-price {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #10B981;
+    margin: 8px 0 16px;
+}
+
+.cma-price-range {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cma-price-range > span {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.cma-range-bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-secondary);
+    position: relative;
+}
+
+.cma-range-fill {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    height: 100%;
+    background: linear-gradient(90deg, #10B981, #3B82F6);
+    border-radius: 3px;
+}
+
+.cma-range-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #10B981;
+    border: 3px solid var(--bg-primary);
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+/* Stats Grid */
+.cma-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.cma-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cma-stat-card span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.cma-stat-card strong { font-size: 1.15rem; font-weight: 900; }
+.cma-icon.blue { color: #3B82F6; }
+.cma-icon.green { color: #10B981; }
+.cma-icon.amber { color: #F59E0B; }
+.cma-icon.violet { color: #8B5CF6; }
+
+/* Comps */
+.cma-comps-section h3 { font-size: 1rem; font-weight: 800; margin: 8px 0 4px; }
+.cma-comps-subtitle { font-size: 0.75rem; color: var(--text-tertiary); display: block; margin-bottom: 12px; }
+
+.cma-comp-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+}
+
+.cma-comp-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.cma-comp-top strong { font-size: 0.9rem; font-weight: 800; display: block; margin-bottom: 2px; }
+.cma-comp-city { font-size: 0.75rem; color: var(--text-tertiary); }
+.cma-comp-price { text-align: right; }
+.cma-comp-price strong { font-size: 0.95rem; font-weight: 800; display: block; }
+
+.cma-price-diff {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.cma-price-diff.above { color: #10B981; }
+.cma-price-diff.below { color: #EF4444; }
+
+.cma-comp-specs {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.cma-comp-specs span { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+
+.cma-comp-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.cma-comp-footer span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+}
+
+.cma-generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-top: 8px;
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle } from 'lucide-react';
+import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle, Pause, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProperties } from '../../../context/PropertyContext';
 import './VibeFeedMobile.css';
@@ -11,6 +11,7 @@ export default function VibeFeedMobile() {
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef(null);
     const [selectedRealtor, setSelectedRealtor] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(true);
     const audioRef = useRef(null);
 
     const verticalImages = [
@@ -61,6 +62,16 @@ export default function VibeFeedMobile() {
         }
     };
 
+    const toggleMusic = () => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play().catch(() => {});
+        }
+        setIsPlaying(!isPlaying);
+    };
+
     return (
         <div className="vibe-feed-container">
             {/* Background Audio */}
@@ -77,7 +88,13 @@ export default function VibeFeedMobile() {
                     <ChevronLeft size={28} color="white" />
                 </button>
                 <div className="vibe-tab-title">Para Ti</div>
-                <div style={{width: 28}}></div>
+                <button 
+                    className="vibe-back-btn" 
+                    onClick={toggleMusic}
+                    style={{ background: 'rgba(0,0,0,0.4)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}
+                >
+                    {isPlaying ? <Pause size={20} color="white" /> : <Play size={20} color="white" />}
+                </button>
             </div>
 
             {/* Scrollable Feed */}
@@ -105,9 +122,53 @@ export default function VibeFeedMobile() {
     );
 }
 
+// Small helper to simulate AI "extracting" key features from the MLS remarks
+function extractAIHighlights(description) {
+    if (!description) return ["✨ Excelente distribución", "🛋 Diseño acogedor", "📍 Gran ubicación"];
+    const lower = description.toLowerCase();
+    const highlights = [];
+    if (lower.includes('pool') || lower.includes('piscina')) highlights.push("🏊‍♀️ Piscina");
+    if (lower.includes('hardwood') || lower.includes('madera')) highlights.push("🪵 Pisos de madera");
+    if (lower.includes('new') || lower.includes('renovated') || lower.includes('nuevo') || lower.includes('remodelado')) highlights.push("✨ Recién remodelado");
+    if (lower.includes('yard') || lower.includes('patio') || lower.includes('garden')) highlights.push("🌳 Amplio patio");
+    if (lower.includes('garage') || lower.includes('garaje')) highlights.push("🚗 Garaje incluido");
+    if (lower.includes('basement') || lower.includes('sótano')) highlights.push("📦 Sótano espacioso");
+    
+    // Fill up to 3 if we couldn't find matches
+    const fallbacks = ["🤩 Espacios iluminados", "🏡 Listo para mudarse", "💎 Increíble oportunidad", "🏙 Barrio tranquilo"];
+    while (highlights.length < 3) {
+        let f = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        if (!highlights.includes(f)) highlights.push(f);
+    }
+    return highlights.slice(0, 3);
+}
+
 function VibePost({ property, isActive, onOpenRealtor }) {
     const [liked, setLiked] = useState(false);
+    const [showMortgage, setShowMortgage] = useState(false);
     const navigate = useNavigate();
+
+    // 1. Simulación de "Open House Live": 25% de las propiedades al azar
+    const isLiveOpenHouse = parseInt(property.id || 0) % 4 === 0;
+
+    // 2. Simulación de "Ruta al Trabajo" basada en coordenadas
+    const commuteMins = Math.floor(Math.random() * 15) + 10; 
+
+    // 3. IA Summaries extraídos mágicamente
+    const aiBullets = extractAIHighlights(property.description);
+
+    // Track analytics (Simulated Tinder/Spotify algorithm tracking)
+    useEffect(() => {
+        if (isActive) {
+            console.log(`[Algorithm Log] User is watching property ${property.id}. Watch time started...`);
+            // In a real app we'd trigger a 3-second timeout here to send a 'Viewed' event to Supabase
+        }
+    }, [isActive, property.id]);
+
+    const handleLike = () => {
+        setLiked(!liked);
+        if (!liked) console.log(`[Algorithm Log] User liked property ${property.id}. Learning preference: ${property.type}`);
+    };
 
     return (
         <div className="vibe-post">
@@ -121,6 +182,18 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                 <div className="vibe-gradient-overlay"></div>
             </div>
 
+            {/* 🔥 NEW: Open House Live Badge */}
+            <AnimatePresence>
+                {isLiveOpenHouse && (
+                    <motion.div initial={{opacity:0, scale:0.8}} animate={{opacity:1, scale:1}} className="vibe-open-house-badge">
+                        <span className="dot"></span> OPEN HOUSE HOY
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+
+
+
             {/* Right Action Column */}
             <div className="vibe-action-col">
                 <div className="vibe-action-item" onClick={onOpenRealtor}>
@@ -130,7 +203,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                     </div>
                 </div>
 
-                <div className="vibe-action-item" onClick={() => setLiked(!liked)}>
+                <div className="vibe-action-item" onClick={handleLike}>
                     <motion.div whileTap={{ scale: 0.8 }}>
                         <Heart size={32} color={liked ? '#e31e24' : 'white'} fill={liked ? '#e31e24' : 'transparent'} />
                     </motion.div>
@@ -154,7 +227,15 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
             {/* Bottom Info Area */}
             <div className="vibe-info-area">
-                <h2 className="vibe-price">${property.price.toLocaleString()}</h2>
+                {/* 🔥 FIXED: AI Property Summaries moved here for natural flex stacking */}
+                {isActive && (
+                    <div className="vibe-ai-summary">
+                        {aiBullets.map((bullet, i) => (
+                            <div key={i} className="ai-bullet">{bullet}</div>
+                        ))}
+                    </div>
+                )}
+                <h2 className="vibe-price">${property.price?.toLocaleString()}</h2>
                 
                 <div className="vibe-location">
                     <MapPin size={16} /> <span>{property.address}, {property.city}</span>
@@ -163,7 +244,11 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                 <div className="vibe-stats">
                     <div className="v-stat"><Bed size={16}/> {property.beds} Hab</div>
                     <div className="v-stat"><Bath size={16}/> {property.baths} Ba</div>
-                    <div className="v-stat"><Square size={16}/> {property.sqft} sqft</div>
+                    {/* 🔥 NEW: Calculadora de Hipoteca Interactiva */}
+                    <div className="v-stat mortgage-clickable" onClick={() => setShowMortgage(!showMortgage)}>
+                        <Square size={16}/> 
+                        {showMortgage ? `~$${Math.round(property.price * 0.0068).toLocaleString()}/mes` : `${property.sqft} sqft`}
+                    </div>
                 </div>
 
                 {/* Simulated "Now Playing" sound ticker for TikTok feel */}

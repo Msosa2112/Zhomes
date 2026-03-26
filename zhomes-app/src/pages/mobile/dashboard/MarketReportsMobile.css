@@ -1,0 +1,182 @@
+.market-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.market-header h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
+.market-header p { font-size: 0.85rem; color: var(--text-tertiary); margin: 4px 0 0; }
+
+/* Main KPI */
+.market-main-kpi {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+}
+
+.market-main-kpi span:first-child {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.market-main-kpi strong {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin: 8px 0;
+}
+
+.market-trend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.market-trend.positive { color: #10B981; }
+.market-trend.negative { color: #EF4444; }
+
+/* Stats Grid */
+.market-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.market-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.market-stat strong { font-size: 1.15rem; font-weight: 900; }
+.market-stat span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.ms-icon.blue { color: #3B82F6; }
+.ms-icon.amber { color: #F59E0B; }
+.ms-icon.green { color: #10B981; }
+.ms-icon.violet { color: #8B5CF6; }
+
+.market-mini-trend {
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+}
+
+.market-mini-trend.positive { color: #10B981 !important; }
+.market-mini-trend.negative { color: #EF4444 !important; }
+
+/* Sections */
+.market-section h3 { font-size: 1rem; font-weight: 800; margin: 8px 0 12px; }
+
+/* Charts */
+.market-chart {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 20px 16px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 180px;
+    gap: 8px;
+}
+
+.market-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.market-bar-value {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.market-bar {
+    width: 100%;
+    max-width: 36px;
+    border-radius: 8px 8px 4px 4px;
+    background: linear-gradient(180deg, var(--zhomes-red), color-mix(in srgb, var(--zhomes-red) 60%, transparent));
+    transition: height 0.5s ease;
+}
+
+.market-bar.sales {
+    background: linear-gradient(180deg, #3B82F6, color-mix(in srgb, #3B82F6 60%, transparent));
+}
+
+.market-bar-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+}
+
+/* Zone Rankings */
+.market-zone-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.market-zone-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+}
+
+.market-zone-rank {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: var(--text-tertiary);
+    min-width: 30px;
+}
+
+.market-zone-info { flex: 1; }
+.market-zone-info strong { display: block; font-size: 0.9rem; font-weight: 700; }
+.market-zone-info span { font-size: 0.7rem; color: var(--text-tertiary); }
+
+.market-zone-price { text-align: right; }
+.market-zone-price strong { display: block; font-size: 0.9rem; font-weight: 800; }
+
+/* Share */
+.market-share-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}

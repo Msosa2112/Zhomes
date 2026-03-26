@@ -10,6 +10,17 @@ const CHATS = [
 
 export default function BrokerMessagesMobile() {
     const [view, setView] = useState('list') // list | chat
+    const [msgs, setMsgs] = useState([
+        { id: 1, type: 'rec', text: 'Hola, la tasación ya llegó, todo OK 👍' },
+        { id: 2, type: 'sent', text: 'Excelente, sube el reporte al sistema por favor.' }
+    ])
+    const [inputStr, setInputStr] = useState('')
+
+    const sendMsg = () => {
+        if (!inputStr.trim()) return;
+        setMsgs([...msgs, { id: Date.now(), type: 'sent', text: inputStr }]);
+        setInputStr('');
+    }
 
     return (
         <div className="mobile-msgs-page">
@@ -47,12 +58,19 @@ export default function BrokerMessagesMobile() {
                         <div className="m-cd-title">Jessica Hernandez</div>
                     </div>
                     <div className="m-cd-msgs">
-                        <div className="m-msg-bubble rec">Hola, la tasación ya llegó, todo OK 👍</div>
-                        <div className="m-msg-bubble sent">Excelente, sube el reporte al sistema por favor.</div>
+                        {msgs.map(m => (
+                            <div key={m.id} className={`m-msg-bubble ${m.type}`}>{m.text}</div>
+                        ))}
                     </div>
                     <div className="m-cd-input">
-                        <input type="text" placeholder="Mensaje..." />
-                        <button><Send size={18} /></button>
+                        <input 
+                            type="text" 
+                            placeholder="Mensaje..." 
+                            value={inputStr}
+                            onChange={(e) => setInputStr(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && sendMsg()}
+                        />
+                        <button onClick={sendMsg}><Send size={18} /></button>
                     </div>
                 </div>
             )}

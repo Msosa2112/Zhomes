@@ -9,6 +9,7 @@ import { useTheme } from '../../../context/ThemeContext'
 import { MOCK_PROPERTIES, REALTORS } from '../../../data/mockData'
 import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
+import { useProperties } from '../../../context/PropertyContext'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
 import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import './PropertyDetailPageMobile.css'
@@ -33,6 +34,7 @@ export default function PropertyDetailPageMobile() {
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
     const [selectedRealtor, setSelectedRealtor] = useState(null)
     const { theme } = useTheme()
+    const { properties: ctxProperties } = useProperties()
 
     const [isFavorite, setIsFavorite] = useState(false)
     const [togglingFav, setTogglingFav] = useState(false)
@@ -59,42 +61,60 @@ export default function PropertyDetailPageMobile() {
 
     useEffect(() => {
         setLoading(true);
+        
+        // 1. First try to find in context (works for both Spark and sample IDs)
+        const ctxProp = ctxProperties.find(p => String(p.id) === String(id));
+        if (ctxProp) {
+            setProperty({
+                ...ctxProp,
+                photos: ctxProp.images || [ctxProp.image],
+                desc: ctxProp.description || 'Hermosa propiedad en una de las mejores zonas de la ciudad.',
+                city: ctxProp.city || ''
+            });
+            setLoading(false);
+            return;
+        }
+
+        // 2. Fallback: try Spark API directly (RESO v3 format)
         SparkService.getListingDetails(id)
             .then(data => {
-                const results = data.D?.Results;
-                if (results && results.length > 0) {
-                    const p = results[0];
+                // RESO v3 returns single entity directly or in value array
+                const p = data?.value?.[0] || data;
+                if (p && (p.ListPrice || p.UnparsedAddress)) {
+                    const mediaPhotos = (p.Media || [])
+                        .filter(m => m.MediaURL)
+                        .map(m => m.MediaURL);
                     setProperty({
-                        id: String(p.Id),
-                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
-                        price: p.StandardFields.ListPrice || 0,
-                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                        photos: p.StandardFields.Photos?.map(ph => ph.Uri800) || ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
-                        beds: p.StandardFields.BedsTotal || 0,
-                        baths: p.StandardFields.BathsTotal || 0,
-                        sqft: p.StandardFields.BuildingAreaTotal || 0,
-                        lat: p.StandardFields.Latitude || null,
-                        lng: p.StandardFields.Longitude || null,
-                        desc: p.StandardFields.PublicRemarks || 'Descripción no disponible',
-                        exclusive: false
+                        id: String(p.ListingKey || id),
+                        address: p.UnparsedAddress || 'Dirección no disponible',
+                        city: `${p.City || ''}, ${p.StateOrProvince || ''}`,
+                        price: p.ListPrice || 0,
+                        image: mediaPhotos[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                        photos: mediaPhotos.length > 0 ? mediaPhotos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
+                        beds: p.BedsTotal || p.BedroomsTotal || 0,
+                        baths: p.BathroomsTotalInteger || p.BathroomsFull || 0,
+                        sqft: p.LivingArea || p.BuildingAreaTotal || 0,
+                        lat: p.Latitude || null,
+                        lng: p.Longitude || null,
+                        desc: p.PublicRemarks || 'Descripción no disponible',
+                        exclusive: String(p.ListOfficeName || '').toLowerCase().includes('zhomes')
                     });
                 } else {
-                    throw new Error("Property not found in Spark or not format matched");
+                    throw new Error("Property not found in Spark");
                 }
             })
             .catch(err => {
-                console.warn("Spark API error or token disabled. Fallback to mock data.", err);
-                const fallbackProp = MOCK_PROPERTIES.find(p => p.id === parseInt(id)) || MOCK_PROPERTIES[0];
+                console.warn("Fallback to mock data:", err.message);
+                const fallbackProp = MOCK_PROPERTIES.find(p => String(p.id) === String(id)) || MOCK_PROPERTIES[0];
                 setProperty({
                     ...fallbackProp,
                     id: String(fallbackProp.id),
                     photos: fallbackProp.images || [fallbackProp.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
-                    desc: 'Hermosa casa completamente renovada en una de las mejores zonas de la ciudad. Cuenta con acabados modernos, concina concepto abierto con topes de granito y un patio trasero amplio ideal para el entretenimiento. Electrodomésticos de acero inoxidable incluidos.'
+                    desc: fallbackProp.description || 'Hermosa casa completamente renovada en una de las mejores zonas de la ciudad.'
                 });
             })
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, ctxProperties]);
 
     useEffect(() => {
         const checkFavoriteStatus = async () => {

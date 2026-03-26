@@ -20,7 +20,9 @@ const SOCIAL_NETWORKS = [
 ]
 
 export default function RealtorProfile() {
-    const realtor = REALTORS[0]
+    const [realtor, setRealtor] = useState(REALTORS[0])
+    const [editingProfile, setEditingProfile] = useState(false)
+    const [tempProfile, setTempProfile] = useState(REALTORS[0])
     const totalSales = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').length
     const totalVolume = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').reduce((s, c) => s + c.salePrice, 0)
     const activeListings = REALTOR_TRANSACTIONS.filter(t => t.status !== 'closed').length
@@ -59,18 +61,28 @@ export default function RealtorProfile() {
 
     return (
         <div className="rp-page">
-            <div className="page-header">
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="page-title">Mi Perfil</h1>
                     <p className="page-subtitle">Tu información profesional</p>
                 </div>
+                {!editingProfile ? (
+                    <button className="btn btn-ghost" onClick={() => {setTempProfile({...realtor}); setEditingProfile(true);}}>
+                        <Edit3 size={16} style={{marginRight: '6px'}}/> Editar
+                    </button>
+                ) : (
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                        <button className="btn btn-ghost" style={{padding: '8px 12px'}} onClick={() => setEditingProfile(false)}>Canc.</button>
+                        <button className="btn btn-primary" style={{padding: '8px 12px'}} onClick={() => {setRealtor({...tempProfile}); setEditingProfile(false);}}>Gdr</button>
+                    </div>
+                )}
             </div>
 
             <div className="rp-grid">
                 {/* Profile card */}
                 <div className="rp-profile-card animate-fadeInUp">
                     <div className="rp-avatar-wrap">
-                        <img src={realtor.photo} alt={realtor.name} className="rp-avatar" />
+                        <img src={realtor.photo || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(realtor.name) + '&background=e41f25&color=fff'} alt={realtor.name} className="rp-avatar" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(realtor.name) + '&background=e41f25&color=fff' }} />
                         {realtor.topProducer && (
                             <span className="rp-top-badge">
                                 <Award size={12} />
@@ -78,9 +90,19 @@ export default function RealtorProfile() {
                             </span>
                         )}
                     </div>
-                    <h2 className="rp-name">{realtor.name}</h2>
-                    <span className="rp-title">{realtor.title}</span>
-                    <span className="rp-specialty">{realtor.specialty}</span>
+                    {editingProfile ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '16px' }}>
+                            <input type="text" className="rp-social-input" value={tempProfile.name} onChange={(e) => setTempProfile({...tempProfile, name: e.target.value})} placeholder="Nombre completo" />
+                            <input type="text" className="rp-social-input" value={tempProfile.title} onChange={(e) => setTempProfile({...tempProfile, title: e.target.value})} placeholder="Título profesional" />
+                            <input type="text" className="rp-social-input" value={tempProfile.specialty} onChange={(e) => setTempProfile({...tempProfile, specialty: e.target.value})} placeholder="Especialidad" />
+                        </div>
+                    ) : (
+                        <>
+                            <h2 className="rp-name">{realtor.name}</h2>
+                            <span className="rp-title">{realtor.title}</span>
+                            <span className="rp-specialty">{realtor.specialty}</span>
+                        </>
+                    )}
 
                     <div className="rp-rating">
                         <Star size={16} fill="#F5A623" color="#F5A623" />
@@ -90,12 +112,16 @@ export default function RealtorProfile() {
 
                     <div className="rp-contact-info">
                         <div className="rp-contact-item">
-                            <Phone size={16} />
-                            <span>{realtor.phone}</span>
+                            <Phone size={16} style={{ flexShrink: 0 }} />
+                            {editingProfile ? (
+                                <input type="text" className="rp-social-input" value={tempProfile.phone} onChange={(e) => setTempProfile({...tempProfile, phone: e.target.value})} />
+                            ) : <span>{realtor.phone}</span>}
                         </div>
                         <div className="rp-contact-item">
-                            <Mail size={16} />
-                            <span>{realtor.email}</span>
+                            <Mail size={16} style={{ flexShrink: 0 }} />
+                            {editingProfile ? (
+                                <input type="email" className="rp-social-input" value={tempProfile.email} onChange={(e) => setTempProfile({...tempProfile, email: e.target.value})} />
+                            ) : <span>{realtor.email}</span>}
                         </div>
                         <div className="rp-contact-item">
                             <MapPin size={16} />
@@ -116,11 +142,15 @@ export default function RealtorProfile() {
                     </div>
 
                     {/* Languages */}
-                    <div className="rp-languages">
+                    <div className="rp-languages" style={{ flexWrap: 'wrap' }}>
                         <Globe size={14} />
-                        {realtor.languages.map((lang, i) => (
-                            <span key={i} className="rp-lang-tag">{lang}</span>
-                        ))}
+                        {editingProfile ? (
+                            <input type="text" className="rp-social-input" value={tempProfile.languages.join(', ')} onChange={(e) => setTempProfile({...tempProfile, languages: e.target.value.split(',').map(s=>s.trim()).filter(Boolean)})} placeholder="EN, ES, etc" />
+                        ) : (
+                            realtor.languages.map((lang, i) => (
+                                <span key={i} className="rp-lang-tag">{lang}</span>
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -212,7 +242,11 @@ export default function RealtorProfile() {
                     {/* Bio */}
                     <div className="rp-bio-card animate-fadeInUp delay-3">
                         <h3>Biografía</h3>
-                        <p>{realtor.bio}</p>
+                        {editingProfile ? (
+                            <textarea className="rp-social-input" style={{width: '100%', minHeight: '100px', resize: 'vertical'}} value={tempProfile.bio} onChange={(e) => setTempProfile({...tempProfile, bio: e.target.value})} />
+                        ) : (
+                            <p>{realtor.bio}</p>
+                        )}
                     </div>
 
                     {/* Recent activity */}

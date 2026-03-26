@@ -26,12 +26,23 @@ import DealRoomMobile from './pages/mobile/dashboard/DealRoomMobile'
 import BrokerMessagesMobile from './pages/mobile/dashboard/BrokerMessagesMobile'
 import AnalyticsPageMobile from './pages/mobile/dashboard/AnalyticsPageMobile'
 import BrokerTerminal from './pages/dashboard/BrokerTerminal'
+import CRMPageMobile from './pages/mobile/dashboard/CRMPageMobile'
+import ShowingScheduleMobile from './pages/mobile/dashboard/ShowingScheduleMobile'
+import ESignaturesMobile from './pages/mobile/dashboard/ESignaturesMobile'
+import CMAPageMobile from './pages/mobile/dashboard/CMAPageMobile'
+import ProspectingMobile from './pages/mobile/dashboard/ProspectingMobile'
+import AccountingMobile from './pages/mobile/dashboard/AccountingMobile'
+import MarketReportsMobile from './pages/mobile/dashboard/MarketReportsMobile'
 
 import RealtorDashboardMobile from './pages/mobile/dashboard/RealtorDashboardMobile'
 import RealtorTransactionsMobile from './pages/mobile/dashboard/RealtorTransactionsMobile'
 import RealtorCommissionsMobile from './pages/mobile/dashboard/RealtorCommissionsMobile'
 import RealtorMessagesMobile from './pages/mobile/dashboard/RealtorMessagesMobile'
 import RealtorDocumentsMobile from './pages/mobile/dashboard/RealtorDocumentsMobile'
+import RealtorShowingsMobile from './pages/mobile/dashboard/RealtorShowingsMobile'
+import RealtorLeadsMobile from './pages/mobile/dashboard/RealtorLeadsMobile'
+import RealtorOpenHousesMobile from './pages/mobile/dashboard/RealtorOpenHousesMobile'
+import RealtorTasksMobile from './pages/mobile/dashboard/RealtorTasksMobile'
 import RealtorProfile from './pages/realtor/RealtorProfile'
 import CreatePropertyPage from './pages/realtor/CreatePropertyPage'
 
@@ -78,6 +89,13 @@ export default function AppRoutes() {
                     <Route path="/mensajes" element={<BrokerMessagesMobile />} />
                     <Route path="/analytics" element={<AnalyticsPageMobile />} />
                     <Route path="/terminal" element={<BrokerTerminal />} />
+                    <Route path="/crm" element={<CRMPageMobile />} />
+                    <Route path="/visitas" element={<ShowingScheduleMobile />} />
+                    <Route path="/firmas" element={<ESignaturesMobile />} />
+                    <Route path="/cma" element={<CMAPageMobile />} />
+                    <Route path="/prospecting" element={<ProspectingMobile />} />
+                    <Route path="/contabilidad" element={<AccountingMobile />} />
+                    <Route path="/mercado" element={<MarketReportsMobile />} />
                 </Route>
 
                 {/* Portal Realtor */}
@@ -89,6 +107,10 @@ export default function AppRoutes() {
                     <Route path="/realtor/mensajes" element={<RealtorMessagesMobile />} />
                     <Route path="/realtor/perfil" element={<RealtorProfile />} />
                     <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />
+                    <Route path="/realtor/citas" element={<RealtorShowingsMobile />} />
+                    <Route path="/realtor/leads" element={<RealtorLeadsMobile />} />
+                    <Route path="/realtor/open-houses" element={<RealtorOpenHousesMobile />} />
+                    <Route path="/realtor/tareas" element={<RealtorTasksMobile />} />
                 </Route>
             </Route>
         </Routes>

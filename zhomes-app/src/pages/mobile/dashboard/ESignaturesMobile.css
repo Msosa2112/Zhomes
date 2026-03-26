@@ -1,0 +1,261 @@
+.esign-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.esign-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.esign-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.esign-title-row h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.esign-stats {
+    display: flex;
+    gap: 8px;
+}
+
+.esign-stat {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.esign-stat svg { color: var(--text-tertiary); }
+.esign-stat strong { font-size: 1.2rem; font-weight: 900; }
+.esign-stat span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.esign-stat.warn { border-color: rgba(245, 158, 11, 0.3); }
+.esign-stat.warn svg { color: #F59E0B; }
+.esign-stat.warn strong { color: #F59E0B; }
+.esign-stat.success { border-color: rgba(16, 185, 129, 0.3); }
+.esign-stat.success svg { color: #10B981; }
+.esign-stat.success strong { color: #10B981; }
+
+/* Doc List */
+.esign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.esign-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.esign-card:active { transform: scale(0.98); }
+
+.esign-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.esign-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.esign-card-info strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+}
+
+.esign-meta {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
+}
+
+.esign-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.esign-agent-mini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.esign-agent-mini img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.esign-status-pill {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.esign-chevron {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+/* Templates */
+.esign-templates {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.esign-template-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.esign-template-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.esign-template-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.esign-template-info strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+}
+
+.esign-template-info span {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+}
+
+.esign-template-fields {
+    margin-top: 4px;
+    font-weight: 700 !important;
+    color: var(--text-secondary) !important;
+}
+
+.esign-use-btn {
+    padding: 8px 16px;
+    background: var(--zhomes-red);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Detail */
+.esign-signer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.esign-signer-row span { flex: 1; font-size: 0.9rem; }
+
+.esign-doc-actions {
+    margin-top: 8px;
+}
+
+.esign-pending-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 12px;
+    color: #F59E0B;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* API Notice */
+.esign-api-notice {
+    text-align: center;
+    padding: 24px;
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+
+.esign-api-notice h3 {
+    margin: 12px 0 8px;
+    font-size: 1.1rem;
+}
+
+.esign-api-notice p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px;
+}
+
+.esign-providers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.esign-provider {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border-radius: 10px;
+}
+
+.esign-provider strong { font-size: 0.85rem; }
+.esign-provider span { font-size: 0.8rem; color: var(--text-tertiary); }

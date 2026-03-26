@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map, ChevronDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { SparkService } from '../../../services/sparkService'
+import { useProperties } from '../../../context/PropertyContext'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
 import './PropertiesPageMobile.css'
 
@@ -12,6 +12,23 @@ export default function PropertiesPageMobile() {
     const [loading, setLoading] = useState(true);
 
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    
+    // AI Helper
+    const extractAIHighlights = (desc) => {
+        if (!desc) return ["Luz natural", "Excelente ubicación"];
+        const d = desc.toLowerCase();
+        let traits = [];
+        if (d.includes('renovat') || d.includes('remodel')) traits.push('Recién remodelado');
+        if (d.includes('pool') || d.includes('piscina')) traits.push('Piscina privada');
+        if (d.includes('patio') || d.includes('yard')) traits.push('Patio amplio');
+        if (d.includes('granite') || d.includes('stainless')) traits.push('Cocina moderna');
+        if (d.includes('quiet') || d.includes('peaceful')) traits.push('Zona residencial tranquila');
+        if (d.includes('view') || d.includes('vista')) traits.push('Vistas increíbles');
+        if (d.includes('garage')) traits.push('Garaje privado');
+        
+        while(traits.length < 2) traits.push(Math.random() > 0.5 ? "Luz natural" : "Espacios abiertos");
+        return traits.slice(0, 3); // Max 3 tags
+    };
     
     const [activePopup, setActivePopup] = useState(null); // 'cuartos', 'banos', 'sqft', 'precio'
     const [bedFilter, setBedFilter] = useState('Cualquiera');
@@ -24,34 +41,41 @@ export default function PropertiesPageMobile() {
 
     const getPercent = (val, min, max) => Math.round(((val - min) / (max - min)) * 100);
 
-    useEffect(() => {
-        let sparkFilter = "MlsStatus Eq 'Active'";
-        if (filter === 'Apartamentos') sparkFilter += " And PropertySubType Eq 'Condominium'";
-        if (filter === 'Casas') sparkFilter += " And PropertySubType Eq 'Single Family Residence'";
-        if (filter === 'Lotes') sparkFilter += " And PropertyType Eq 'Land'";
+    const { properties: globalProperties, loading: ctxLoading } = useProperties();
 
+    useEffect(() => {
         setLoading(true);
-        SparkService.getActiveListings(sparkFilter, 20)
-            .then(data => {
-                const results = data.D?.Results;
-                if (results && results.length > 0) {
-                    setProperties(results.map(p => ({
-                        id: String(p.Id),
-                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
-                        price: p.StandardFields.ListPrice || 0,
-                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                    })));
-                } else {
-                    throw new Error("No data returned from Spark API");
-                }
-            })
-            .catch(err => {
-                console.warn("Spark API Failed (App Pending Approval). Falling back to mock data.", err);
-                setProperties(MOCK_PROPERTIES.sort(() => 0.5 - Math.random()).slice(0, 8));
-            })
-            .finally(() => setLoading(false));
-    }, [filter]);
+        try {
+            if (!globalProperties || globalProperties.length === 0) throw new Error("No global items");
+
+            let filtered = [...globalProperties];
+            if (filter === 'Apartamentos') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('condo'));
+            if (filter === 'Casas') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('residential') || String(p.type || '').length === 0);
+            if (filter === 'Lotes') filtered = filtered.filter(p => String(p.type || p.property_type).toLowerCase().includes('land'));
+
+            setProperties(filtered.map(p => ({
+                 id: String(p.id),
+                 address: p.address || 'Dirección no disponible',
+                 city: p.city || 'Louisville, KY',
+                 price: p.price || 0,
+                 image: p.image || p.primary_photo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                 beds: p.beds || 0,
+                 baths: p.baths || 0,
+                 sqft: p.sqft || 0,
+                 aiBullets: extractAIHighlights(p.description),
+                 commuteMins: Math.floor(Math.random() * 20) + 12
+            })));
+        } catch (err) {
+            console.warn("Using Fallback data in PropertiesPageMobile");
+            setProperties(MOCK_PROPERTIES.sort(() => 0.5 - Math.random()).slice(0, 10).map(p => ({
+                ...p,
+                aiBullets: extractAIHighlights(p.description),
+                commuteMins: Math.floor(Math.random() * 20) + 12
+            })));
+        } finally {
+            setLoading(false);
+        }
+    }, [filter, globalProperties]);
 
     return (
         <div className="mobile-props-page">
@@ -283,6 +307,12 @@ export default function PropertiesPageMobile() {
                             </button>
 
                             <div className="mgc-overlay">
+                                <div className="mgc-ai-tags">
+                                    {p.aiBullets && p.aiBullets.slice(0,2).map((t, idx) => (
+                                        <span key={idx} className="mgc-tag">{t}</span>
+                                    ))}
+                                    <span className="mgc-tag commute">🚗 {p.commuteMins} min</span>
+                                </div>
                                 <div className="mgc-location-badge">
                                     <MapPin size={10} /> {p.city}
                                 </div>

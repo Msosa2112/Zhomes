@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight, MapPin, Play } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { SparkService } from '../../../services/sparkService'
+import { useProperties } from '../../../context/PropertyContext'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
 import './LandingPageMobile.css'
 
@@ -9,28 +9,18 @@ export default function LandingPageMobile() {
     const [featured, setFeatured] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const { properties: globalProperties, loading: ctxLoading } = useProperties();
+
     useEffect(() => {
-        SparkService.getActiveListings("PropertyType Eq 'A' And MlsStatus Eq 'Active'", 3)
-            .then(data => {
-                const results = data.D?.Results;
-                if (results && results.length > 0) {
-                    setFeatured(results.map(p => ({
-                        id: String(p.Id),
-                        address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                        city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
-                        price: p.StandardFields.ListPrice || 0,
-                        image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                    })));
-                } else {
-                    throw new Error("No data returned from Spark API");
-                }
-            })
-            .catch(err => {
-                console.warn("Spark API Failed (App Pending Approval). Falling back to mock data.", err);
-                setFeatured(MOCK_PROPERTIES.slice(0, 3));
-            })
-            .finally(() => setLoading(false));
-    }, []);
+        if (!ctxLoading) {
+            if (globalProperties && globalProperties.length > 0) {
+                 setFeatured(globalProperties.slice(0, 3));
+            } else {
+                 setFeatured(MOCK_PROPERTIES.slice(0, 3));
+            }
+            setLoading(false);
+        }
+    }, [globalProperties, ctxLoading]);
 
     return (
         <div className="mobile-landing">

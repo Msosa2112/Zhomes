@@ -1,0 +1,221 @@
+.prospect-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 80px 16px 120px;
+}
+
+.prospect-header h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
+.prospect-header p { font-size: 0.9rem; color: var(--text-tertiary); margin: 4px 0 0; }
+
+.prospect-kpis {
+    display: flex;
+    gap: 8px;
+}
+
+.prospect-kpi {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.prospect-kpi svg { color: var(--text-tertiary); }
+.prospect-kpi strong { font-size: 1.2rem; font-weight: 900; }
+.prospect-kpi span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
+.prospect-kpi.hot { border-color: rgba(245, 158, 11, 0.3); }
+.prospect-kpi.hot svg { color: #F59E0B; }
+.prospect-kpi.hot strong { color: #F59E0B; }
+.kpi-target { color: var(--zhomes-red) !important; }
+
+/* Zone Cards */
+.prospect-zones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.prospect-zone-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.prospect-zone-card:active { transform: scale(0.98); }
+
+.zone-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.zone-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.zone-name-row strong { font-size: 1rem; font-weight: 800; }
+.zone-zip { font-size: 0.75rem; color: var(--text-tertiary); }
+
+.zone-hot-score {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.zone-hot-score.hot { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+.zone-hot-score.warm { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.zone-hot-score.cool { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+
+.zone-stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.zone-mini-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.zone-mini-stat svg { color: var(--text-tertiary); }
+
+.zone-card-footer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.zone-price-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #10B981;
+}
+
+.zone-forecast {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* Opportunities */
+.prospect-opps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.prospect-opp-card {
+    display: flex;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.opp-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.opp-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.opp-card-info strong { display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 2px; }
+.opp-zone { font-size: 0.75rem; color: var(--text-tertiary); display: block; margin-bottom: 8px; }
+
+.opp-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.opp-type-pill {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.opp-value { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+
+.opp-confidence {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.opp-conf-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.opp-conf-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+.opp-confidence span { font-size: 0.65rem; color: var(--text-tertiary); font-weight: 600; flex-shrink: 0; }
+
+.opp-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.opp-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    cursor: pointer;
+}
+
+.prospect-ai-notice {
+    display: flex;
+    gap: 14px;
+    padding: 18px;
+    background: rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 16px;
+    margin-top: 8px;
+}
+
+.prospect-ai-notice strong { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+.prospect-ai-notice p { margin: 0; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }

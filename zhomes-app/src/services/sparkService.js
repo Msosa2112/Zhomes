@@ -31,11 +31,11 @@ export const SparkService = {
      * Trae los listados activos de la MLS.
      * Permite pasar filtros opcionales de OData ($filter, $top, etc.).
      */
-    async getActiveListings(filter = "PropertyType eq 'Residential' and StandardStatus eq 'Active'", limit = 20) {
+    async getActiveListings(filter = "MlsStatus eq 'Active'", limit = 20) {
         return fetchFromSpark('Property', {
             $filter: filter,
             $top: limit,
-            $expand: 'Media' // RESO Web API usually uses Media for photos
+            $expand: 'Media'
         });
     },
 
