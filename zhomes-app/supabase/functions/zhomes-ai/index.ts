@@ -36,6 +36,10 @@ serve(async (req) => {
         const { clientName, propertyAddress, views } = data;
         system_message = "You are a top-performing real estate agent's assistant. Draft a short, natural, friendly follow-up message (SMS/WhatsApp style) in Spanish for a client who has shown high interest in a property. Do not be overly pushy, just helpful and inviting. Return a JSON object with 'message' (string).";
         prompt = `Client: ${clientName}, Property: ${propertyAddress}, Times viewed today: ${views}.`;
+    } else if (action === "deal_briefing") {
+        const { dealAddress, dealPrice, messages, documents, matchPrefs } = data;
+        system_message = "You are an expert real estate Transaction Coordinator AI. Analyze the deal context provided and return a JSON object with exactly these fields: 'sentimentText' (string: 2-4 word emotional state of the client, e.g. 'Entusiasmado pero ansioso'), 'summary' (array of 3 strings: concise bullet points about the deal status in Spanish), 'nextAction' (string: the single most important next action the realtor should take, in Spanish). Be direct, practical, and insightful. Reply entirely in Spanish.";
+        prompt = `Deal: ${dealAddress} — $${dealPrice?.toLocaleString()}\n\nRecent messages:\n${(messages || []).map((m: any) => `[${m.sender}]: ${m.text}`).join('\n')}\n\nDocuments:\n${(documents || []).map((d: any) => `- ${d.name} (${d.status})`).join('\n')}\n\nClient Match Preferences:\n${JSON.stringify(matchPrefs || {})}`;
     } else {
         throw new Error(`Unknown action: ${action}`);
     }
