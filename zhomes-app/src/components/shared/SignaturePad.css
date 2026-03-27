@@ -1,0 +1,134 @@
+.sigpad-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sigpad-modal {
+  background: var(--card-bg, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 1.25rem;
+  animation: sigpadSlide 0.3s ease;
+}
+
+@keyframes sigpadSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sigpad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.sigpad-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-primary);
+}
+
+.sigpad-doc-title {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+.sigpad-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+}
+
+.sigpad-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 8px;
+}
+
+.sigpad-canvas-wrap {
+  position: relative;
+  border: 2px dashed var(--border-color, #ddd);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.sigpad-canvas {
+  display: block;
+  width: 100% !important;
+  height: 180px !important;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sigpad-placeholder {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.9rem;
+  color: #ccc;
+  pointer-events: none;
+}
+
+.sigpad-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sigpad-btn {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: none;
+  transition: all 0.2s;
+}
+
+.sigpad-btn.secondary {
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-primary);
+}
+
+.sigpad-btn.primary {
+  background: var(--zhomes-red, #E31E24);
+  color: white;
+}
+
+.sigpad-btn.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sigpad-legal {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 0.75rem;
+  line-height: 1.3;
+}

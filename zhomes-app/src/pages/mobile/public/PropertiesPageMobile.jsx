@@ -75,6 +75,26 @@ export default function PropertiesPageMobile() {
             });
             if (filter === 'Lotes') filtered = filtered.filter(p => typeStr(p).includes('land'));
 
+            // Beds filter
+            if (bedFilter !== 'Cualquiera') {
+                const minBeds = parseInt(bedFilter);
+                if (!isNaN(minBeds)) filtered = filtered.filter(p => (p.beds || 0) >= minBeds);
+            }
+
+            // Baths filter
+            if (bathFilter !== 'Cualquiera') {
+                const minBaths = parseInt(bathFilter);
+                if (!isNaN(minBaths)) filtered = filtered.filter(p => (p.baths || 0) >= minBaths);
+            }
+
+            // Price filter
+            if (priceMin > 0) filtered = filtered.filter(p => (p.price || 0) >= priceMin);
+            if (priceMax < 2000000) filtered = filtered.filter(p => (p.price || 0) <= priceMax);
+
+            // Sqft filter
+            if (sqftMin > 0) filtered = filtered.filter(p => (p.sqft || 0) >= sqftMin);
+            if (sqftMax < 10000) filtered = filtered.filter(p => (p.sqft || 0) <= sqftMax);
+
             setProperties(filtered.map(p => ({
                  id: String(p.id),
                  address: p.address || 'Dirección no disponible',
@@ -100,7 +120,7 @@ export default function PropertiesPageMobile() {
         } finally {
             setLoading(false);
         }
-    }, [filter, globalProperties, closedListings]);
+    }, [filter, bedFilter, bathFilter, priceMin, priceMax, sqftMin, sqftMax, globalProperties, closedListings]);
 
     return (
         <div className="mobile-props-page">

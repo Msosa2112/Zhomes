@@ -42,7 +42,15 @@ export function PropertiesProvider({ children }) {
                 const supaProps = supaPropsResult.status === 'fulfilled' ? supaPropsResult.value : [];
                 
                 if (supaProps.length > 0) {
-                    const formattedProps = supaProps.map(p => SupabasePropertyService.formatForApp(p));
+                    let formattedProps = supaProps.map(p => SupabasePropertyService.formatForApp(p));
+                    
+                    // Remove duplicates by address (keep the first one found)
+                    const seen = new Set();
+                    formattedProps = formattedProps.filter(p => {
+                        if (seen.has(p.address)) return false;
+                        seen.add(p.address);
+                        return true;
+                    });
                     
                     // Sort: ZHomes listings first, then by price descending
                     formattedProps.sort((a, b) => {

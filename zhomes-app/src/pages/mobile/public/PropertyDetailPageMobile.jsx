@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, MapPin, Share, Heart, Play, BedDouble, Bath, Maximize, Star, HeartCrack } from 'lucide-react'
+import { ArrowLeft, MapPin, Share, Heart, Play, BedDouble, Bath, Maximize, Star, HeartCrack, CalendarPlus, Calculator } from 'lucide-react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'motion/react'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
@@ -10,8 +10,12 @@ import { MOCK_PROPERTIES, REALTORS } from '../../../data/mockData'
 import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
+import { HomeScoreService } from '../../../services/homeScoreService'
+import { MortgageService } from '../../../services/mortgageService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
 import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
+import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
+import BookingWidget from '../../../components/public/BookingWidget'
 import './PropertyDetailPageMobile.css'
 
 // Fix to clear map layout size 
@@ -33,6 +37,7 @@ export default function PropertyDetailPageMobile() {
     const [viewerOpen, setViewerOpen] = useState(false)
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
     const [selectedRealtor, setSelectedRealtor] = useState(null)
+    const [bookingOpen, setBookingOpen] = useState(false)
     const { theme } = useTheme()
     const { properties: ctxProperties } = useProperties()
 
@@ -247,21 +252,83 @@ export default function PropertyDetailPageMobile() {
                                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             />
                             <path className="vibe-circle"
-                                strokeDasharray="92, 100"
+                                strokeDasharray={`${(() => {
+                                    const hs = HomeScoreService.calculateScore(property, {
+                                        maxPrice: 350000, minPrice: 100000,
+                                        minBeds: 3, minBaths: 2, minSqft: 1200
+                                    });
+                                    return hs.score;
+                                })()}, 100`}
                                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             />
-                            <text x="18" y="21.5" className="vibe-percentage">92%</text>
+                            <text x="18" y="21.5" className="vibe-percentage">
+                                {HomeScoreService.calculateScore(property, {
+                                    maxPrice: 350000, minPrice: 100000,
+                                    minBeds: 3, minBaths: 2, minSqft: 1200
+                                }).score}%
+                            </text>
                         </svg>
                     </div>
                     <div className="vibe-text">
-                        <h3>Vibe Match</h3>
-                        <p>Esta propiedad hace match con tu perfil lifestyle de Zhomes.</p>
+                        <h3>🎯 Home Score</h3>
+                        <p>Puntuación personalizada basada en tus preferencias de búsqueda.</p>
                     </div>
                 </div>
 
                 <div className="mpd-desc">
                     <h2>Acerca de esta propiedad</h2>
                     <p>{property.desc}</p>
+                </div>
+
+                {/* Neighborhood Intelligence — WalkScore */}
+                <NeighborhoodIntel 
+                    address={property.address}
+                    lat={property.lat}
+                    lng={property.lng}
+                />
+
+                {/* Quick Mortgage Estimate */}
+                {property.price > 0 && (
+                    <div className="mpd-mortgage-quick">
+                        <h2><Calculator size={16} /> Estimado Hipotecario</h2>
+                        <div className="mpd-mortgage-card">
+                            {(() => {
+                                const calc = MortgageService.calculateFullPayment({
+                                    homePrice: property.price,
+                                    downPayment: property.price * 0.2,
+                                    interestRate: 6.5,
+                                    years: 30
+                                });
+                                return (
+                                    <>
+                                        <div className="mpd-mort-main">
+                                            <span className="mpd-mort-label">Pago Mensual</span>
+                                            <strong className="mpd-mort-value">${calc.total.toLocaleString()}</strong>
+                                        </div>
+                                        <div className="mpd-mort-details">
+                                            <span>Principal: ${calc.principalAndInterest.toLocaleString()}</span>
+                                            <span>Impuestos: ${calc.tax.toLocaleString()}</span>
+                                            <span>Seguro: ${calc.insurance.toLocaleString()}</span>
+                                            {calc.pmi > 0 && <span>PMI: ${calc.pmi.toLocaleString()}</span>}
+                                        </div>
+                                        <div className="mpd-mort-note">
+                                            Con 20% de enganche · 6.5% tasa · 30 años
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+                        <button className="mpd-calc-btn" onClick={() => navigate('/calculadora')}>
+                            <Calculator size={14} /> Calculadora Completa →
+                        </button>
+                    </div>
+                )}
+
+                {/* Booking / Schedule Visit Button */}
+                <div className="mpd-booking-section">
+                    <button className="mpd-booking-btn" onClick={() => setBookingOpen(true)}>
+                        <CalendarPlus size={18} /> Agendar Visita
+                    </button>
                 </div>
 
                 <div className="mpd-map-wrap">
@@ -319,6 +386,15 @@ export default function PropertyDetailPageMobile() {
                 isOpen={photoViewerOpen}
                 onClose={() => setPhotoViewerOpen(false)}
             />
+
+            {bookingOpen && (
+                <BookingWidget
+                    propertyAddress={property.address}
+                    realtorName={selectedRealtor?.name || 'ZHomes'}
+                    onBook={(data) => console.log('Booking:', data)}
+                    onClose={() => setBookingOpen(false)}
+                />
+            )}
         </div>
     )
 }

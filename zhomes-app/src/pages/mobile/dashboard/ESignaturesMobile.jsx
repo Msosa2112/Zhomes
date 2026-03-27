@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X, User, Calendar, Download, Eye, Edit3, PenTool, ChevronRight, Shield } from 'lucide-react'
+import SignaturePad from '../../../components/shared/SignaturePad'
 import './ESignaturesMobile.css'
 
 const TEMPLATES = [
@@ -31,6 +32,7 @@ export default function ESignaturesMobile() {
     const [selectedDoc, setSelectedDoc] = useState(null)
     const [showCreate, setShowCreate] = useState(false)
     const [filter, setFilter] = useState('all')
+    const [signingDoc, setSigningDoc] = useState(null)
 
     const filteredDocs = filter === 'all' ? docs : docs.filter(d => d.status === filter)
 
@@ -205,10 +207,15 @@ export default function ESignaturesMobile() {
                                     </button>
                                 )}
                                 {selectedDoc.status === 'pending' && (
-                                    <div className="esign-pending-notice">
-                                        <Shield size={16} />
-                                        <span>Esperando firma de {selectedDoc.signers.find(s => !s.signed)?.name || 'firmantes'}</span>
-                                    </div>
+                                    <>
+                                        <button className="crm-submit-btn" style={{ background: '#F59E0B' }} onClick={() => { setSigningDoc(selectedDoc); setSelectedDoc(null) }}>
+                                            <PenTool size={16} /> Firmar Ahora
+                                        </button>
+                                        <div className="esign-pending-notice">
+                                            <Shield size={16} />
+                                            <span>Esperando firma de {selectedDoc.signers.find(s => !s.signed)?.name || 'firmantes'}</span>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -226,23 +233,9 @@ export default function ESignaturesMobile() {
                         </div>
                         <div className="crm-modal-body">
                             <div className="esign-api-notice">
-                                <Shield size={24} color="#3B82F6" />
-                                <h3>Listo para Integrar</h3>
-                                <p>Este módulo está preparado para conectar con DocuSign, HelloSign, o SignNow. Solo necesitamos configurar el API key del servicio de firmas electrónicas elegido.</p>
-                                <div className="esign-providers">
-                                    <div className="esign-provider">
-                                        <strong>DocuSign</strong>
-                                        <span>Enterprise — $25/mes</span>
-                                    </div>
-                                    <div className="esign-provider">
-                                        <strong>HelloSign</strong>
-                                        <span>Standard — $15/mes</span>
-                                    </div>
-                                    <div className="esign-provider">
-                                        <strong>SignNow</strong>
-                                        <span>Business — $8/mes</span>
-                                    </div>
-                                </div>
+                                <PenTool size={24} color="#10B981" />
+                                <h3>Firma Interna ZHomes</h3>
+                                <p>Sistema de firma electrónica integrado. Las firmas se guardan como PDF con validez legal bajo UETA y ESIGN Act.</p>
                             </div>
 
                             <div className="crm-form-group">
@@ -265,6 +258,23 @@ export default function ESignaturesMobile() {
                         </div>
                     </div>
                 </div>
+            )}
+            {signingDoc && (
+                <SignaturePad
+                    documentTitle={signingDoc.title}
+                    signerName={signingDoc.client}
+                    onSave={(result) => {
+                        console.log('Signed PDF:', result)
+                        setDocs(docs.map(d => d.id === signingDoc.id ? {
+                            ...d,
+                            status: 'signed',
+                            signedDate: new Date().toISOString().split('T')[0],
+                            signers: d.signers.map(s => ({ ...s, signed: true }))
+                        } : d))
+                        setSigningDoc(null)
+                    }}
+                    onClose={() => setSigningDoc(null)}
+                />
             )}
         </>
     )

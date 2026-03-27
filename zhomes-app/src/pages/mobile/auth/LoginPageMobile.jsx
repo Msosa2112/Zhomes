@@ -125,20 +125,8 @@ export default function LoginPageMobile() {
                     </button>
                 </form>
 
-                {/* Demo mode button */}
-                <button 
-                    type="button" 
-                    onClick={handleDemoLogin}
-                    style={{
-                        width: '100%', padding: '14px', borderRadius: '12px',
-                        border: '2px dashed rgba(255,255,255,0.3)',
-                        background: 'transparent', color: '#fff',
-                        fontWeight: 700, fontSize: '14px', cursor: 'pointer',
-                        marginTop: '12px', letterSpacing: '0.5px'
-                    }}
-                >
-                    🚀 Entrar como {role === 'broker' ? 'Broker' : role === 'realtor' ? 'Realtor' : 'Cliente'} (Demo)
-                </button>
+
+
 
                 <div className="ml-oauth-divider">
                     <span>O continúa con</span>

@@ -160,6 +160,11 @@
     border-color: rgba(76, 175, 80, 0.3);
 }
 
+.sa-btn.undo {
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
 /* ── LIKE / NOPE stamps ── */
 .swipe-stamp {
     position: absolute;

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useTransform } from 'motion/react'
-import { Heart, X, MapPin, Star } from 'lucide-react'
+import { Heart, X, MapPin, Star, ArrowLeft, Undo2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useProperties } from '../../../context/PropertyContext'
 import { supabase } from '../../../lib/supabaseClient'
-import { useNavigate } from 'react-router-dom'
 import './SwipeModePageMobile.css'
 
 const MAX_VISIBLE = 5 // How many cards visible in the 3D stack
@@ -57,6 +57,12 @@ export default function SwipeModePageMobile() {
         setCurrentIndex(prev => prev + 1)
     }
 
+    const handleUndo = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(prev => prev - 1)
+        }
+    }
+
     if (loading) return <div className="swipe-loading">Buscando casas para ti...</div>
 
     if (currentIndex >= properties.length) {
@@ -71,7 +77,10 @@ export default function SwipeModePageMobile() {
 
     return (
         <div className="swipe-page">
-            <h1 className="swipe-title">Zhomes Match</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 1rem' }}>
+                <button onClick={() => navigate(-1)} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ArrowLeft size={18} color="var(--text-primary)" /></button>
+                <h1 className="swipe-title" style={{ margin: 0 }}>Zhomes Match</h1>
+            </div>
             <p className="swipe-subtitle">Desliza a la derecha si te gusta, a la izquierda si no.</p>
 
             <div className="swipe-carousel">
@@ -104,6 +113,9 @@ export default function SwipeModePageMobile() {
             <div className="swipe-actions">
                 <button className="sa-btn no" onClick={() => handleSwipe('left', properties[currentIndex]?.id)}>
                     <X size={26} />
+                </button>
+                <button className="sa-btn undo" onClick={handleUndo} disabled={currentIndex === 0} style={{ opacity: currentIndex === 0 ? 0.3 : 1 }}>
+                    <Undo2 size={22} />
                 </button>
                 <button className="sa-btn yes" onClick={() => handleSwipe('right', properties[currentIndex]?.id)}>
                     <Heart size={26} fill="currentColor" />

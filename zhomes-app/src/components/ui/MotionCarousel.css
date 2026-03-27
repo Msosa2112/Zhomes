@@ -1,0 +1,102 @@
+.mc-wrapper {
+    position: relative;
+    width: 100%;
+    /* Darker context like the screenshot or leave it to inherit,
+       but usually we add padding to make it pop */
+    padding: 1.5rem 0;
+}
+
+.mc-viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.mc-container {
+    display: flex;
+    cursor: grab;
+    /* Ensure no padding here so embla handles alignment natively */
+}
+
+.mc-container:active {
+    cursor: grabbing;
+}
+
+.mc-slide {
+    flex: 0 0 75%; /* Slide takes up 75% of the viewport width */
+    min-width: 0;
+    position: relative;
+    padding: 0 0.5rem; /* Gap between slides */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Framer motion handles transform, opacity, and blur */
+}
+
+.mc-slide-inner {
+    width: 100%;
+    /* Aspect ratio like the cards, maybe taller */
+    aspect-ratio: 4 / 5;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+/* ─── Controls below Carousel ─── */
+.mc-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 2rem 0;
+}
+
+.mc-btn {
+    background: white;
+    border: 1px solid var(--border-color, #eaeaea);
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary, #111);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mc-btn:active {
+    transform: scale(0.92);
+}
+
+.mc-indicators {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mc-pill {
+    background: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color, #eaeaea);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-right: 0.25rem;
+}
+
+.mc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color, #ccc);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mc-dot.is-active {
+    background: var(--text-primary, #111);
+    transform: scale(1.2);
+}
