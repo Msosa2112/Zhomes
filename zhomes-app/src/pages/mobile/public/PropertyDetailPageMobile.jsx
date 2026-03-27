@@ -185,7 +185,10 @@ export default function PropertyDetailPageMobile() {
     }
 
     const formatPriceK = (price) => {
-        return price >= 1000 ? (price / 1000) + 'k' : price;
+        if (!price) return '$0'
+        if (price >= 1000000) return `$${(price / 1000000).toFixed(2)}M`
+        if (price >= 1000) return `$${(price / 1000).toFixed(0)}K`
+        return `$${price}`
     }
 
     return (

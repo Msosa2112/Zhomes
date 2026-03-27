@@ -7,20 +7,35 @@ export default function ProtectedRoute() {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-        // Verificar sesión inicial
-        const checkUser = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            setUser(session?.user || null)
+        // Check demo user (localStorage bypass)
+        const demoUser = localStorage.getItem('zhomes_demo_user')
+        if (demoUser) {
+            setUser(JSON.parse(demoUser))
             setLoading(false)
+            return
+        }
+
+        // Check real Supabase session
+        const checkUser = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession()
+                setUser(session?.user || null)
+            } catch (e) {
+                setUser(null)
+            } finally {
+                setLoading(false)
+            }
         }
         
         checkUser()
 
-        // Escuchar cambios de autenticación
         const { data: authListener } = supabase.auth.onAuthStateChange(
             (event, session) => {
-                setUser(session?.user || null)
-                setLoading(false)
+                // Don't override demo user
+                if (!localStorage.getItem('zhomes_demo_user')) {
+                    setUser(session?.user || null)
+                    setLoading(false)
+                }
             }
         )
 
@@ -36,11 +51,9 @@ export default function ProtectedRoute() {
         </div>
     }
 
-    // Si no hay usuario, redirigir a /login
     if (!user) {
         return <Navigate to="/login" replace />
     }
 
-    // Si hay usuario, pintar las rutas hijas
     return <Outlet />
 }

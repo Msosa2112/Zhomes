@@ -125,7 +125,20 @@ export default function LoginPageMobile() {
                     </button>
                 </form>
 
-
+                <div style={{ textAlign: 'center', margin: '12px 0 4px' }}>
+                    <button
+                        type="button"
+                        onClick={handleDemoLogin}
+                        style={{
+                            background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.4)',
+                            color: '#8B5CF6', padding: '10px 24px', borderRadius: '10px',
+                            fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', width: '100%'
+                        }}
+                    >
+                        ⚡ Acceso Demo ({role === 'broker' ? 'Broker' : role === 'realtor' ? 'Realtor' : 'Cliente'})
+                    </button>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '6px' }}>Sin contraseña — solo para pruebas</p>
+                </div>
 
 
                 <div className="ml-oauth-divider">

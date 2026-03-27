@@ -129,13 +129,13 @@ export default function RealtorDashboardMobile() {
                     <div className="mq-icon"><FileText size={22} /></div>
                     <span>Subir</span>
                 </Link>
-                <Link to="/realtor/perfil" className="m-quick-btn">
-                    <div className="mq-icon"><Star size={22} /></div>
-                    <span>Perfil</span>
-                </Link>
                 <Link to="/realtor/mensajes" className="m-quick-btn">
                     <div className="mq-icon"><MessageSquare size={22} /></div>
                     <span>Chat</span>
+                </Link>
+                <Link to="/dashboard/deal" className="m-quick-btn">
+                    <div className="mq-icon" style={{ background: 'rgba(139,92,246,0.15)' }}><Brain size={22} color="#8B5CF6" /></div>
+                    <span>Deal Room</span>
                 </Link>
             </div>
 
@@ -234,10 +234,10 @@ export default function RealtorDashboardMobile() {
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <strong style={{ fontSize: '13px', display: 'block' }}>{agent.name}</strong>
-                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{agent.totalClosed} cierres · Promedio ${(agent.avgPrice / 1000).toFixed(0)}K</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{agent.totalClosed} cierres · Promedio ${agent.avgPrice >= 1000000 ? (agent.avgPrice / 1000000).toFixed(2) + 'M' : (agent.avgPrice / 1000).toFixed(0) + 'K'}</span>
                             </div>
                             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                <strong style={{ fontSize: '14px', color: '#10B981', display: 'block' }}>${(agent.totalVolume / 1000).toFixed(0)}K</strong>
+                                <strong style={{ fontSize: '14px', color: '#10B981', display: 'block' }}>${agent.totalVolume >= 1000000 ? (agent.totalVolume / 1000000).toFixed(2) + 'M' : (agent.totalVolume / 1000).toFixed(0) + 'K'}</strong>
                                 <span style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>volumen</span>
                             </div>
                         </div>
