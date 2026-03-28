@@ -91,7 +91,7 @@ export default function RealtorDashboardMobile() {
 
     const ALERTS = [
         { type: 'warning', icon: AlertCircle, text: 'Faltan 3 documentos para 8708 Denise Dr', time: 'Hace 2 horas', color: '#EF4444' },
-        { type: 'success', icon: CheckCircle2, text: 'Comisión de $8,925 aprobada', time: 'Hace 1 día', color: '#10B981' },
+        { type: 'success', icon: CheckCircle2, text: 'Oferta aceptada para 8708 Denise Dr', time: 'Hace 1 día', color: '#10B981' },
     ]
 
     return (
@@ -120,10 +120,6 @@ export default function RealtorDashboardMobile() {
                 <Link to="/realtor/open-houses" className="m-quick-btn">
                     <div className="mq-icon" style={{ background: 'rgba(236,72,153,0.1)' }}><MapPin size={22} color="#EC4899" /></div>
                     <span>OH</span>
-                </Link>
-                <Link to="/realtor/comisiones" className="m-quick-btn">
-                    <div className="mq-icon"><DollarSign size={22} /></div>
-                    <span>Comis</span>
                 </Link>
                 <Link to="/realtor/crear-propiedad" className="m-quick-btn">
                     <div className="mq-icon"><FileText size={22} /></div>

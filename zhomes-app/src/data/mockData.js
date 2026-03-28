@@ -763,17 +763,6 @@ export const REALTOR_TRANSACTIONS = [
             { name: 'Tasación', status: 'approved' },
             { name: 'HUD Statement', status: 'approved' },
             { name: 'Title Insurance', status: 'approved' },
-            { name: 'Commission Disbursement', status: 'approved' },
         ],
     },
-]
-
-// Comisiones de Jessica
-export const REALTOR_COMMISSIONS = [
-    { id: 201, address: '3744 Springhurst Blvd', salePrice: 345000, commissionPct: 3, split: 70, grossAmount: 10350, brokerFee: 3105, netAmount: 7245, status: 'paid', paidDate: '2026-02-01' },
-    { id: 202, address: '5506 Preston Hwy', salePrice: 225000, commissionPct: 3, split: 70, grossAmount: 6750, brokerFee: 2025, netAmount: 4725, status: 'paid', paidDate: '2026-01-15' },
-    { id: 203, address: '8708 Denise Dr', salePrice: 425000, commissionPct: 3, split: 70, grossAmount: 12750, brokerFee: 3825, netAmount: 8925, status: 'approved', paidDate: null },
-    { id: 204, address: '220 River Rd', salePrice: 899000, commissionPct: 2.5, split: 70, grossAmount: 22475, brokerFee: 6742, netAmount: 15733, status: 'pending', paidDate: null },
-    { id: 205, address: '1850 Lakewood Hills', salePrice: 715000, commissionPct: 3, split: 70, grossAmount: 21450, brokerFee: 6435, netAmount: 15015, status: 'pending', paidDate: null },
-    { id: 206, address: '9320 Galene Dr', salePrice: 199000, commissionPct: 3, split: 70, grossAmount: 5970, brokerFee: 1791, netAmount: 4179, status: 'paid', paidDate: '2025-12-20' },
 ]

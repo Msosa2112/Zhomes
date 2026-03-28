@@ -62,10 +62,6 @@ export default function DashboardPageMobile() {
                 </div>
 
                 <div className="mobile-quick-actions">
-                    <Link to="/comisiones" className="m-quick-btn">
-                        <div className="mq-icon"><CheckCircle2 size={24} /></div>
-                        <span>Comis</span>
-                    </Link>
                     <Link to="/analytics" className="m-quick-btn">
                         <div className="mq-icon"><TrendingUp size={24} /></div>
                         <span>Analytics</span>

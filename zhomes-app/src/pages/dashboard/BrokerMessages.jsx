@@ -25,7 +25,7 @@ const MOCK_MESSAGES = {
     ],
     judith: [
         { id: 1, sender: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png', isMine: false, text: '¡Buenos días! Ya firmé los documentos de 220 River Rd. Todo listo.', time: '9:00 AM', date: 'Ayer' },
-        { id: 2, sender: 'Gilbert Zaldivar', isMine: true, text: 'Perfecto Judith. La comisión ya fue procesada, debería llegar mañana.', time: '9:15 AM', date: 'Ayer' },
+        { id: 2, sender: 'Gilbert Zaldivar', isMine: true, text: 'Perfecto Judith. Ya revisé todos los documentos, todo en orden. Listos para el próximo cliente.', time: '9:15 AM', date: 'Ayer' },
         { id: 3, sender: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png', isMine: false, text: '¡Gracias! 🎉 Ya estoy trabajando en un nuevo listing en St. Matthews.', time: '9:22 AM', date: 'Ayer' },
     ],
     miriam: [

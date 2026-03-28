@@ -3,7 +3,7 @@ import StackedAlerts from '../../components/shared/StackedAlerts'
 import { Link } from 'react-router-dom'
 import TransactionTimeline from '../../components/shared/TransactionTimeline'
 import AIInsightsWidget from '../../components/dashboard/AIInsightsWidget'
-import { REALTORS, REALTOR_TRANSACTIONS, REALTOR_COMMISSIONS } from '../../data/mockData'
+import { REALTORS, REALTOR_TRANSACTIONS } from '../../data/mockData'
 import '../dashboard/DashboardPage.css'
 import './RealtorDashboard.css'
 
@@ -33,13 +33,11 @@ export default function RealtorDashboard() {
     const realtor = REALTORS[0]
     const activeTransactions = REALTOR_TRANSACTIONS.filter(t => t.status !== 'closed')
     const pendingDocs = REALTOR_TRANSACTIONS.reduce((acc, t) => acc + t.documents.filter(d => d.status === 'pending').length, 0)
-    const pendingCommissions = REALTOR_COMMISSIONS.filter(c => c.status !== 'paid')
-    const totalPendingAmount = pendingCommissions.reduce((acc, c) => acc + c.netAmount, 0)
-    const totalEarned = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').reduce((acc, c) => acc + c.netAmount, 0)
+    const totalVolume = REALTOR_TRANSACTIONS.reduce((acc, t) => acc + t.price, 0)
 
     const ALERTS = [
         { type: 'warning', icon: AlertCircle, text: 'Faltan 3 documentos para 8708 Denise Dr — sube la Tasación', time: 'Hace 2 horas' },
-        { type: 'success', icon: CheckCircle2, text: 'Comisión de $8,925 aprobada para 8708 Denise Dr', time: 'Hace 1 día' },
+        { type: 'success', icon: CheckCircle2, text: 'Oferta aceptada para 8708 Denise Dr', time: 'Hace 1 día' },
         { type: 'info', icon: Upload, text: 'Broker revisó tus docs para 220 River Rd', time: 'Hace 2 días' },
     ]
 
@@ -93,13 +91,13 @@ export default function RealtorDashboard() {
                 </div>
                 <div className="kpi-card animate-fadeInUp delay-3">
                     <div className="kpi-icon" style={{ background: 'rgba(245, 166, 35, 0.12)', color: '#F5A623' }}>
-                        <DollarSign size={22} />
+                        <TrendingUp size={22} />
                     </div>
                     <div className="kpi-content">
-                        <span className="kpi-value">${(totalPendingAmount / 1000).toFixed(1)}K</span>
-                        <span className="kpi-label">Comisiones Pendientes</span>
+                        <span className="kpi-value">${(totalVolume / 1000000).toFixed(1)}M</span>
+                        <span className="kpi-label">Volumen Total</span>
                     </div>
-                    <span className="kpi-trend neutral">{pendingCommissions.length} por cobrar</span>
+                    <span className="kpi-trend up"><ArrowUpRight size={14} /> +12%</span>
                 </div>
             </div>
 

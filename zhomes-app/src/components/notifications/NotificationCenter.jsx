@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion } from 'motion/react'
 import {
     X, Bell, AlertCircle, CheckCircle2, Clock,
-    DollarSign, MessageSquare, Upload, ArrowUpRight
+    MessageSquare, Upload, ArrowUpRight
 } from 'lucide-react'
 import './NotificationCenter.css'
 
@@ -32,13 +32,13 @@ const MOCK_NOTIFICATIONS = [
     {
         id: 3,
         type: 'action',
-        title: 'Comisión pendiente de aprobación',
-        body: 'La comisión de $4,500 para Ernesto C. por 220 River Rd está lista para aprobar.',
+        title: 'Buyer Agent Agreement pendiente',
+        body: 'Ernesto C. necesita firmar el Buyer Representation Agreement para 220 River Rd.',
         tx: '220 River Rd',
         time: 'Hace 1 hora',
         read: false,
-        action: 'Aprobar Pago',
-        icon: DollarSign,
+        action: 'Ver Documento',
+        icon: Upload,
     },
     {
         id: 4,
@@ -76,13 +76,13 @@ const MOCK_NOTIFICATIONS = [
     {
         id: 7,
         type: 'completed',
-        title: 'Comisión pagada',
-        body: 'Se procesó el pago de $3,200 a Miriam S. por 3744 Springhurst Blvd.',
+        title: 'Cierre completado',
+        body: 'Miriam S. completó todos los documentos para 3744 Springhurst Blvd. Lista para closing.',
         tx: '3744 Springhurst Blvd',
         time: 'Ayer',
         read: true,
         action: null,
-        icon: DollarSign,
+        icon: CheckCircle2,
     },
 ]
 

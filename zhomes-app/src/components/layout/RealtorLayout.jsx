@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import {
-    LayoutDashboard, FileText, DollarSign, User,
+    LayoutDashboard, FileText, User,
     MessageSquare, FolderOpen, PlusCircle,
     Bell, LogOut, Sun, Moon
 } from 'lucide-react'
@@ -22,7 +22,6 @@ export default function RealtorLayout() {
         { path: '/realtor', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/realtor/transacciones', label: 'Transacciones', icon: FileText },
         { path: '/realtor/documentos', label: 'Documentos', icon: FolderOpen },
-        { path: '/realtor/comisiones', label: 'Comisiones', icon: DollarSign },
         { path: '/realtor/mensajes', label: 'Mensajes', icon: MessageSquare },
         { path: '/realtor/crear-propiedad', label: 'Nueva Propiedad', icon: PlusCircle },
         { path: '/realtor/perfil', label: 'Perfil', icon: User },

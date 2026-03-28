@@ -31,7 +31,7 @@ export default function RealtorLayoutMobile() {
     ]
 
     const extras = [
-        { path: '/realtor/comisiones', icon: CheckCircle2, label: 'Comis' },
+
         { path: '/realtor/crear-propiedad', icon: PlusCircle, label: 'Nueva' },
         { path: '/realtor/perfil', icon: User, label: 'Perfil' },
     ]

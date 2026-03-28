@@ -20,7 +20,6 @@ import CoShoppingMobile from './pages/mobile/public/CoShoppingMobile'
 
 import DashboardPageMobile from './pages/mobile/dashboard/DashboardPageMobile'
 import TransactionsPageMobile from './pages/mobile/dashboard/TransactionsPageMobile'
-import CommissionsPageMobile from './pages/mobile/dashboard/CommissionsPageMobile'
 import BrokerDocumentsMobile from './pages/mobile/dashboard/BrokerDocumentsMobile'
 import TeamPageMobile from './pages/mobile/dashboard/TeamPageMobile'
 import DealRoomMobile from './pages/mobile/dashboard/DealRoomMobile'
@@ -39,7 +38,6 @@ import SuperAdminKeysMobile from './pages/admin/SuperAdminKeysMobile'
 
 import RealtorDashboardMobile from './pages/mobile/dashboard/RealtorDashboardMobile'
 import RealtorTransactionsMobile from './pages/mobile/dashboard/RealtorTransactionsMobile'
-import RealtorCommissionsMobile from './pages/mobile/dashboard/RealtorCommissionsMobile'
 import RealtorMessagesMobile from './pages/mobile/dashboard/RealtorMessagesMobile'
 import RealtorDocumentsMobile from './pages/mobile/dashboard/RealtorDocumentsMobile'
 import RealtorShowingsMobile from './pages/mobile/dashboard/RealtorShowingsMobile'
@@ -87,7 +85,6 @@ export default function AppRoutes() {
                     <Route path="/dashboard" element={<DashboardPageMobile />} />
                     <Route path="/transacciones" element={<TransactionsPageMobile />} />
                     <Route path="/documentos" element={<BrokerDocumentsMobile />} />
-                    <Route path="/comisiones" element={<CommissionsPageMobile />} />
                     <Route path="/equipo" element={<TeamPageMobile />} />
                     <Route path="/dashboard/deal" element={<DealRoomMobile />} />
                     <Route path="/deal/:id" element={<DealRoomMobile />} />
@@ -111,7 +108,6 @@ export default function AppRoutes() {
                     <Route path="/realtor" element={<RealtorDashboardMobile />} />
                     <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
                     <Route path="/realtor/documentos" element={<RealtorDocumentsMobile />} />
-                    <Route path="/realtor/comisiones" element={<RealtorCommissionsMobile />} />
                     <Route path="/realtor/mensajes" element={<RealtorMessagesMobile />} />
                     <Route path="/realtor/perfil" element={<RealtorProfile />} />
                     <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />

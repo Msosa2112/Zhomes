@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import {
-    LayoutDashboard, FileText, DollarSign, Users,
+    LayoutDashboard, FileText, Users,
     FolderOpen, MessageSquare, BarChart3, Bell, LogOut, Sun, Moon
 } from 'lucide-react'
 import { useState } from 'react'
@@ -18,7 +18,6 @@ export default function DashboardLayout() {
         { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/transacciones', label: 'Transacciones', icon: FileText },
         { path: '/documentos', label: 'Documentos', icon: FolderOpen },
-        { path: '/comisiones', label: 'Comisiones', icon: DollarSign },
         { path: '/equipo', label: 'Equipo', icon: Users },
         { path: '/mensajes', label: 'Mensajes', icon: MessageSquare, badge: 3 },
         { path: '/analytics', label: 'Analíticas', icon: BarChart3 },

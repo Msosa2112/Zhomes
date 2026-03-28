@@ -38,7 +38,7 @@ export default function DashboardLayoutMobile() {
         { path: '/mercado', icon: TrendingUp, label: 'Mercado' },
         { path: '/prospecting', icon: Target, label: 'Prospect' },
         { path: '/contabilidad', icon: Wallet, label: 'Contab.' },
-        { path: '/comisiones', icon: CheckCircle2, label: 'Comis' },
+
         { path: '/analytics', icon: MapPin, label: 'Analytics' },
         { path: '/equipo', icon: Users, label: 'Equipo' },
         { path: '/admin/config', icon: ShieldAlert, label: 'Sistema' },
