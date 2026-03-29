@@ -159,7 +159,7 @@ export const MOCK_PROPERTIES = [
         "description": "*** Short Sale sold as is, subject to lender 3rd Party approval.   Home was originally a 3 bedroom but has been remodeled into a 2 bedroom with large master.   Large lot and 2.5 car garage out back.   Newer HVAC, water heater, sump pump.",
         "lat": 38.10157,
         "lng": -85.743178,
-        "exclusive": false,
+        "exclusive": true,
         "city": "Louisville, KY"
     },
     {
@@ -177,7 +177,7 @@ export const MOCK_PROPERTIES = [
         "description": "Hurry!  Don’t miss out on this Awesome 3 Bedroom, 2 Full Bath Ranch with a basement and garage.  Very cozy living room and dining area with beautiful hardwood floors.  Nice eat-in kitchen with updates in past years.  Three good size bedrooms and a master bedroom with its own private bath.  Second full bath in the hall.  Huge open basement with a family room and a game room area.  Large laundry room.  Big fenced-in back yard with a huge 2-car detached garage.  This home is move-in condition and shows Pride of Ownership!",
         "lat": 38.198256,
         "lng": -85.634072,
-        "exclusive": false,
+        "exclusive": true,
         "city": "Louisville, KY"
     },
     {
@@ -195,7 +195,7 @@ export const MOCK_PROPERTIES = [
         "description": "Beautiful Remodel!  Just move in!  Nothing you need to do on this one!  Beautiful wood laminate floor n the living room and tile in the large eat-in kitchen.  New cabinets and countertop and the appliances stay.  Three bedrooms with closets.  A fully remodeled bath in the hallway.  The master bedroom is big and has its own private full bath.  Fresh carpet and paint.  Replaced windows, furnace and air.  Huge fenced in back yard.  Better Hurry – A Showing is a Sale!",
         "lat": 38.181744,
         "lng": -85.700973,
-        "exclusive": false,
+        "exclusive": true,
         "city": "Louisville, KY"
     },
     {
