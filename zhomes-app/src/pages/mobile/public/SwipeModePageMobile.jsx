@@ -19,12 +19,20 @@ export default function SwipeModePageMobile() {
 
     useEffect(() => {
         const initSwipe = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                navigate('/login')
-                return
+            let activeUser = null;
+            const demoUser = localStorage.getItem('zhomes_demo_user');
+            if (demoUser) {
+                activeUser = JSON.parse(demoUser);
+            } else {
+                const { data: { session } } = await supabase.auth.getSession();
+                activeUser = session?.user || null;
             }
-            setUser(session.user)
+
+            if (!activeUser) {
+                navigate('/login');
+                return;
+            }
+            setUser(activeUser);
 
             if (!ctxLoading) {
                  const active = globalProperties || [];
@@ -39,7 +47,7 @@ export default function SwipeModePageMobile() {
             }
         }
         initSwipe()
-    }, [navigate, globalProperties, closedListings, ctxLoading])
+    }, [navigate, globalProperties, ctxLoading])
 
     const handleSwipe = async (direction, propertyId) => {
         if (direction === 'right' && user) {

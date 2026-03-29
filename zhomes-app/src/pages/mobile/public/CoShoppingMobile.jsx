@@ -15,12 +15,20 @@ export default function CoShoppingMobile() {
 
     useEffect(() => {
         const fetchUserAndMatches = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                navigate('/login')
-                return
+            let activeUser = null;
+            const demoUser = localStorage.getItem('zhomes_demo_user');
+            if (demoUser) {
+                activeUser = JSON.parse(demoUser);
+            } else {
+                const { data: { session } } = await supabase.auth.getSession();
+                activeUser = session?.user || null;
             }
-            setUser(session.user)
+
+            if (!activeUser) {
+                navigate('/login');
+                return;
+            }
+            setUser(activeUser);
 
             // SIMULATION: Check if linked. We use localStorage to mock this for now.
             const isLinked = localStorage.getItem('zhomes_partner_linked') === 'true'
