@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle2, ChevronRight, X, User, Phone, Mail, FolderHeart, DollarSign, Home, Shield, UploadCloud, AlertCircle, Search, Compass, MapPin, Key } from 'lucide-react'
+import { CheckCircle2, ChevronRight, X, User, Phone, Mail, FolderHeart, DollarSign, Home, Shield, UploadCloud, AlertCircle, Search, Compass, MapPin, Key, Heart, Calendar, Sparkles } from 'lucide-react'
 import './RealtorClientsMobile.css'
 
 // Simulated Database
@@ -30,7 +30,21 @@ const INITIAL_CLIENTS = [
         realtorDocs: [
             { id: 201, name: 'Guía del Comprador.pdf', date: 'Oct 22, 2025' }
         ],
-        favoritesCount: 14
+        favoritesCount: 14,
+        likedPropertiesCount: 22,
+        openHousesCount: 3,
+        savedProperties: [
+            { id: 1001, address: '123 Ocean Drive, Miami FL', price: '$450,000', beds: 3, baths: 2, img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop' },
+            { id: 1002, address: '456 Brickell Ave, Miami FL', price: '$550,000', beds: 2, baths: 2, img: 'https://images.unsplash.com/photo-1560184897-ae75f418493e?w=400&h=300&fit=crop' },
+            { id: 1004, address: '888 Collins Ave, Miami FL', price: '$510,000', beds: 2, baths: 1, img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop' }
+        ],
+        aiMatches: [
+            { id: 2001, address: '999 Riverside Dr, Miami FL', price: '$425,000', beds: 3, baths: 2, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop', matchReason: 'Match: Precio bajo su Pre-Aprobación ($450k) y 3 hab.' },
+            { id: 2002, address: '777 Bayshore Dr, Miami FL', price: '$440,000', beds: 2, baths: 2, img: 'https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?w=400&h=300&fit=crop', matchReason: 'Match: Diseño similar a favoritos y buena zona.' }
+        ],
+        openHouses: [
+            { id: 1003, address: '789 Coral Way, Coral Gables FL', date: 'Dom 14 Nov, 10:00 AM', price: '$650,000', img: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=300&fit=crop' }
+        ]
     },
     { 
         id: 3, 
@@ -51,7 +65,14 @@ const INITIAL_CLIENTS = [
             { id: 202, name: 'Contrato de Compraventa Firmado.pdf', date: 'Oct 15, 2025' },
             { id: 203, name: 'Reporte de Inspección.pdf', date: 'Oct 28, 2025' }
         ],
-        favoritesCount: 3
+        favoritesCount: 3,
+        likedPropertiesCount: 8,
+        openHousesCount: 0,
+        savedProperties: [
+            { id: 1005, address: '100 Sunset Blvd, Miami FL', price: '$850,000', beds: 4, baths: 3, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop' }
+        ],
+        aiMatches: [],
+        openHouses: []
     }
 ]
 
@@ -69,7 +90,8 @@ export default function RealtorClientsMobile() {
     
     // Workspace state
     const [selectedClient, setSelectedClient] = useState(null)
-    const [workspaceTab, setWorkspaceTab] = useState('overview') // 'overview' | 'pipeline' | 'documents'
+    const [workspaceTab, setWorkspaceTab] = useState('overview') // 'overview' | 'pipeline' | 'documents' | 'properties'
+    const [propertyFilter, setPropertyFilter] = useState('saved') // 'saved' | 'ai_matches' | 'open_houses'
 
     // Mock notification toast
     const [toastMsg, setToastMsg] = useState('')
@@ -92,7 +114,12 @@ export default function RealtorClientsMobile() {
                     preApproval: { amount: 0, documentsComplete: false },
                     clientVault: [],
                     realtorDocs: [],
-                    favoritesCount: 0
+                    favoritesCount: 0,
+                    likedPropertiesCount: 0,
+                    openHousesCount: 0,
+                    savedProperties: [],
+                    aiMatches: [],
+                    openHouses: []
                 }
             }
             return c
@@ -119,8 +146,8 @@ export default function RealtorClientsMobile() {
         if (!selectedClient) return
         const newDoc = { id: Date.now(), name: 'Nuevo Documento.pdf', date: 'Reciente' }
         
-        setSelectedClient(prev => ({ ...prev, realtorDocs: [newDoc, ...prev.realtorDocs] }))
-        setClients(prev => prev.map(c => c.id === selectedClient.id ? { ...c, realtorDocs: [newDoc, ...c.realtorDocs] } : c))
+        setSelectedClient(prev => ({ ...prev, realtorDocs: [newDoc, ...(prev.realtorDocs || [])] }))
+        setClients(prev => prev.map(c => c.id === selectedClient.id ? { ...c, realtorDocs: [newDoc, ...(c.realtorDocs || [])] } : c))
         
         showToast('Documento subido. Notificación enviada al cliente.')
     }
@@ -213,8 +240,9 @@ export default function RealtorClientsMobile() {
                             </p>
                         </div>
 
-                        <div className="rc-modal-tabs">
+                        <div className="rc-modal-tabs" style={{overflowX: 'auto', whiteSpace: 'nowrap'}}>
                             <button className={`rc-modal-tab ${workspaceTab === 'overview' ? 'active' : ''}`} onClick={() => setWorkspaceTab('overview')}>General</button>
+                            <button className={`rc-modal-tab ${workspaceTab === 'properties' ? 'active' : ''}`} onClick={() => setWorkspaceTab('properties')}>Propiedades</button>
                             <button className={`rc-modal-tab ${workspaceTab === 'pipeline' ? 'active' : ''}`} onClick={() => setWorkspaceTab('pipeline')}>Pipeline</button>
                             <button className={`rc-modal-tab ${workspaceTab === 'documents' ? 'active' : ''}`} onClick={() => setWorkspaceTab('documents')}>Documentos</button>
                         </div>
@@ -225,7 +253,7 @@ export default function RealtorClientsMobile() {
                                     <div className="rc-info-card">
                                         <div className="rc-info-header"><DollarSign size={18} color="#10b981"/> Pre-Aprobación</div>
                                         <div className="rc-info-val">
-                                            {selectedClient.preApproval.amount > 0 
+                                            {selectedClient.preApproval?.amount > 0 
                                                 ? `$${selectedClient.preApproval.amount.toLocaleString()}`
                                                 : 'Sin Evaluar'}
                                         </div>
@@ -233,12 +261,78 @@ export default function RealtorClientsMobile() {
                                     <div className="rc-info-card">
                                         <div className="rc-info-header"><Shield size={18} color="#8B5CF6"/> Bóveda del Cliente</div>
                                         <div className="rc-info-val" style={{fontSize: '16px'}}>
-                                            {selectedClient.preApproval.documentsComplete ? 'Completa ✓' : 'Faltan documentos'}
+                                            {selectedClient.preApproval?.documentsComplete ? 'Completa ✓' : 'Faltan documentos'}
                                         </div>
                                     </div>
-                                    <div className="rc-info-card">
+                                    <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('saved'); }}>
                                         <div className="rc-info-header"><FolderHeart size={18} color="var(--zhomes-red)"/> Propiedades Guardadas</div>
-                                        <div className="rc-info-val">{selectedClient.favoritesCount} Casas</div>
+                                        <div className="rc-info-val">{selectedClient.savedProperties?.length || 0} Casas</div>
+                                    </div>
+                                    <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('ai_matches'); }}>
+                                        <div className="rc-info-header"><Sparkles size={18} color="#F59E0B"/> Sugerencias IA ✨</div>
+                                        <div className="rc-info-val" style={{color: '#F59E0B'}}>{selectedClient.aiMatches?.length || 0} Matches</div>
+                                    </div>
+                                    <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('open_houses'); }}>
+                                        <div className="rc-info-header"><Calendar size={18} color="#3B82F6"/> Open Houses Agend.</div>
+                                        <div className="rc-info-val">{selectedClient.openHouses?.length || 0} Visitas</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {workspaceTab === 'properties' && (
+                                <div className="rc-properties-view">
+                                    <div className="rc-filter-tabs">
+                                        <button className={`rc-filter-tab ${propertyFilter === 'saved' ? 'active' : ''}`} onClick={() => setPropertyFilter('saved')}>Guardadas</button>
+                                        <button className={`rc-filter-tab ${propertyFilter === 'ai_matches' ? 'active' : ''}`} onClick={() => setPropertyFilter('ai_matches')}>Sugerencias IA ✨</button>
+                                        <button className={`rc-filter-tab ${propertyFilter === 'open_houses' ? 'active' : ''}`} onClick={() => setPropertyFilter('open_houses')}>Open Houses</button>
+                                    </div>
+
+                                    <div className="rc-property-list">
+                                        {propertyFilter === 'saved' && (
+                                            <>
+                                                {(!selectedClient.savedProperties || selectedClient.savedProperties.length === 0) && <p style={{color:'var(--text-secondary)'}}>No hay propiedades guardadas.</p>}
+                                                {(selectedClient.savedProperties || []).map(p => (
+                                                    <div key={p.id} className="rc-property-card">
+                                                        <img src={p.img} alt={p.address} className="rc-property-img" />
+                                                        <div className="rc-property-details">
+                                                            <h4>{p.address}</h4>
+                                                            <p>{p.beds} Beds • {p.baths} Baths</p>
+                                                            <div className="rc-property-price">{p.price}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        )}
+                                        {propertyFilter === 'ai_matches' && (
+                                            <>
+                                                {(!selectedClient.aiMatches || selectedClient.aiMatches.length === 0) && <p style={{color:'var(--text-secondary)'}}>La IA aún está analizando este perfil...</p>}
+                                                {(selectedClient.aiMatches || []).map(p => (
+                                                    <div key={p.id} className="rc-property-card" style={{borderColor: '#F59E0B33', background: '#F59E0B05'}}>
+                                                        <img src={p.img} alt={p.address} className="rc-property-img" />
+                                                        <div className="rc-property-details">
+                                                            <h4>{p.address}</h4>
+                                                            <p style={{fontSize: '12px', fontWeight: 600, color: '#F59E0B', marginBottom: '4px'}}>✨ {p.matchReason}</p>
+                                                            <div className="rc-property-price">{p.price}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        )}
+                                        {propertyFilter === 'open_houses' && (
+                                            <>
+                                                {(!selectedClient.openHouses || selectedClient.openHouses.length === 0) && <p style={{color:'var(--text-secondary)'}}>No hay open houses agendados.</p>}
+                                                {(selectedClient.openHouses || []).map(p => (
+                                                    <div key={p.id} className="rc-property-card">
+                                                        <img src={p.img} alt={p.address} className="rc-property-img" />
+                                                        <div className="rc-property-details">
+                                                            <h4>{p.address}</h4>
+                                                            <p style={{color: '#3B82F6', fontWeight: 600}}>🗓 {p.date}</p>
+                                                            <div className="rc-property-price">{p.price}</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             )}

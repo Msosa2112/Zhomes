@@ -62,10 +62,6 @@ export default function DashboardPageMobile() {
                 </div>
 
                 <div className="mobile-quick-actions">
-                    <Link to="/analytics" className="m-quick-btn">
-                        <div className="mq-icon"><TrendingUp size={24} /></div>
-                        <span>Analytics</span>
-                    </Link>
                     <Link to="/equipo" className="m-quick-btn">
                         <div className="mq-icon"><Users size={24} /></div>
                         <span>Equipo</span>

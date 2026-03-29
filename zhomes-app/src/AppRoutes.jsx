@@ -24,14 +24,11 @@ import BrokerDocumentsMobile from './pages/mobile/dashboard/BrokerDocumentsMobil
 import TeamPageMobile from './pages/mobile/dashboard/TeamPageMobile'
 import DealRoomMobile from './pages/mobile/dashboard/DealRoomMobile'
 import BrokerMessagesMobile from './pages/mobile/dashboard/BrokerMessagesMobile'
-import AnalyticsPageMobile from './pages/mobile/dashboard/AnalyticsPageMobile'
 import BrokerTerminal from './pages/dashboard/BrokerTerminal'
 import CRMPageMobile from './pages/mobile/dashboard/CRMPageMobile'
 import ShowingScheduleMobile from './pages/mobile/dashboard/ShowingScheduleMobile'
 import ESignaturesMobile from './pages/mobile/dashboard/ESignaturesMobile'
 import CMAPageMobile from './pages/mobile/dashboard/CMAPageMobile'
-import ProspectingMobile from './pages/mobile/dashboard/ProspectingMobile'
-import AccountingMobile from './pages/mobile/dashboard/AccountingMobile'
 import MarketReportsMobile from './pages/mobile/dashboard/MarketReportsMobile'
 
 import SuperAdminKeysMobile from './pages/admin/SuperAdminKeysMobile'
@@ -90,14 +87,11 @@ export default function AppRoutes() {
                     <Route path="/dashboard/deal" element={<DealRoomMobile />} />
                     <Route path="/deal/:id" element={<DealRoomMobile />} />
                     <Route path="/mensajes" element={<BrokerMessagesMobile />} />
-                    <Route path="/analytics" element={<AnalyticsPageMobile />} />
                     <Route path="/terminal" element={<BrokerTerminal />} />
                     <Route path="/crm" element={<CRMPageMobile />} />
                     <Route path="/visitas" element={<ShowingScheduleMobile />} />
                     <Route path="/firmas" element={<ESignaturesMobile />} />
                     <Route path="/cma" element={<CMAPageMobile />} />
-                    <Route path="/prospecting" element={<ProspectingMobile />} />
-                    <Route path="/contabilidad" element={<AccountingMobile />} />
                     <Route path="/mercado" element={<MarketReportsMobile />} />
                 </Route>
                 

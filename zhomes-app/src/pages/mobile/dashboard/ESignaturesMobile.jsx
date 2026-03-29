@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X, User, Calendar, Download, Eye, Edit3, PenTool, ChevronRight, Shield } from 'lucide-react'
-import SignaturePad from '../../../components/shared/SignaturePad'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X, User, Download, Edit3, PenTool, ChevronRight, Shield, ExternalLink } from 'lucide-react'
+import { DocusealForm } from '@docuseal/react'
 import './ESignaturesMobile.css'
 
 const TEMPLATES = [
@@ -13,6 +14,18 @@ const TEMPLATES = [
 ]
 
 const DOCUMENTS = [
+    { 
+        id: 999, 
+        title: 'Acuerdo de Renta - 1300 Brickell Ave', 
+        template: 'Contrato Residencial (Miami-Dade)', 
+        client: 'Marcos de la Torre', 
+        agent: 'Jessica Hernandez', 
+        agentAvatar: '/assets/agents/Jessica Hernandez.png', 
+        status: 'pending', 
+        sentDate: new Date().toISOString().split('T')[0], 
+        signedDate: null, 
+        signers: [{ name: 'Marcos de la Torre', signed: false }, { name: 'Gilbert Zaldivar', signed: true }] 
+    },
     { id: 101, title: 'Oferta - 4132 Craig Ave', template: 'Oferta de Compra', client: 'Rosa Gutiérrez', agent: 'Jessica Hernandez', agentAvatar: '/assets/agents/Jessica Hernandez.png', status: 'signed', sentDate: '2026-03-22', signedDate: '2026-03-23', signers: [{ name: 'Rosa Gutiérrez', signed: true }, { name: 'Gilbert Zaldivar', signed: true }] },
     { id: 102, title: 'Listado - 220 River Rd', template: 'Acuerdo de Listado', client: 'Pedro Sánchez', agent: 'Miriam C Castaño', agentAvatar: '/assets/agents/Miriam Castano.png', status: 'pending', sentDate: '2026-03-25', signedDate: null, signers: [{ name: 'Pedro Sánchez', signed: false }, { name: 'Gilbert Zaldivar', signed: true }] },
     { id: 103, title: 'Representación - Ana Martínez', template: 'Acuerdo de Representación', client: 'Ana Martínez', agent: 'Judith N Gonzalez', agentAvatar: '/assets/agents/Judith Gonzalez.png', status: 'draft', sentDate: null, signedDate: null, signers: [] },
@@ -35,6 +48,29 @@ export default function ESignaturesMobile() {
     const [signingDoc, setSigningDoc] = useState(null)
 
     const filteredDocs = filter === 'all' ? docs : docs.filter(d => d.status === filter)
+
+    const confirmCompletion = () => {
+        if (!signingDoc) return;
+        setDocs(docs.map(d => d.id === signingDoc.id ? {
+            ...d,
+            status: 'signed',
+            signedDate: new Date().toISOString().split('T')[0],
+            signers: d.signers.map(s => ({ ...s, signed: true }))
+        } : d))
+        setSigningDoc(null);
+    };
+
+    useEffect(() => {
+        const handleMessage = (event) => {
+            // Verificar si el mensaje viene de DocuSeal
+            if (event.data?.type === 'docuseal:completed' || event.data?.event === 'completed' || event.data === 'docuseal:completed') {
+                console.log('Firma completada detectada:', event.data);
+                if (signingDoc) confirmCompletion();
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [signingDoc, docs]);
 
     const sendForSignature = (docId) => {
         setDocs(docs.map(d => d.id === docId ? {
@@ -154,8 +190,8 @@ export default function ESignaturesMobile() {
             </div>
 
             {/* Doc Detail */}
-            {selectedDoc && (
-                <div className="crm-modal-overlay" onClick={() => setSelectedDoc(null)}>
+            {selectedDoc && createPortal(
+                <div className="crm-modal-overlay" onClick={() => setSelectedDoc(null)} style={{ zIndex: 999999 }}>
                     <div className="crm-modal" onClick={e => e.stopPropagation()}>
                         <div className="crm-modal-header">
                             <h2>{selectedDoc.title}</h2>
@@ -202,13 +238,26 @@ export default function ESignaturesMobile() {
                                     </button>
                                 )}
                                 {selectedDoc.status === 'signed' && (
-                                    <button className="crm-submit-btn" style={{ background: '#3B82F6' }}>
+                                    <button 
+                                        className="crm-submit-btn" 
+                                        style={{ background: '#3B82F6' }}
+                                        onClick={() => {
+                                            if (selectedDoc.pdfUrl) {
+                                                const a = document.createElement('a');
+                                                a.href = selectedDoc.pdfUrl;
+                                                a.download = `${selectedDoc.title.replace(/\s+/g, '_')}_Firmado.pdf`;
+                                                a.click();
+                                            } else {
+                                                alert("El archivo PDF original se encuentra accesible mediante el proveedor E-Sign.");
+                                            }
+                                        }}
+                                    >
                                         <Download size={16} /> Descargar PDF
                                     </button>
                                 )}
                                 {selectedDoc.status === 'pending' && (
                                     <>
-                                        <button className="crm-submit-btn" style={{ background: '#F59E0B' }} onClick={() => { setSigningDoc(selectedDoc); setSelectedDoc(null) }}>
+                                        <button className="crm-submit-btn" style={{ background: '#F59E0B' }} onClick={() => setSigningDoc(selectedDoc)}>
                                             <PenTool size={16} /> Firmar Ahora
                                         </button>
                                         <div className="esign-pending-notice">
@@ -220,12 +269,13 @@ export default function ESignaturesMobile() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Create New Doc (simple prompt) */}
-            {showCreate && (
-                <div className="crm-modal-overlay" onClick={() => setShowCreate(false)}>
+            {showCreate && createPortal(
+                <div className="crm-modal-overlay" onClick={() => setShowCreate(false)} style={{ zIndex: 999999 }}>
                     <div className="crm-modal" onClick={e => e.stopPropagation()}>
                         <div className="crm-modal-header">
                             <h2>Nuevo Documento</h2>
@@ -233,9 +283,9 @@ export default function ESignaturesMobile() {
                         </div>
                         <div className="crm-modal-body">
                             <div className="esign-api-notice">
-                                <PenTool size={24} color="#10B981" />
-                                <h3>Firma Interna ZHomes</h3>
-                                <p>Sistema de firma electrónica integrado. Las firmas se guardan como PDF con validez legal bajo UETA y ESIGN Act.</p>
+                                <Shield size={24} color="#3B82F6" />
+                                <h3>Integración e-Sign</h3>
+                                <p>Elije un proveedor certificado (DocuSign, DotLoop, HelloSign) para gestionar estos contratos con validez legal nativa.</p>
                             </div>
 
                             <div className="crm-form-group">
@@ -257,24 +307,77 @@ export default function ESignaturesMobile() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
-            {signingDoc && (
-                <SignaturePad
-                    documentTitle={signingDoc.title}
-                    signerName={signingDoc.client}
-                    onSave={(result) => {
-                        console.log('Signed PDF:', result)
-                        setDocs(docs.map(d => d.id === signingDoc.id ? {
-                            ...d,
-                            status: 'signed',
-                            signedDate: new Date().toISOString().split('T')[0],
-                            signers: d.signers.map(s => ({ ...s, signed: true }))
-                        } : d))
-                        setSigningDoc(null)
+
+            {signingDoc && createPortal(
+                <div 
+                    className="docuseal-overlay" 
+                    style={{ 
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: '#000', 
+                        zIndex: 999999, // Super high z-index
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}
-                    onClose={() => setSigningDoc(null)}
-                />
+                >
+                    <div className="docuseal-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 20px', background: '#fff', alignItems: 'center' }}>
+                        <h3 style={{ margin: 0, fontSize: '16px', color: '#000' }}>{signingDoc.title}</h3>
+                        <button 
+                            onClick={() => setSigningDoc(null)} 
+                            style={{ background: 'none', border: 'none', color: '#666', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                        >
+                            <X size={18} /> Cancelar y Cerrar
+                        </button>
+                    </div>
+                    {/* Contenedor del Iframe */}
+                    {/* Modal Alternativo Gratuito (Abre en Nueva Pestaña) */}
+                    <div style={{ flex: 1, width: '100%', height: '100%', overflow: 'hidden', background: '#f5f5f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', textAlign: 'center' }}>
+                        
+                        <div style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', maxWidth: '400px', width: '100%' }}>
+                            <div style={{ width: '60px', height: '60px', background: '#E3F2FD', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#1a73e8' }}>
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            
+                            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', color: '#333' }}>Firma Electrónica Segura</h3>
+                            <p style={{ margin: '0 0 25px 0', fontSize: '14px', color: '#666', lineHeight: '1.5' }}>
+                                Serás redirigido al portal seguro de DocuSeal para trazar tu firma. Una vez que termines, vuelve a esta pantalla.
+                            </p>
+
+                            <button 
+                                onClick={() => {
+                                    const docusealUrl = `https://docuseal-railway-production-97d8.up.railway.app/d/nzWzy3TSqNZgQr?email=${encodeURIComponent(signingDoc.clientEmail || '')}&name=${encodeURIComponent(signingDoc.client || '')}`;
+                                    window.open(docusealUrl, '_blank');
+                                }}
+                                style={{
+                                    width: '100%', padding: '14px', background: '#1a73e8', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
+                                }}
+                            >
+                                <span>Abrir Documento y Firmar</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            </button>
+
+                            <button 
+                                onClick={confirmCompletion}
+                                style={{
+                                    width: '100%', padding: '14px', background: 'transparent', color: '#1a73e8', border: '1px solid #1a73e8', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer'
+                                }}
+                            >
+                                Ya firmé el documento
+                            </button>
+                        </div>
+
+                    </div>
+                </div>,
+                document.body
             )}
         </>
     )

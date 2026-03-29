@@ -20,7 +20,6 @@ export default function DashboardLayout() {
         { path: '/documentos', label: 'Documentos', icon: FolderOpen },
         { path: '/equipo', label: 'Equipo', icon: Users },
         { path: '/mensajes', label: 'Mensajes', icon: MessageSquare, badge: 3 },
-        { path: '/analytics', label: 'Analíticas', icon: BarChart3 },
     ]
 
     return (

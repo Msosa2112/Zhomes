@@ -49,7 +49,6 @@ export default function ZSlider({
                             }} 
                         />
                     </div>
-                    {/* Native input layered on top, invisible, touch-action: none */}
                     <input
                         type="range"
                         className="zslider-input"
@@ -59,9 +58,7 @@ export default function ZSlider({
                         value={safeValue}
                         onChange={e => {
                             const val = parseFloat(e.target.value);
-                            if (!isNaN(val)) {
-                                onChange(val);
-                            }
+                            if (!isNaN(val)) onChange(val);
                         }}
                     />
                 </div>
@@ -71,28 +68,33 @@ export default function ZSlider({
 
     // Range (two thumbs)
     const [lo, hi] = value || [min, max];
-    const safeLo = lo ?? min;
-    const safeHi = hi ?? max;
+    const safeLo = Math.max(min, Math.min(lo ?? min, max));
+    const safeHi = Math.max(min, Math.min(hi ?? max, max));
     const loPct = pct(safeLo);
     const hiPct = pct(safeHi);
 
-    const loOnTop = safeLo >= safeHi - step || (loPct > 90)
-    const loZ = loOnTop ? 15 : 13
-    const hiZ = loOnTop ? 13 : 15
+    // The thumb near the HIGH end needs to go on top when both are close together,
+    // but when lo=min (leftmost) the lo thumb needs to be reachable too.
+    // Solution: give lo higher z when it's near the minimum (left edge).
+    const gap = safeHi - safeLo;
+    const loNearMin = loPct < 10;
+    const hiNearMax = hiPct > 90;
+    // lo thumb on top when: near the left edge OR hi is above lo
+    const loOnTop = loNearMin || gap <= step;
+    const loZ = loOnTop ? 15 : 12;
+    const hiZ = loOnTop ? 12 : 15;
 
     const handleLo = useCallback(e => {
         const val = parseFloat(e.target.value);
         if (!isNaN(val)) {
-            const v = Math.min(val, safeHi - step)
-            onChange([v, safeHi])
+            onChange([Math.min(val, safeHi - step), safeHi]);
         }
     }, [safeHi, step, onChange])
 
     const handleHi = useCallback(e => {
         const val = parseFloat(e.target.value);
         if (!isNaN(val)) {
-            const v = Math.max(val, safeLo + step)
-            onChange([safeLo, v])
+            onChange([safeLo, Math.max(val, safeLo + step)]);
         }
     }, [safeLo, step, onChange])
 
@@ -110,9 +112,12 @@ export default function ZSlider({
                         className="zslider-fill"
                         style={{ left: `${loPct}%`, width: `${hiPct - loPct}%`, backgroundColor: color }}
                     />
-                    <div className="zslider-thumb" style={{ left: `${loPct}%`, border: `3px solid ${color}`, zIndex: 11 }} />
-                    <div className="zslider-thumb" style={{ left: `${hiPct}%`, border: `3px solid ${color}`, zIndex: 11 }} />
+                    {/* Lo thumb visual */}
+                    <div className="zslider-thumb" style={{ left: `${loPct}%`, border: `3px solid ${color}`, zIndex: loZ + 1 }} />
+                    {/* Hi thumb visual */}
+                    <div className="zslider-thumb" style={{ left: `${hiPct}%`, border: `3px solid ${color}`, zIndex: hiZ + 1 }} />
                 </div>
+                {/* Lo input — rendered AFTER hi so it sits on top in the DOM when loZ wins */}
                 <input
                     type="range"
                     className="zslider-input"

@@ -99,6 +99,23 @@ export default function SignaturePad({ documentTitle, signerName, onSave, onClos
           <span>{new Date().toLocaleDateString('es-US')}</span>
         </div>
 
+        <div className="sigpad-doc-preview">
+            <div className="doc-skeleton-line" />
+            <div className="doc-skeleton-line" style={{ width: '80%' }} />
+            <p className="doc-preview-text">
+                Por la presente, (<strong>{signerName}</strong>) acepta y formaliza 
+                legalmente todos los términos y condiciones definidos en el documento 
+                titulado: <strong>{documentTitle}</strong>.
+            </p>
+            <div className="doc-skeleton-line" style={{ width: '90%' }} />
+            <div className="doc-skeleton-line" style={{ width: '60%' }} />
+            
+            <div className="doc-sign-here-indicator">
+                <span>FIRMA REQUERIDA A CONTINUACIÓN</span>
+                <span style={{ fontSize: '14px', marginTop: '2px' }}>↓</span>
+            </div>
+        </div>
+
         <div className="sigpad-canvas-wrap">
           <SignatureCanvas
             ref={sigCanvas}

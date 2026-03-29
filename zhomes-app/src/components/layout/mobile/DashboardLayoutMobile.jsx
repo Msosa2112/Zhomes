@@ -36,10 +36,6 @@ export default function DashboardLayoutMobile() {
         { path: '/firmas', icon: PenTool, label: 'Firmas' },
         { path: '/cma', icon: BarChart3, label: 'CMA' },
         { path: '/mercado', icon: TrendingUp, label: 'Mercado' },
-        { path: '/prospecting', icon: Target, label: 'Prospect' },
-        { path: '/contabilidad', icon: Wallet, label: 'Contab.' },
-
-        { path: '/analytics', icon: MapPin, label: 'Analytics' },
         { path: '/equipo', icon: Users, label: 'Equipo' },
         { path: '/admin/config', icon: ShieldAlert, label: 'Sistema' },
     ]

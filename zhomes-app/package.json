@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -16,6 +16,7 @@
     "@capacitor/cli": "^8.2.0",
     "@capacitor/core": "^8.2.0",
     "@capacitor/ios": "^8.2.0",
+    "@docuseal/react": "^1.0.71",
     "@ionic/react": "^8.8.1",
     "@supabase/supabase-js": "^2.100.0",
     "dotenv": "^17.3.1",
@@ -25,7 +26,6 @@
     "i18next": "^26.0.1",
     "i18next-browser-languagedetector": "^8.2.1",
     "ionicons": "^8.0.13",
-    "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.563.0",
@@ -41,7 +41,6 @@
     "react-leaflet-cluster": "^4.0.0",
     "react-router": "^6.30.3",
     "react-router-dom": "^6.30.3",
-    "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^3.7.0",
     "supercluster": "^8.0.1"
   },

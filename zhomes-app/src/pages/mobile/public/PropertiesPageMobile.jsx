@@ -7,6 +7,13 @@ import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
 import ZSlider from '../../../components/ui/ZSlider'
 import './PropertiesPageMobile.css'
 
+const formatPricePill = (price) => {
+    if (!price) return '$0';
+    if (price >= 1000000) return `$${(price / 1000000).toFixed(2).replace(/\.00$/, '').replace(/0$/, '')}M`;
+    if (price >= 1000) return `$${Math.round(price / 1000)}K`;
+    return `$${price}`;
+};
+
 const extractAIHighlights = (desc) => {
     if (!desc) return ['Luz natural', 'Excelente ubicación']
     const d = desc.toLowerCase()
@@ -40,7 +47,7 @@ const normalize = (p, offMarket = false) => ({
 })
 
 export default function PropertiesPageMobile() {
-    const { properties: globalProperties, closedListings, loading: ctxLoading } = useProperties()
+    const { properties: globalProperties, offMarketListings, loading: ctxLoading } = useProperties()
     const [searchParams] = useSearchParams()
 
     const [typeFilter, setTypeFilter] = useState('Casas')
@@ -60,15 +67,11 @@ export default function PropertiesPageMobile() {
     // ── Build the correct property pools ──
     const { activePool, offMarketPool } = useMemo(() => {
         const active = (globalProperties || []).map(p => normalize(p, false))
-        // Closed = off market
-        const closed = (closedListings || []).map(p => normalize(p, true))
+        // Off Market = propiedades subidas desde la app (Fix&Flip, Exclusivas, etc.)
+        const offMarket = (offMarketListings || []).map(p => normalize(p, true))
 
-        // Deduplicate off-market: if same id is already in active, skip
-        const activeIds = new Set(active.map(p => p.id))
-        const uniqueClosed = closed.filter(p => !activeIds.has(p.id))
-
-        return { activePool: active, offMarketPool: uniqueClosed }
-    }, [globalProperties, closedListings])
+        return { activePool: active, offMarketPool: offMarket }
+    }, [globalProperties, offMarketListings])
 
     const applyFilters = (pool) => {
         let filtered = [...pool]
@@ -166,8 +169,26 @@ export default function PropertiesPageMobile() {
 
         // ZHomes exclusives always first
         excl = filtered.filter(p => p.exclusive)
-        rest = filtered.filter(p => !p.exclusive)
-        return [...excl, ...rest]
+        const others = filtered.filter(p => !p.exclusive)
+
+        // Target $180k-$450k priority randomly for mass appeal
+        const targetRangeProps = []
+        const remainingProps = []
+
+        others.forEach(p => {
+            if (p.price >= 180000 && p.price <= 450000) {
+                targetRangeProps.push(p)
+            } else {
+                remainingProps.push(p)
+            }
+        })
+
+        // Pseudo-random stable sort based on UUIDs for the target range to shuffle them up nicely without jumping
+        targetRangeProps.sort((a, b) => String(a.id).localeCompare(String(b.id)))
+        // Sort remaining props starting from cheapest to most expensive, so $2M+ are at the end
+        remainingProps.sort((a, b) => a.price - b.price)
+
+        return [...excl, ...targetRangeProps, ...remainingProps]
     }, [showOffMarket, activePool, offMarketPool, typeFilter, bedFilter, bathFilter, priceMin, priceMax, sqftMin, sqftMax, searchQuery])
 
     const isLoading = ctxLoading
@@ -238,7 +259,7 @@ export default function PropertiesPageMobile() {
                         transition: 'all 0.2s',
                     }}
                 >
-                    <Lock size={13} /> Off Market
+                    <Lock size={13} /> Exclusivas
                     {showOffMarket && (
                         <span style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>
                             {offMarketPool.length}
@@ -354,9 +375,27 @@ export default function PropertiesPageMobile() {
                                 formatOptions={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
                             />
                             <div className="mpp-exact-inputs">
-                                <label>Min <input type="number" value={priceMin} onChange={e => setPriceMin(Number(e.target.value))} /></label>
+                                <label>Min <input
+                                    type="number"
+                                    value={priceMin || ''}
+                                    min={0} max={priceMax}
+                                    onChange={e => {
+                                        const raw = e.target.value.replace(/^0+(?!$)/, '');
+                                        const v = raw === '' ? 0 : parseInt(raw, 10);
+                                        if (!isNaN(v)) setPriceMin(Math.min(v, priceMax - 10000));
+                                    }}
+                                /></label>
                                 <span>-</span>
-                                <label>Max <input type="number" value={priceMax} onChange={e => setPriceMax(Number(e.target.value))} /></label>
+                                <label>Max <input
+                                    type="number"
+                                    value={priceMax || ''}
+                                    min={priceMin} max={2000000}
+                                    onChange={e => {
+                                        const raw = e.target.value.replace(/^0+(?!$)/, '');
+                                        const v = raw === '' ? 2000000 : parseInt(raw, 10);
+                                        if (!isNaN(v)) setPriceMax(Math.max(v, priceMin + 10000));
+                                    }}
+                                /></label>
                             </div>
                         </div>
                     )}
@@ -371,9 +410,27 @@ export default function PropertiesPageMobile() {
                                 onChange={([lo, hi]) => { setSqftMin(lo); setSqftMax(hi) }}
                             />
                             <div className="mpp-exact-inputs">
-                                <label>Min <input type="number" value={sqftMin} onChange={e => setSqftMin(Number(e.target.value))} /></label>
+                                <label>Min <input
+                                    type="number"
+                                    value={sqftMin || ''}
+                                    min={0} max={sqftMax}
+                                    onChange={e => {
+                                        const raw = e.target.value.replace(/^0+(?!$)/, '');
+                                        const v = raw === '' ? 0 : parseInt(raw, 10);
+                                        if (!isNaN(v)) setSqftMin(Math.min(v, sqftMax - 100));
+                                    }}
+                                /></label>
                                 <span>-</span>
-                                <label>Max <input type="number" value={sqftMax} onChange={e => setSqftMax(Number(e.target.value))} /></label>
+                                <label>Max <input
+                                    type="number"
+                                    value={sqftMax || ''}
+                                    min={sqftMin} max={10000}
+                                    onChange={e => {
+                                        const raw = e.target.value.replace(/^0+(?!$)/, '');
+                                        const v = raw === '' ? 10000 : parseInt(raw, 10);
+                                        if (!isNaN(v)) setSqftMax(Math.max(v, sqftMin + 100));
+                                    }}
+                                /></label>
                             </div>
                         </div>
                     )}
@@ -385,7 +442,7 @@ export default function PropertiesPageMobile() {
             <div className="mpp-list-header">
                 <h2>
                     {showOffMarket ? (
-                        <><Lock size={16} style={{ marginRight: 6, color: '#6366F1' }} />Off Market</>
+                        <><Lock size={16} style={{ marginRight: 6, color: '#6366F1' }} />Exclusivas</>
                     ) : (
                         <><Tag size={16} style={{ marginRight: 6, color: 'var(--zhomes-red)' }} />En Venta</>
                     )}
@@ -428,15 +485,38 @@ export default function PropertiesPageMobile() {
                             <img src={p.image} alt={p.address} className="mgc-img" />
 
                             {/* Status badge */}
-                            <div style={{
-                                position: 'absolute', top: 12, left: 12,
-                                background: p.offMarket ? 'rgba(99,102,241,0.85)' : p.exclusive ? 'var(--zhomes-red)' : 'rgba(16,185,129,0.85)',
-                                color: '#fff', padding: '3px 10px', borderRadius: 12,
-                                fontSize: 11, fontWeight: 700, backdropFilter: 'blur(6px)',
-                                display: 'flex', alignItems: 'center', gap: 4
-                            }}>
-                                {p.offMarket ? <><Lock size={10} /> Off Market</> : p.exclusive ? '⭐ ZHomes' : '● Activa'}
-                            </div>
+                            {(() => {
+                                let bg, label
+                                if (p.offMarket) {
+                                    bg = 'rgba(99,102,241,0.85)'
+                                    const s = p.status
+                                    label = s === 'Closed' ? <><Lock size={10}/> Vendida</> :
+                                            s === 'Cancelled' ? <><Lock size={10}/> Cancelada</> :
+                                            s === 'Expired' ? <><Lock size={10}/> Expirada</> :
+                                            <><Lock size={10}/> Exclusiva</>
+                                } else if (p.exclusive) {
+                                    bg = 'var(--zhomes-red)'
+                                    label = p.status === 'Pending' ? '🔥 Pending ZHomes' :
+                                            p.status === 'Active Under Contract' ? '🔒 Bajo Contrato' :
+                                            '⭐ ZHomes'
+                                } else {
+                                    bg = p.status === 'Pending' ? 'rgba(245,158,11,0.9)' :
+                                         p.status === 'Active Under Contract' ? 'rgba(59,130,246,0.85)' :
+                                         'rgba(16,185,129,0.85)'
+                                    label = p.status === 'Pending' ? '🔥 Pending' :
+                                            p.status === 'Active Under Contract' ? '🔒 Bajo Contrato' :
+                                            '● En Venta'
+                                }
+                                return (
+                                    <div style={{
+                                        position: 'absolute', top: 12, left: 12,
+                                        background: bg,
+                                        color: '#fff', padding: '3px 10px', borderRadius: 12,
+                                        fontSize: 11, fontWeight: 700, backdropFilter: 'blur(6px)',
+                                        display: 'flex', alignItems: 'center', gap: 4
+                                    }}>{label}</div>
+                                )
+                            })()}
 
                             <button className="mgc-like-btn" onClick={e => e.preventDefault()}>
                                 <Heart size={16} color="var(--zhomes-red)" />
@@ -452,7 +532,11 @@ export default function PropertiesPageMobile() {
                                 <div className="mgc-location-badge"><MapPin size={10} /> {p.city}</div>
                                 <h3 className="mgc-addr">{p.address}</h3>
                                 <div className="mgc-stats-row">
-                                    <span className="mgc-glass-pill">${(p.price / 1000).toFixed(0)}K</span>
+                                    <span className="mgc-glass-pill">
+                                        {p.offMarket && p.closePrice 
+                                            ? `${formatPricePill(p.closePrice)} vendida`
+                                            : formatPricePill(p.price)}
+                                    </span>
                                     <span className="mgc-glass-pill">{p.beds}🛏 {p.baths}🚿</span>
                                     {p.sqft > 0 && <span className="mgc-glass-pill">{p.sqft.toLocaleString()} sqft</span>}
                                 </div>

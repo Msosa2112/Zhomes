@@ -20,54 +20,50 @@ export function PropertiesProvider({ children }) {
     const [properties, setProperties] = useState(normalizedMock)
     const [zhomesAgents, setZhomesAgents] = useState([])
     const [zhomesOffice, setZhomesOffice] = useState(null)
-    const [closedListings, setClosedListings] = useState([])
-    const [allZHomesHistory, setAllZHomesHistory] = useState([])
+    const [offMarketListings, setOffMarketListings] = useState([])  // app-uploaded (Fix&Flip, exclusives)
     const [agentStats, setAgentStats] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         async function fetchAllData() {
             try {
-                // All data comes from Supabase (synced 2x/day from Spark)
-                const [supaPropsResult, closedPropsResult, agentsResult, officeResult] = await Promise.allSettled([
-                    SupabasePropertyService.getProperties({ limit: 500 }),
-                    SupabasePropertyService.getProperties({ status: 'Closed', limit: 500 }),
-                    supabase.from('zhomes_agents').select('*').order('total_volume', { ascending: false }),
+                const [supaPropsResult, offMarketResult, agentsResult, officeResult] = await Promise.allSettled([
+                    // Active = "En Venta": Active, Pending, Active Under Contract (from MLS)
+                    SupabasePropertyService.getProperties({ status: 'Active', limit: 1000 }),
+                    // Exclusivas = propiedades subidas desde la app (no MLS), status = 'Exclusiva'
+                    SupabasePropertyService.getProperties({ status: 'Exclusiva', limit: 500 }),
+                    supabase.from('zhomes_agents').select('*').order('full_name', { ascending: true }),
                     supabase.from('zhomes_office').select('*').limit(1).single()
                 ]);
 
-                // ── Properties ──
+                // ── Active MLS listings (En Venta) ──
                 const supaProps = supaPropsResult.status === 'fulfilled' ? supaPropsResult.value : [];
                 if (supaProps.length > 0) {
                     let formattedProps = supaProps.map(p => SupabasePropertyService.formatForApp(p));
+                    // Deduplicate by id (service returns ZHomes first)
                     const seen = new Set();
                     formattedProps = formattedProps.filter(p => {
-                        if (seen.has(p.address)) return false;
-                        seen.add(p.address);
+                        if (seen.has(p.id)) return false;
+                        seen.add(p.id);
                         return true;
                     });
-                    formattedProps.sort((a, b) => {
-                        if (a.exclusive && !b.exclusive) return -1;
-                        if (!a.exclusive && b.exclusive) return 1;
-                        return b.price - a.price;
-                    });
                     setProperties(formattedProps);
-                    console.log(`✅ Loaded ${formattedProps.length} properties from Supabase`);
+                    const zhomesActive = formattedProps.filter(p => p.exclusive).length;
+                    console.log(`✅ Loaded ${formattedProps.length} active MLS properties (${zhomesActive} ZHomes)`);
                 } else {
-                    console.warn('⚠️ Supabase returned 0 properties, using mock data');
+                    console.warn('⚠️ Supabase returned 0 active properties, using mock data');
                     setProperties(normalizedMock);
                 }
 
-                // ── Closed Listings ──
-                const closedProps = closedPropsResult.status === 'fulfilled' ? closedPropsResult.value : [];
-                if (closedProps.length > 0) {
-                    const formatted = closedProps.map(p => SupabasePropertyService.formatForApp(p));
-                    setClosedListings(formatted);
-                    setAllZHomesHistory(formatted.filter(p => p.exclusive));
-                    console.log(`✅ Loaded ${formatted.length} closed properties from Supabase`);
+                // ── Off Market: propiedades subidas desde la app (no vienen del MLS) ──
+                const offMarketProps = offMarketResult.status === 'fulfilled' ? offMarketResult.value : [];
+                if (offMarketProps.length > 0) {
+                    const formatted = offMarketProps.map(p => SupabasePropertyService.formatForApp(p));
+                    setOffMarketListings(formatted);
+                    console.log(`✅ Loaded ${formatted.length} off-market (app-uploaded) properties`);
                 }
 
-                // ── ZHomes Agents (from synced table, fallback to Spark) ──
+                // ── ZHomes Agents ──
                 const supaAgents = agentsResult.status === 'fulfilled' ? (agentsResult.value.data || []) : [];
 
                 if (supaAgents.length > 0) {
@@ -86,30 +82,20 @@ export function PropertiesProvider({ children }) {
                         recentDeals: a.recent_deals || []
                     }));
                     setAgentStats(stats);
-                    console.log(`✅ Loaded ${agents.length} agents + stats from Supabase`);
+                    console.log(`✅ Loaded ${agents.length} agents from Supabase`);
                 } else {
-                    // Fallback: single Spark call for agent list (table not ready yet)
-                    console.warn('⚠️ Agents table empty/unavailable, fetching from Spark (1 call)...');
+                    console.warn('⚠️ Agents table empty, fetching from Spark...');
                     try {
                         const sparkData = await SparkService.getZHomesAgents();
                         const sparkAgents = sparkData?.value || [];
                         if (sparkAgents.length > 0) {
                             const agents = sparkAgents.map(a => ({
-                                id: a.MemberKey,
-                                name: a.MemberFullName,
-                                firstName: a.MemberFirstName,
-                                lastName: a.MemberLastName,
-                                email: a.MemberEmail,
+                                id: a.MemberKey, name: a.MemberFullName, firstName: a.MemberFirstName,
+                                lastName: a.MemberLastName, email: a.MemberEmail,
                                 phone: a.MemberPreferredPhone || a.MemberMobilePhone || '',
-                                mlsId: a.MemberMlsId,
-                                status: a.MemberStatus,
-                                license: a.MemberStateLicense,
-                                type: a.MemberType,
-                                office: a.OfficeName,
-                                bio: a.MemberBio || '',
-                                city: a.MemberCity || '',
-                                state: a.MemberStateOrProvince || '',
-                                source: 'Spark'
+                                mlsId: a.MemberMlsId, status: a.MemberStatus, license: a.MemberStateLicense,
+                                type: a.MemberType, office: a.OfficeName, bio: a.MemberBio || '',
+                                city: a.MemberCity || '', state: a.MemberStateOrProvince || '', source: 'Spark'
                             }));
                             setZhomesAgents(agents);
                             console.log(`✅ Loaded ${agents.length} agents from Spark (fallback)`);
@@ -119,8 +105,7 @@ export function PropertiesProvider({ children }) {
                     }
                 }
 
-
-                // ── ZHomes Office (from synced table) ──
+                // ── ZHomes Office ──
                 if (officeResult.status === 'fulfilled' && officeResult.value.data) {
                     const o = officeResult.value.data;
                     setZhomesOffice({
@@ -143,34 +128,81 @@ export function PropertiesProvider({ children }) {
         fetchAllData();
     }, [])
 
-    const addProperty = (newProperty) => {
-        const newId = Math.max(...properties.map(p => Number(p.id) || 0), 0) + 1
-        const propertyWithId = {
-            id: String(newId), ...newProperty,
-            exclusive: false, images: newProperty.images || [newProperty.image],
-            postedAt: new Date().toISOString()
+    /**
+     * Add a new Off Market property — saves to Supabase mls_properties
+     * with status='Off Market' and is_zhomes=true (always a ZHomes listing)
+     */
+    const addProperty = async (newProperty) => {
+        try {
+            const row = {
+                address: newProperty.address || '',
+                city: newProperty.city || 'Louisville',
+                state: newProperty.state || 'KY',
+                zip: newProperty.zip || null,
+                price: Number(newProperty.price) || null,
+                beds: Number(newProperty.beds) || 0,
+                baths: Number(newProperty.baths) || 0,
+                sqft: Number(newProperty.sqft) || 0,
+                description: newProperty.description || null,
+                primary_photo: newProperty.image || null,
+                photos: newProperty.image ? [newProperty.image] : null,
+                status: 'Exclusiva',
+                property_subtype: newProperty.type || 'Single Family',
+                is_zhomes: true,    // Off Market properties are always ZHomes exclusives
+                spark_source: 'app',
+                list_agent_name: newProperty.agentName || null,
+                lat: newProperty.lat || null,
+                lng: newProperty.lng || null,
+                sync_timestamp: new Date().toISOString(),
+                list_date: new Date().toISOString().split('T')[0],
+            };
+
+            const { data, error } = await supabase
+                .from('mls_properties')
+                .insert(row)
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Add to local state immediately
+            const formatted = SupabasePropertyService.formatForApp(data);
+            setOffMarketListings(prev => [formatted, ...prev]);
+            console.log('✅ Off Market property saved to Supabase:', data.id);
+            return formatted;
+        } catch (err) {
+            console.error('❌ Failed to save off-market property:', err.message);
+            // Fallback: add locally
+            const localProp = {
+                id: `local-${Date.now()}`,
+                ...newProperty,
+                status: 'Exclusiva',
+                exclusive: true,
+                images: [newProperty.image].filter(Boolean),
+                postedAt: new Date().toISOString()
+            };
+            setOffMarketListings(prev => [localProp, ...prev]);
+            return localProp;
         }
-        setProperties(prev => [propertyWithId, ...prev])
-        return propertyWithId
     }
 
     const zhomesListings = properties.filter(p => p.exclusive)
     const mlsListings = properties.filter(p => !p.exclusive)
 
     return (
-        <PropertyContext.Provider value={{ 
-            properties, 
-            loading, 
+        <PropertyContext.Provider value={{
+            properties,
+            loading,
             addProperty,
             zhomesAgents,
             zhomesOffice,
             zhomesListings,
             mlsListings,
-            closedListings,
-            allZHomesHistory,
+            offMarketListings,   // NEW: app-uploaded off market (Fix&Flip, exclusives)
             agentStats
         }}>
             {children}
         </PropertyContext.Provider>
     )
 }
+

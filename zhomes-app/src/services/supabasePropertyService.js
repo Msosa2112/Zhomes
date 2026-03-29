@@ -12,13 +12,49 @@ const PAGE_SIZE = 50;
 export const SupabasePropertyService = {
 
     /**
-     * Get all properties with optional filters.
-     * Used by: PropertiesPageMobile, MapPageMobile, SwipeModePageMobile
+     * Build a filtered query base (shared between ZHomes and non-ZHomes queries)
      */
-    async getProperties({ 
-        status = null, 
-        city = null, 
-        minPrice = null, 
+    _buildBaseQuery({ status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType }) {
+        let q = supabase.from('mls_properties').select('*');
+
+        // Status filter
+        if (status === 'Active') {
+            q = q.in('status', ['Active', 'Active Under Contract', 'Pending']);
+        } else if (status === 'Closed') {
+            q = q.in('status', ['Closed', 'Cancelled', 'Expired']);
+        } else if (status) {
+            q = q.eq('status', status);
+        } else {
+            // Default: active listings only
+            q = q.in('status', ['Active', 'Active Under Contract', 'Pending']);
+        }
+
+        if (city)        q = q.ilike('city', `%${city}%`);
+        if (minPrice)    q = q.gte('price', minPrice);
+        if (maxPrice)    q = q.lte('price', maxPrice);
+        if (minBeds)     q = q.gte('beds', minBeds);
+        if (minBaths)    q = q.gte('baths', minBaths);
+        if (minSqft)     q = q.gte('sqft', minSqft);
+        if (maxSqft)     q = q.lte('sqft', maxSqft);
+        if (propertyType) q = q.ilike('property_subtype', `%${propertyType}%`);
+
+        return q;
+    },
+
+    /**
+     * Get properties — ZHomes ALWAYS come first, no matter the limit.
+     *
+     * Strategy:
+     *  1. Fetch ALL ZHomes matching the filters (no cap) → ordered by list_date DESC
+     *  2. Fill remaining slots (limit - zhomesCount) with non-ZHomes → ordered by list_date DESC
+     *  3. Combine: [zhomes..., nonZhomes...]
+     *
+     * Used by: PropertiesPageMobile, MapPageMobile, SwipeModePageMobile, PropertyContext
+     */
+    async getProperties({
+        status = null,
+        city = null,
+        minPrice = null,
         maxPrice = null,
         minBeds = null,
         minBaths = null,
@@ -28,54 +64,40 @@ export const SupabasePropertyService = {
         zhomesOnly = false,
         limit = 200,
         offset = 0,
-        orderBy = 'price',
-        ascending = false
     } = {}) {
-        let query = supabase
-            .from('mls_properties')
-            .select('*')
-            .not('lat', 'is', null)
-            .not('lng', 'is', null);
+        const filters = { status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType };
 
-        // Status filter
-        if (status === 'Active') {
-            query = query.in('status', ['Active', 'Active Under Contract', 'Pending']);
-        } else if (status === 'Closed') {
-            query = query.eq('status', 'Closed');
-        } else if (status) {
-            query = query.eq('status', status);
+        // ── 1. Always fetch ALL ZHomes matching the filter first ──
+        const { data: zhomesData, error: e1 } = await this._buildBaseQuery(filters)
+            .eq('is_zhomes', true)
+            .order('list_date', { ascending: false })   // newest ZHomes first
+            .order('price',     { ascending: false });
+
+        if (e1) console.error('ZHomes query error:', e1.message);
+        const zhomes = zhomesData || [];
+
+        // If zhomesOnly, return immediately (no fill needed)
+        if (zhomesOnly) return zhomes;
+
+        // ── 2. Fill remaining slots with non-ZHomes ──
+        const remaining = Math.max(0, limit - zhomes.length);
+        let nonZhomes = [];
+
+        if (remaining > 0) {
+            const { data: idxData, error: e2 } = await this._buildBaseQuery(filters)
+                .eq('is_zhomes', false)
+                .not('lat', 'is', null)
+                .not('lng', 'is', null)
+                .order('list_date', { ascending: false })  // newest non-ZHomes next
+                .order('price',     { ascending: false })
+                .range(offset, offset + remaining - 1);
+
+            if (e2) console.error('NonZHomes query error:', e2.message);
+            nonZhomes = idxData || [];
         }
 
-        // Location
-        if (city) query = query.ilike('city', `%${city}%`);
-
-        // Price range
-        if (minPrice) query = query.gte('price', minPrice);
-        if (maxPrice) query = query.lte('price', maxPrice);
-
-        // Property attributes
-        if (minBeds) query = query.gte('beds', minBeds);
-        if (minBaths) query = query.gte('baths', minBaths);
-        if (minSqft) query = query.gte('sqft', minSqft);
-        if (maxSqft) query = query.lte('sqft', maxSqft);
-
-        // Property type
-        if (propertyType) query = query.ilike('property_subtype', `%${propertyType}%`);
-
-        // ZHomes only
-        if (zhomesOnly) query = query.eq('is_zhomes', true);
-
-        // Order & Pagination
-        query = query
-            .order(orderBy, { ascending })
-            .range(offset, offset + limit - 1);
-
-        const { data, error } = await query;
-        if (error) {
-            console.error('SupabasePropertyService error:', error.message);
-            return [];
-        }
-        return data || [];
+        // ── 3. Return ZHomes first, then fill ──
+        return [...zhomes, ...nonZhomes];
     },
 
     /**

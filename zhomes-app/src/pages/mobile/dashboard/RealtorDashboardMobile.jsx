@@ -9,7 +9,7 @@ const XP = { current: 2450, level: 7, levelName: 'Rising Star', nextAt: 3000, pr
 
 export default function RealtorDashboardMobile() {
     const navigate = useNavigate()
-    const { zhomesListings, zhomesAgents, zhomesOffice, properties, closedListings, allZHomesHistory, agentStats, loading: propsLoading } = useProperties()
+    const { zhomesListings, zhomesAgents, zhomesOffice, properties, offMarketListings, agentStats, loading: propsLoading } = useProperties()
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     
@@ -85,7 +85,7 @@ export default function RealtorDashboardMobile() {
     const totalMlsProperties = properties.length
     const totalClosedDeals = agentStats.reduce((sum, a) => sum + a.totalClosed, 0)
     const totalVolume = agentStats.reduce((sum, a) => sum + a.totalVolume, 0)
-    const totalHistory = allZHomesHistory.length
+    const totalOffMarket = (offMarketListings || []).length
     
     const xpPct = Math.round(((XP.current - XP.prevAt) / (XP.nextAt - XP.prevAt)) * 100)
 
@@ -182,8 +182,8 @@ export default function RealtorDashboardMobile() {
                 </div>
                 <div className="mk-card">
                     <Building2 size={20} style={{color: '#8B5CF6'}} />
-                    <span>Historial</span>
-                    <strong>{totalHistory}</strong>
+                    <span>Exclusivas</span>
+                    <strong>{totalOffMarket}</strong>
                 </div>
             </div>
 
@@ -242,17 +242,17 @@ export default function RealtorDashboardMobile() {
             </div>
             )}
 
-            {closedListings.length > 0 && (
+            {(offMarketListings || []).length > 0 && (
             <div className="m-dash-section">
-                <h3><CheckCircle2 size={16} color="#10B981" style={{marginRight:'6px'}}/> Cierres Recientes (Off-Market)</h3>
+                <h3>⭐ Propiedades Exclusivas</h3>
                 <div className="m-alerts-list">
-                    {closedListings.slice(0, 5).map((prop, idx) => (
-                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    {(offMarketListings || []).slice(0, 5).map((prop, idx) => (
+                        <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.15)', display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <img src={prop.image} alt="" style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />
                             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                                 <strong style={{ fontSize: '13px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.address}</strong>
-                                <span style={{ fontSize: '12px', color: '#10B981', fontWeight: 'bold' }}>Vendida: ${prop.closePrice?.toLocaleString()}</span>
-                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{prop.listAgentName} · {prop.closeDate ? new Date(prop.closeDate).toLocaleDateString('es-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
+                                <span style={{ fontSize: '12px', color: '#FFD700', fontWeight: 'bold' }}>${prop.price?.toLocaleString()} — {prop.description?.match(/\[([^\]]+)\]/)?.[1] || 'Exclusiva'}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>{prop.listAgentName} · {prop.beds}bd / {prop.baths}ba</span>
                             </div>
                         </div>
                     ))}

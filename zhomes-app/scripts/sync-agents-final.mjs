@@ -1,26 +1,10 @@
-/**
- * sync-agents-only.mjs
- * Syncs ONLY agents + office to Supabase (skips the slow property crawl).
- */
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-try {
-  const env = readFileSync(resolve(__dirname, '../.env'), 'utf-8');
-  for (const line of env.split('\n')) {
-    const m = line.match(/^([^#=]+)=\"?([^\"]*)\"?$/);
-    if (m) process.env[m[1].trim()] = m[2].trim();
-  }
-} catch {}
+// Direct config, no env loading needed for quick check
+const SUPABASE_URL = 'https://bnbvzcllyfmzuhnjltxg.supabase.co';
+const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuYnZ6Y2xseWZtenVobmpsdHhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDYzMTk4NywiZXhwIjoyMDkwMjA3OTg3fQ.b_0mHIW7lFeI2icy2LJRbelJWGd5HkC0mtzOK8HKF3w';
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://bnbvzcllyfmzuhnjltxg.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuYnZ6Y2xseWZtenVobmpsdHhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDYzMTk4NywiZXhwIjoyMDkwMjA3OTg3fQ.b_0mHIW7lFeI2icy2LJRbelJWGd5HkC0mtzOK8HKF3w';
-console.log('Using key role:', SUPABASE_KEY.includes('service_role') ? 'service_role ✅' : 'anon');
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const SPARK_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 const BROKER_TOKEN = '6ojczz7todkepnsvryhw7m8ka';
@@ -32,18 +16,18 @@ async function sparkFetch(path, params = {}) {
   const res = await fetch(url, {
     headers: { 'Authorization': `Bearer ${BROKER_TOKEN}`, 'X-SparkApi-User-Agent': 'ZhomesApp/1.0' }
   });
-  if (!res.ok) throw new Error(`Spark ${res.status}: ${await res.text().then(t => t.slice(0,150))}`);
+  if (!res.ok) throw new Error(`Spark ${res.status}: ${await res.text().then(t => t.slice(0, 150))}`);
   return res.json();
 }
 
 async function upsert(table, rows) {
   if (!rows.length) return;
   const { error } = await supabase.from(table).upsert(rows, { onConflict: 'id' });
-  if (error) throw new Error(`Supabase [${table}]: ${error.message} | ${error.details || ''}`);
+  if (error) throw new Error(`Supabase [${table}]: ${error.message}`);
 }
 
 async function syncAgents() {
-  console.log('\n👥 Fetching ZHomes agents from Spark...');
+  console.log('Fetching ZHomes agents from Spark...');
   const data = await sparkFetch('Member', {
     '$filter': `OfficeKey eq '${ZHOMES_OFFICE_KEY}'`,
     '$select': 'MemberKey,MemberFullName,MemberFirstName,MemberLastName,MemberEmail,MemberPreferredPhone,MemberMobilePhone,MemberOfficePhone,MemberMlsId,MemberStatus,MemberStateLicense,MemberType,MemberLocalType,MemberAddress1,MemberCity,MemberStateOrProvince,MemberPostalCode,OfficeName,OfficeKey,MemberBio'
@@ -70,13 +54,13 @@ async function syncAgents() {
     sync_timestamp: new Date().toISOString()
   }));
 
-  if (agents.length === 0) { console.log('   ⚠️  No agents found'); return []; }
+  if (agents.length === 0) { console.log('No agents found'); return []; }
 
   await upsert('zhomes_agents', agents);
-  console.log(`   ✅ ${agents.length} agents saved`);
+  console.log(`${agents.length} agents saved to Supabase!`);
 
   // Stats per agent
-  console.log('   📊 Fetching closed deals per agent...');
+  console.log('Fetching closed deals per agent...');
   for (const agent of agents) {
     try {
       const deals = await sparkFetch('Property', {
@@ -100,20 +84,20 @@ async function syncAgents() {
         sync_timestamp: new Date().toISOString()
       }]);
 
-      console.log(`   ✓ ${agent.full_name}: ${deals.length} closed deals, $${vol.toLocaleString()} volume`);
+      console.log(`  ${agent.full_name}: ${deals.length} closed, $${vol.toLocaleString()}`);
       await new Promise(r => setTimeout(r, 200));
     } catch (err) {
-      console.warn(`   ⚠️  ${agent.full_name}: ${err.message}`);
+      console.warn(`  WARN ${agent.full_name}: ${err.message}`);
     }
   }
   return agents;
 }
 
 async function syncOffice() {
-  console.log('\n🏢 Fetching ZHomes office...');
+  console.log('Fetching ZHomes office...');
   try {
     const office = await sparkFetch(`Office('${ZHOMES_OFFICE_KEY}')`);
-    if (!office?.OfficeKey) { console.log('   ⚠️  Office not found'); return; }
+    if (!office?.OfficeKey) { console.log('Office not found'); return; }
 
     await upsert('zhomes_office', [{
       id: office.OfficeKey,
@@ -131,22 +115,18 @@ async function syncOffice() {
       status: office.OfficeStatus || null,
       sync_timestamp: new Date().toISOString()
     }]);
-    console.log(`   ✅ Office "${office.OfficeName}" saved`);
+    console.log(`Office "${office.OfficeName}" saved!`);
   } catch (err) {
-    console.error('   ❌ Office error:', err.message);
+    console.error('Office error:', err.message);
   }
 }
 
 async function main() {
-  console.log('═══════════════════════════════════════════════');
-  console.log('  ZHomes Agents + Office Sync');
-  console.log(`  ${new Date().toLocaleString('es-US')}`);
-  console.log('═══════════════════════════════════════════════');
+  console.log('=== ZHomes Agent + Office Sync ===');
+  console.log('Project: bnbvzcllyfmzuhnjltxg (using service_role key)');
   const agents = await syncAgents();
   await syncOffice();
-  console.log('\n═══════════════════════════════════════════════');
-  console.log(`  ✅ Done. ${agents.length} agents + office synced.`);
-  console.log('═══════════════════════════════════════════════\n');
+  console.log(`\nDONE. ${agents.length} agents + office synced.`);
 }
 
-main().catch(err => { console.error('Fatal:', err); process.exit(1); });
+main().catch(err => { console.error('Fatal:', err.message); process.exit(1); });

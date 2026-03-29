@@ -1,14 +1,32 @@
 /**
  * Spark MLS → Supabase Sync Script (Full)
  * 
- * Syncs properties (IDX + Broker), agents, and office data
- * from Spark API into Supabase. Designed to run 2x/day.
+ * Syncs properties, agents, and office data from Spark API into Supabase.
+ * Uses SUPABASE_SERVICE_KEY (service_role) to bypass RLS for writing.
  * 
  * Usage: node scripts/sync-mls.mjs
  */
+import { readFileSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const SUPABASE_URL = 'https://elhqcwpqbnxafaepmswl.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsaHFjd3BxYm54YWZhZXBtc3dsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczNjUxMzMsImV4cCI6MjA0Mjk0MTEzM30.yT5F14NA892OvOH8zethl3Vjqjn80jJ0sQ_FaD20RA4';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load .env manually
+try {
+  const envContent = readFileSync(resolve(__dirname, '../.env'), 'utf-8');
+  for (const line of envContent.split('\n')) {
+    const m = line.match(/^([^#=]+)=\"?([^\"]*)\"?$/);
+    if (m) process.env[m[1].trim()] = m[2].trim();
+  }
+} catch {}
+
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://bnbvzcllyfmzuhnjltxg.supabase.co';
+// Prefer service_role key (bypasses RLS) — falls back to anon key
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJuYnZ6Y2xseWZtenVobmpsdHhnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDYzMTk4NywiZXhwIjoyMDkwMjA3OTg3fQ.b_0mHIW7lFeI2icy2LJRbelJWGd5HkC0mtzOK8HKF3w';
+console.log('Using key role:', SUPABASE_KEY.includes('service_role') ? 'service_role ✅' : 'anon (write policies required)');
+
 const SPARK_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 const ZHOMES_OFFICE_KEY = '20141212170001416260000000';
 
@@ -21,6 +39,7 @@ const TOKENS = {
 async function sparkFetch(token, path, params = {}) {
   const searchParams = new URLSearchParams(params).toString();
   const url = `${SPARK_BASE}/${path}${searchParams ? '?' + searchParams : ''}`;
+  console.log(`Fetching: ${url}`);
   const res = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -98,7 +117,7 @@ function transformProperty(raw, source) {
   };
 }
 
-// ── Upsert batch into Supabase ──
+// ── Upsert for BROKER feed (writes is_zhomes correctly) ──
 async function upsertBatch(table, rows) {
   if (rows.length === 0) return;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
@@ -117,9 +136,59 @@ async function upsertBatch(table, rows) {
   }
 }
 
+// ── Upsert for IDX feed: never overwrites is_zhomes ──
+// Uses onConflict to ignore is_zhomes column via ignoreDuplicates trick:
+// We strip is_zhomes from IDX rows before upserting, then re-flag via SQL.
+async function upsertBatchIDX(table, rows) {
+  if (rows.length === 0) return;
+  // Remove is_zhomes from IDX rows so we never overwrite it
+  const safeRows = rows.map(({ is_zhomes, ...rest }) => rest);
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(safeRows)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Supabase upsertIDX [${table}] ${res.status}: ${err.substring(0, 200)}`);
+  }
+}
+
+// ── After IDX sync: re-flag all ZHomes properties by office name ──
+async function reflagZHomesProperties() {
+  console.log('\n🏷️  Re-flagging ZHomes properties by office name...');
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/mls_properties?list_office_name=ilike.*ZHomes*`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ is_zhomes: true })
+    }
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    console.warn('  ⚠️  reflag warning:', err.substring(0, 150));
+  } else {
+    const data = await res.json();
+    console.log(`  ✅ Re-flagged ${Array.isArray(data) ? data.length : '?'} ZHomes properties`);
+  }
+}
+
+
 // ── Crawl all pages of properties from a single Spark token ──
-async function crawlProperties(tokenName, token, maxProperties = Infinity) {
+async function crawlProperties(tokenName, token, maxProperties = Infinity, filter = null, isIDX = false) {
   console.log(`\n🔄 Crawling ${tokenName} feed... (limit: ${maxProperties === Infinity ? 'none' : maxProperties.toLocaleString()})`);
+  const upsert = isIDX ? upsertBatchIDX : upsertBatch;
   const allRows = [];
   const seenTokens = new Set();
   let skipToken = null;
@@ -128,6 +197,7 @@ async function crawlProperties(tokenName, token, maxProperties = Infinity) {
   while (page < 5000 && allRows.length < maxProperties) {
     try {
       const params = { '$expand': 'Media' };
+      if (filter) params['$filter'] = filter;
       if (skipToken) params['$skiptoken'] = skipToken;
 
       const data = await sparkFetch(token, 'Property', params);
@@ -147,9 +217,9 @@ async function crawlProperties(tokenName, token, maxProperties = Infinity) {
 
       // Batch upsert every 100 rows
       if (allRows.length % 100 < rows.length) {
-        await upsertBatch('mls_properties', rows).catch(async () => {
+        await upsert('mls_properties', rows).catch(async () => {
           for (let i = 0; i < rows.length; i += 25) {
-            await upsertBatch('mls_properties', rows.slice(i, i + 25)).catch(e =>
+            await upsert('mls_properties', rows.slice(i, i + 25)).catch(e =>
               console.error(`   ❌ Chunk failed:`, e.message)
             );
           }
@@ -179,13 +249,18 @@ async function crawlProperties(tokenName, token, maxProperties = Infinity) {
 
   // Final flush of remaining rows
   if (allRows.length > 0) {
-    await upsertBatch('mls_properties', allRows).catch(async () => {
+    await upsert('mls_properties', allRows).catch(async () => {
       for (let i = 0; i < allRows.length; i += 50) {
-        await upsertBatch('mls_properties', allRows.slice(i, i + 50)).catch(e =>
+        await upsert('mls_properties', allRows.slice(i, i + 50)).catch(e =>
           console.error(`   ❌ Chunk ${i} failed:`, e.message)
         );
       }
     });
+  }
+
+  // After IDX sync: re-mark all ZHomes properties (prevents overwrite)
+  if (isIDX) {
+    await reflagZHomesProperties();
   }
 
   console.log(`   ✅ ${tokenName}: ${allRows.length.toLocaleString()} properties synced (${page} pages)`);
@@ -305,9 +380,9 @@ async function main() {
 
   let totalProps = 0;
 
-  // 1. Properties (Broker: all ZHomes listings, IDX: up to 10k MLS listings)
-  totalProps += await crawlProperties('broker', TOKENS.broker);
-  totalProps += await crawlProperties('idx', TOKENS.idx, 10_000);
+  // 1. Properties (Broker: all ZHomes listings)
+  const brokerFilter = `ListOfficeKey eq '${ZHOMES_OFFICE_KEY}'`;
+  totalProps += await crawlProperties('broker', TOKENS.broker, Infinity, brokerFilter);
 
   // 2. Agents + stats
   await syncAgents();
