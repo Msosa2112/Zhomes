@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, SlidersHorizontal, MapPin, Heart, ChevronDown, Users, Map, LayoutGrid, BedDouble, Bath, Maximize } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
@@ -31,12 +31,37 @@ export default function PropertiesPage() {
     const [realtorModalOpen, setRealtorModalOpen] = useState(false)
     const [selectedProperty, setSelectedProperty] = useState(null)
     const { properties } = useProperties()
+    const [searchQuery, setSearchQuery] = useState('')
 
-    const filtered = properties.filter(p => {
-        if (zhomesOnly && !p.exclusive) return false
-        if (p.price < priceRange[0] || p.price > priceRange[1]) return false
-        return true
-    })
+    const filtered = useMemo(() => {
+        let matches = properties.filter(p => {
+            if (zhomesOnly && !p.exclusive) return false
+            if (p.price < priceRange[0] || p.price > priceRange[1]) return false
+            return true
+        })
+
+        if (searchQuery.trim()) {
+            let exactMatches = []
+            let otherMatches = []
+            const qStr = searchQuery.toLowerCase()
+            const qStrList = qStr.split(',').map(s => s.trim()).filter(s => s.length > 0)
+            const mainAddress = qStrList.length > 0 ? qStrList[0] : ''
+
+            matches.forEach(p => {
+                const searchArea = `${p.address} ${p.city} ${p.zip || ''} ${p.type || ''}`.toLowerCase()
+                const pAddress = p.address.toLowerCase()
+                
+                if (mainAddress && pAddress.includes(mainAddress)) {
+                    exactMatches.push(p)
+                } else if (searchArea.includes(qStr)) {
+                    otherMatches.push(p)
+                }
+            })
+            matches = [...exactMatches, ...otherMatches]
+        }
+        
+        return matches
+    }, [properties, zhomesOnly, priceRange, searchQuery])
 
     const toggleFav = (id, e) => {
         if (e) e.stopPropagation()
@@ -72,7 +97,13 @@ export default function PropertiesPage() {
                 <div className="filters-main">
                     <div className="search-box">
                         <Search size={18} />
-                        <input type="text" placeholder="Buscar por dirección, ciudad..." className="input" />
+                        <input 
+                            type="text" 
+                            placeholder="Buscar por dirección, ciudad..." 
+                            className="input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
 
                     <div className="zhomes-toggle" onClick={() => setZhomesOnly(!zhomesOnly)}>

@@ -15,7 +15,7 @@ export default function SwipeModePageMobile() {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
 
-    const { properties: globalProperties, closedListings, loading: ctxLoading } = useProperties();
+    const { properties: globalProperties, loading: ctxLoading } = useProperties();
 
     useEffect(() => {
         const initSwipe = async () => {
@@ -28,16 +28,14 @@ export default function SwipeModePageMobile() {
 
             if (!ctxLoading) {
                  const active = globalProperties || [];
-                 const closed = (closedListings || []).map(p => ({ ...p, offMarket: true }));
-                 const combined = [...active, ...closed];
-                 
-                 if (combined.length > 0) {
-                     const zhomes = combined.filter(p => p.exclusive && !p.offMarket);
-                     const otherActive = combined.filter(p => !p.exclusive && !p.offMarket).sort(() => Math.random() - 0.5);
-                     const offMarket = combined.filter(p => p.offMarket).sort(() => Math.random() - 0.5);
-                     setProperties([...zhomes, ...otherActive, ...offMarket].slice(0, 150));
+                 if (active.length > 0) {
+                     // ZHomes exclusives first, then other active listings
+                     // Off-market (closed) intentionally excluded from swipe
+                     const zhomes = active.filter(p => p.exclusive)
+                     const others = active.filter(p => !p.exclusive).sort(() => Math.random() - 0.5)
+                     setProperties([...zhomes, ...others].slice(0, 150))
                  }
-                 setLoading(false);
+                 setLoading(false)
             }
         }
         initSwipe()

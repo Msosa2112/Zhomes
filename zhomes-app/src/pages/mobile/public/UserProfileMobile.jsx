@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users, Search, FileCheck, Key, Home, Compass, MapPin, SlidersHorizontal, DollarSign, TrendingUp, Shield, Vault, ChevronRight, Lock } from 'lucide-react'
+import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users, Search, FileCheck, Key, Home, Compass, MapPin, SlidersHorizontal, DollarSign, TrendingUp, Shield, Vault, ChevronRight, Lock, BarChart3 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { SparkService } from '../../../services/sparkService'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
+import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
+import ZSlider from '../../../components/ui/ZSlider'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
@@ -13,10 +15,8 @@ export default function UserProfileMobile() {
     const [loading, setLoading] = useState(true)
     const [loadingFavs, setLoadingFavs] = useState(true)
 
-    // AI Modal State
-    const [showAiModal, setShowAiModal] = useState(false)
-    const [aiState, setAiState] = useState('idle') // idle, analyzing, done
-    const [aiResult, setAiResult] = useState(null)
+    // Pre-qual saved summary (for card display)
+    const [savedPrequal, setSavedPrequal] = useState(null)
 
     // ZHomes Match Prefs State
     const [showMatchModal, setShowMatchModal] = useState(false)
@@ -43,6 +43,7 @@ export default function UserProfileMobile() {
 
     // Offer Vault State
     const [showVaultModal, setShowVaultModal] = useState(false)
+    const [showPrequalModal, setShowPrequalModal] = useState(false)
     const [vaultDocs, setVaultDocs] = useState({
         preApproval: null,
         govId: null,
@@ -50,61 +51,33 @@ export default function UserProfileMobile() {
     })
     const vaultComplete = Object.values(vaultDocs).every(Boolean)
 
-    const [selectedFile, setSelectedFile] = useState(null)
-
-    const handleFileUpload = async (e) => {
-        const file = e.target.files[0]
-        if (!file) return
-        setSelectedFile(file)
-        setAiState('analyzing')
-        
-        try {
-            // Try real AI analysis via serverless function (works on Vercel)
-            const mockDocumentText = `Documento: ${file.name}. CONTRATO: HOA: 450 mensual. Mascotas: perros máx 20lbs. Rentas: Prohibido corto plazo.`;
-            const response = await fetch('/api/zhomes-ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'legal_translator', data: { documentText: mockDocumentText } })
-            });
-            
-            if (!response.ok) throw new Error('API not available');
-            
-            const data = await response.json();
-            setAiResult(data.summary)
-            setAiState('done')
-        } catch (err) {
-            // Fallback: mock analysis for local dev
-            setTimeout(() => {
-                setAiResult([
-                    "El documento estipula un cobro mensual de HOA de $450 USD. Aplican recargos del 5% si el pago pasa del día 5.",
-                    "Solo se permiten perros y gatos de hasta 20 lbs. Mascotas exóticas están prohibidas.",
-                    "Las rentas a corto plazo (AirBnb) están prohibidas. Periodo mínimo de arrendamiento: 6 meses.",
-                    "El mantenimiento del patio frontal es responsabilidad del propietario. La HOA cubre áreas comunes."
-                ])
-                setAiState('done')
-            }, 2500)
-        }
-    }
-
-    const resetAi = () => {
-        setAiState('idle')
-        setSelectedFile(null)
-    }
-
     useEffect(() => {
         const fetchUserAndFavorites = async () => {
+            // Check demo user bypass first (localStorage)
+            const demoRaw = localStorage.getItem('zhomes_demo_user')
+            const demoUser = demoRaw ? JSON.parse(demoRaw) : null
+
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
+
+            if (!session && !demoUser) {
                 navigate('/login')
                 return
             }
-            setUser(session.user)
 
-            // Fetch favorites from DB
-            const { data: favsData } = await supabase
+            // Use real session user or build a demo user object
+            const currentUser = session?.user || {
+                id: 'demo-client-001',
+                email: demoUser?.email || 'cliente@zhomes.com',
+                user_metadata: { full_name: demoUser?.name || 'Carlos Rivera (Demo)' },
+                isDemo: true,
+            }
+            setUser(currentUser)
+
+            // Fetch favorites from DB (skip for demo users to avoid UUID constraint errors)
+            const { data: favsData } = currentUser.isDemo ? { data: [] } : await supabase
                 .from('user_favorites')
                 .select('property_id')
-                .eq('user_id', session.user.id)
+                .eq('user_id', currentUser.id)
                 .order('created_at', { ascending: false })
 
             if (favsData && favsData.length > 0) {
@@ -135,6 +108,16 @@ export default function UserProfileMobile() {
             }
             setLoading(false)
             setLoadingFavs(false)
+
+            // Load saved pre-qual estimate for card
+            if (!currentUser.isDemo) {
+                const { data: prequalData } = await supabase
+                    .from('prequal_estimates')
+                    .select('result, updated_at, credit_tier_label')
+                    .eq('user_id', currentUser.id)
+                    .single()
+                if (prequalData?.result) setSavedPrequal(prequalData)
+            }
         }
 
         fetchUserAndFavorites()
@@ -164,7 +147,7 @@ export default function UserProfileMobile() {
                 <p>{userEmail}</p>
 
                 <div className="up-actions">
-                    <button className="up-btn outline">Editar Perfil</button>
+                    <button className="up-btn outline" onClick={() => alert('Función de edición de perfil próximamente disponible.')}>Editar Perfil</button>
                     <button className="up-btn flat" onClick={handleLogout}><LogOut size={16}/> Salir</button>
                 </div>
             </header>
@@ -240,26 +223,28 @@ export default function UserProfileMobile() {
                     </div>
 
                     <div className="up-bp-slider-group">
-                        <div className="up-bp-slider-header">
-                            <label>Precio de Compra</label>
-                            <span>${budget.toLocaleString()}</span>
-                        </div>
-                        <input type="range" min="100000" max="1000000" step="5000"
-                            className="up-match-slider up-bp-slider"
+                        <ZSlider
+                            label="Precio de Compra"
                             value={budget}
-                            onChange={e => setBudget(parseInt(e.target.value))}
+                            min={100000}
+                            max={1000000}
+                            step={5000}
+                            color="#10b981"
+                            onChange={setBudget}
+                            formatOptions={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
                         />
                     </div>
 
                     <div className="up-bp-slider-group">
-                        <div className="up-bp-slider-header">
-                            <label>Enganche</label>
-                            <span>{downPct}% — ${downAmount.toLocaleString()}</span>
-                        </div>
-                        <input type="range" min="3" max="30"
-                            className="up-match-slider up-bp-slider"
+                        <ZSlider
+                            label={`Enganche — $${downAmount.toLocaleString()}`}
                             value={downPct}
-                            onChange={e => setDownPct(parseInt(e.target.value))}
+                            min={3}
+                            max={30}
+                            step={1}
+                            color="#10b981"
+                            onChange={setDownPct}
+                            formatOptions={{ style: 'percent', maximumFractionDigits: 0 }}
                         />
                     </div>
 
@@ -309,17 +294,27 @@ export default function UserProfileMobile() {
                     </div>
                 </div>
 
-                {/* Zhomes AI Feature Card */}
-                <div className="up-ai-card" onClick={() => setShowAiModal(true)}>
-                    <div className="up-ai-icon">
-                        <Cpu size={26} color="#ffffff" />
+                {/* Pre-Calificación Card */}
+                <div
+                    className="up-ai-card"
+                    style={{ marginTop: '16px', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}
+                    onClick={() => setShowPrequalModal(true)}
+                >
+                    <div className="up-ai-icon" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                        <BarChart3 size={26} color="#ffffff" />
                     </div>
                     <div className="up-ai-text">
-                        <h3>ZhomesAI Legal <span className="up-ai-badge">NUEVO</span></h3>
-                        <p>Analiza contratos y documentos complejos en segundos con IA.</p>
+                        <h3 style={{ color: 'white' }}>Pre-Calificación Estimada <span className="up-ai-badge">REALTOR</span></h3>
+                        {savedPrequal ? (
+                            <p style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600 }}>
+                                Rango: {savedPrequal.result.rangeLow?.toLocaleString('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0})} — {savedPrequal.result.rangeHigh?.toLocaleString('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0})}
+                            </p>
+                        ) : (
+                            <p style={{ color: 'rgba(255,255,255,0.7)' }}>Calcula el rango de precio que un banco le aprobaría al cliente.</p>
+                        )}
                     </div>
                     <div className="up-ai-arrow">
-                        <ArrowRight size={20} />
+                        <ArrowRight size={20} color="rgba(255,255,255,0.7)" />
                     </div>
                 </div>
 
@@ -388,86 +383,6 @@ export default function UserProfileMobile() {
                 )}
             </main>
         </div>
-
-            {/* AI Legal Translator Modal */}
-            {showAiModal && (
-                <div className="up-modal-overlay" onClick={() => setShowAiModal(false)}>
-                    <div className="up-modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="up-modal-header">
-                            <h2><Cpu size={24} color="var(--zhomes-red)" /> ZhomesAI Legal</h2>
-                            <button className="up-modal-close" onClick={() => { setShowAiModal(false); resetAi(); }}>
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        {aiState === 'idle' && (
-                            <>
-                                <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                                    Sube cualquier documento de HOA, disclosures o contratos de compraventa de tu casa actual o futura. La IA extraerá los puntos más importantes para ti.
-                                </p>
-                                
-                                <label className="up-file-upload">
-                                    <input 
-                                        type="file" 
-                                        accept=".pdf,.doc,.docx" 
-                                        onChange={handleFileUpload}
-                                        style={{ display: 'none' }} 
-                                    />
-                                    <UploadCloud size={40} color="var(--text-tertiary)" />
-                                    <p>Toca para adjuntar un documento (PDF, DOC)</p>
-                                </label>
-                            </>
-                        )}
-
-                        {aiState === 'analyzing' && (
-                            <div className="up-ai-analyzing">
-                                <div className="up-ai-analyzing-spinner"></div>
-                                <p>ZhomesAI está leyendo el documento...</p>
-                                <span style={{fontSize: '0.85rem', color: 'var(--text-tertiary)', marginTop: '8px'}}>Esto tomará unos segundos</span>
-                            </div>
-                        )}
-
-                        {aiState === 'done' && (
-                            <div>
-                                <div className="up-file-info">
-                                    <FileText size={20} color="var(--zhomes-red)" />
-                                    <span>{selectedFile?.name || 'Documento_Legal.pdf'}</span>
-                                </div>
-                                
-                                <div className="up-ai-result">
-                                    <h4><CheckCircle2 size={18} style={{display:'inline', verticalAlign:'text-bottom', marginRight:'6px'}}/> Resumen Inteligente:</h4>
-                                    <ul>
-                                        {aiResult ? aiResult.map((bullet, idx) => (
-                                            <li key={idx}><strong>Punto {idx+1}:</strong> {bullet}</li>
-                                        )) : (
-                                            <>
-                                                <li><strong>Costos de HOA:</strong> El documento estipula un cobro mensual de $450 USD. Aplican recargos del 5% si el pago pasa del día 5 de cada mes.</li>
-                                                <li><strong>Mascotas:</strong> Solo se permiten perros y gatos de hasta 20 lbs. Mascotas exóticas están prohibidas por la asociación.</li>
-                                                <li><strong>Alquileres (AirBnb):</strong> Las rentas a corto plazo están prohibidas. El periodo mínimo de arrendamiento es de 6 meses.</li>
-                                            </>
-                                        )}
-                                    </ul>
-                                </div>
-
-                                <button 
-                                    className="up-btn flat" 
-                                    style={{ width: '100%', marginTop: '20px', background: 'var(--zhomes-red)', color: 'white' }}
-                                    onClick={() => { setShowAiModal(false); resetAi(); }}
-                                >
-                                    ¡Entendido!
-                                </button>
-                                <button 
-                                    className="up-btn outline" 
-                                    style={{ width: '100%', marginTop: '12px', border: 'none' }}
-                                    onClick={resetAi}
-                                >
-                                    Analizar otro documento
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
 
             {/* Offer Vault Modal */}
             {showVaultModal && (
@@ -538,33 +453,31 @@ export default function UserProfileMobile() {
                         </p>
 
                         <div className="up-match-setting">
-                            <div className="up-match-setting-header">
-                                <label>Precio vs. Ubicación</label>
-                                <span className="up-match-setting-value">
-                                    {matchPrefs.priceVsLocation < 33 ? 'Priorizo Presupuesto' : matchPrefs.priceVsLocation > 66 ? 'Priorizo Ubicación' : 'Balanceado'}
-                                </span>
-                            </div>
-                            <input 
-                                type="range" min="0" max="100" 
-                                className="up-match-slider" 
+                            <ZSlider
+                                label="Precio vs. Ubicación"
                                 value={matchPrefs.priceVsLocation}
-                                onChange={(e) => setMatchPrefs({...matchPrefs, priceVsLocation: parseInt(e.target.value)})}
+                                min={0}
+                                max={100}
+                                step={1}
+                                onChange={v => setMatchPrefs({...matchPrefs, priceVsLocation: v})}
                             />
+                            <span className="up-match-setting-value" style={{fontSize:'0.8rem',color:'var(--text-secondary)',marginTop:2}}>
+                                {matchPrefs.priceVsLocation < 33 ? 'Priorizo Presupuesto' : matchPrefs.priceVsLocation > 66 ? 'Priorizo Ubicación' : 'Balanceado'}
+                            </span>
                         </div>
 
                         <div className="up-match-setting">
-                            <div className="up-match-setting-header">
-                                <label>Condición de la Casa</label>
-                                <span className="up-match-setting-value">
-                                    {matchPrefs.moveInReady > 70 ? 'Lista para vivir' : matchPrefs.moveInReady < 30 ? 'Fixer Upper' : 'Un poco de todo'}
-                                </span>
-                            </div>
-                            <input 
-                                type="range" min="0" max="100" 
-                                className="up-match-slider" 
+                            <ZSlider
+                                label="Condición de la Casa"
                                 value={matchPrefs.moveInReady}
-                                onChange={(e) => setMatchPrefs({...matchPrefs, moveInReady: parseInt(e.target.value)})}
+                                min={0}
+                                max={100}
+                                step={1}
+                                onChange={v => setMatchPrefs({...matchPrefs, moveInReady: v})}
                             />
+                            <span className="up-match-setting-value" style={{fontSize:'0.8rem',color:'var(--text-secondary)',marginTop:2}}>
+                                {matchPrefs.moveInReady > 70 ? 'Lista para vivir' : matchPrefs.moveInReady < 30 ? 'Fixer Upper' : 'Un poco de todo'}
+                            </span>
                         </div>
 
                         <div className="up-match-setting">
@@ -596,6 +509,24 @@ export default function UserProfileMobile() {
                         </button>
                     </div>
                 </div>
+            )}
+            {/* Pre-Qual Modal */}
+            {showPrequalModal && (
+                <PrequalToolMobile
+                    onClose={() => {
+                        setShowPrequalModal(false)
+                        // Refresh card summary after closing
+                        if (user) {
+                            supabase
+                                .from('prequal_estimates')
+                                .select('result, updated_at, credit_tier_label')
+                                .eq('user_id', user.id)
+                                .single()
+                                .then(({ data }) => { if (data?.result) setSavedPrequal(data) })
+                        }
+                    }}
+                    userId={user?.id}
+                />
             )}
         </>
     )

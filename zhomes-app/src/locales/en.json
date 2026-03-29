@@ -1,0 +1,64 @@
+{
+  "translation": {
+    "nav": {
+      "home": "Home",
+      "search": "Search",
+      "match": "Match",
+      "map": "Map",
+      "vibe": "Vibe",
+      "properties": "Properties",
+      "calculator": "Calculator",
+      "profile": "Profile",
+      "login": "Login",
+      "brokerPortal": "Broker Portal"
+    },
+    "footer": {
+      "slogan": "Connecting families with the best properties in Kentucky from Louisville.",
+      "explore": "Explore",
+      "ourRealtors": "Our Realtors",
+      "mortgageCalc": "Mortgage Calc",
+      "services": "Services",
+      "buy": "Buy",
+      "sell": "Sell",
+      "invest": "Invest",
+      "portal": "Portal",
+      "rights": "© 2026 ZHOMES Real Estate. All rights reserved."
+    },
+    "home": {
+      "loading": "Loading properties...",
+      "searchPlaceholder": "City, address, or ZIP...",
+      "categories": {
+        "all": "All",
+        "exclusive": "Exclusive",
+        "new": "New",
+        "under300": "Under $300K",
+        "luxury": "Luxury",
+        "properties": "Properties"
+      },
+      "match": {
+        "title": "ZHomes Match",
+        "subtitle": "Swipe and find your ideal home"
+      },
+      "tools": {
+        "title": "Tools",
+        "calculator": "Calculator",
+        "calculatorSub": "Estimate mortgage",
+        "agents": "Agents",
+        "agentsSub": "Our team",
+        "market": "Market",
+        "marketSub": "Explore all"
+      },
+      "recent": {
+        "title": "Recently Listed",
+        "viewAll": "View all",
+        "newBadge": "NEW"
+      },
+      "results": "results",
+      "stats": {
+        "properties": "Properties",
+        "exclusive": "Exclusive",
+        "avgPrice": "Avg Price"
+      }
+    }
+  }
+}

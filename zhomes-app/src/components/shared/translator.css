@@ -1,0 +1,42 @@
+/* Google Translate Widget Overrides - Extreme Native Look */
+
+/* Nuke the top banner, widget, tooltips, and any dropdowns */
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-smMQSb,
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.skiptranslate > iframe.goog-te-banner-frame,
+#goog-gt-tt, 
+#google_translate_element,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-te-menu-value,
+.goog-te-menu-frame {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    position: absolute !important;
+    z-index: -999999 !important;
+    pointer-events: none !important;
+}
+
+/* Prevent Google Translate from pushing the body down */
+body {
+    top: 0px !important;
+    margin-top: 0px !important;
+}
+
+html {
+    top: 0px !important;
+    margin-top: 0px !important;
+}
+
+/* Remove awkward highlighting on translated text */
+.goog-text-highlight {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}

@@ -1,0 +1,682 @@
+/* ─── PrequalToolMobile.css ──────────────────────────────────────────────── */
+
+.prequal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.prequal-sheet {
+    background: var(--bg-primary, #fff);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px 24px 0 0;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUpPrequal 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideUpPrequal {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.prequal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    background: linear-gradient(135deg, #aa141a 0%, #d32f2f 100%);
+    flex-shrink: 0;
+}
+
+.prequal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.prequal-header-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.prequal-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 2px 0;
+}
+
+.prequal-header p {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+}
+
+.prequal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ── Step indicator ─────────────────────────────────────────────────────────── */
+.prequal-steps {
+    display: flex;
+    align-items: center;
+    padding: 14px 24px;
+    background: var(--bg-secondary, #f9f9f9);
+    border-bottom: 1px solid var(--border-color, #eee);
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.prequal-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-tertiary, #999);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.prequal-step.active {
+    color: #aa141a;
+    font-weight: 700;
+}
+
+.prequal-step span {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border-color, #ddd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-tertiary, #999);
+    transition: all 0.2s;
+}
+
+.prequal-step.active span {
+    background: #aa141a;
+    color: #fff;
+}
+
+.prequal-step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-color, #ddd);
+    border-radius: 2px;
+}
+
+/* ── Scrollable body ────────────────────────────────────────────────────────── */
+.prequal-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 20px;
+    /* Extra bottom space so last element clears the mobile nav bar (~64px) + safe area */
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Form ───────────────────────────────────────────────────────────────────── */
+.prequal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.prequal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prequal-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary, #111);
+    flex-wrap: wrap;
+}
+
+.prequal-hint {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-tertiary, #999);
+    width: 100%;
+    margin-top: 0;
+}
+
+.prequal-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    background: var(--bg-secondary, #fafafa);
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.prequal-input-wrap:focus-within {
+    border-color: #aa141a;
+}
+
+.prequal-prefix {
+    padding: 0 10px 0 14px;
+    font-weight: 700;
+    color: var(--text-tertiary, #999);
+    font-size: 1rem;
+    user-select: none;
+}
+
+.prequal-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 13px 14px 13px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #111);
+    outline: none;
+    min-width: 0;
+}
+
+/* ── Credit tier grid ───────────────────────────────────────────────────────── */
+.prequal-credit-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prequal-credit-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    background: var(--bg-secondary, #fafafa);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-primary, #111);
+    transition: all 0.15s;
+}
+
+.prequal-credit-btn.selected {
+    border-color: var(--tier-color);
+    background: color-mix(in srgb, var(--tier-color) 10%, transparent);
+    font-weight: 700;
+    color: var(--tier-color);
+}
+
+.prequal-credit-emoji {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* ── Loan term toggle ────────────────────────────────────────────────────────── */
+.prequal-toggle-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.prequal-toggle {
+    padding: 12px 10px;
+    border: 1.5px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    background: var(--bg-secondary, #fafafa);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+}
+
+.prequal-toggle span {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text-tertiary, #aaa);
+}
+
+.prequal-toggle.active {
+    border-color: #aa141a;
+    background: rgba(170, 20, 26, 0.07);
+    color: #aa141a;
+}
+
+.prequal-toggle.active span {
+    color: rgba(170, 20, 26, 0.7);
+}
+
+/* ── Primary button ─────────────────────────────────────────────────────────── */
+.prequal-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #aa141a, #d32f2f);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 16px rgba(170, 20, 26, 0.3);
+}
+
+.prequal-btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.prequal-btn-primary:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+/* ── Results ─────────────────────────────────────────────────────────────────── */
+.prequal-results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Main price range card */
+.prequal-range-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    padding: 24px 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.prequal-range-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(170, 20, 26, 0.2);
+}
+
+.prequal-range-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.prequal-range-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.prequal-range-low,
+.prequal-range-high {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.prequal-range-dash {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.4);
+}
+
+.prequal-loan-type {
+    display: inline-flex;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+}
+
+/* DTI cards */
+.prequal-dti-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.prequal-dti-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1.5px solid;
+}
+
+.prequal-dti-card.ok {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10B981;
+}
+
+.prequal-dti-card.warn {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+}
+
+.prequal-dti-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.prequal-dti-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.prequal-dti-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.prequal-dti-limit {
+    font-size: 0.68rem;
+    opacity: 0.65;
+}
+
+/* Breakdown card */
+.prequal-breakdown-card {
+    background: var(--bg-secondary, #f9f9f9);
+    border: 1px solid var(--border-color, #eee);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.prequal-breakdown-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary, #111);
+    margin-bottom: 12px;
+}
+
+.prequal-breakdown-total {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #aa141a;
+}
+
+.prequal-breakdown-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.prequal-br-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.84rem;
+    color: var(--text-secondary, #555);
+}
+
+.prequal-br-row span:last-child {
+    font-weight: 600;
+    color: var(--text-primary, #111);
+}
+
+.warn-row {
+    color: #F97316;
+}
+
+.warn-row span:last-child {
+    color: #F97316;
+}
+
+.prequal-br-divider {
+    height: 1px;
+    background: var(--border-color, #eee);
+    margin: 10px 0;
+}
+
+.total-row {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary, #111) !important;
+}
+
+.total-row span:last-child {
+    color: #aa141a !important;
+    font-size: 1.05rem;
+}
+
+.prequal-pmi-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.72rem;
+    color: var(--text-tertiary, #999);
+    line-height: 1.4;
+}
+
+/* Key numbers */
+.prequal-key-nums {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.prequal-kn {
+    background: var(--bg-secondary, #f9f9f9);
+    border: 1px solid var(--border-color, #eee);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.prequal-kn span {
+    font-size: 0.72rem;
+    color: var(--text-tertiary, #999);
+    font-weight: 500;
+}
+
+.prequal-kn strong {
+    font-size: 0.9rem;
+    color: var(--text-primary, #111);
+}
+
+/* Tip */
+.prequal-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.prequal-tip.warn {
+    background: rgba(249, 115, 22, 0.08);
+    color: #F97316;
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+/* Disclaimer */
+.prequal-disclaimer {
+    display: flex;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(107, 114, 128, 0.08);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    border-radius: 12px;
+    font-size: 0.76rem;
+    color: var(--text-tertiary, #888);
+    line-height: 1.5;
+}
+
+.prequal-disclaimer p { margin: 0; }
+
+/* No qualify */
+.prequal-no-qualify {
+    text-align: center;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.prequal-no-qualify h3 {
+    font-size: 1.2rem;
+    color: #EF4444;
+    margin: 0;
+}
+
+.prequal-no-qualify p {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #555);
+    line-height: 1.5;
+}
+
+.prequal-recommendations {
+    text-align: left;
+    background: var(--bg-secondary, #f9f9f9);
+    border-radius: 14px;
+    padding: 16px;
+    width: 100%;
+}
+
+.prequal-recommendations h4 {
+    font-size: 0.85rem;
+    color: var(--text-primary, #111);
+    margin: 0 0 10px 0;
+}
+
+.prequal-recommendations ul {
+    margin: 0;
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.prequal-recommendations li {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #555);
+    line-height: 1.4;
+}
+
+/* Actions row */
+.prequal-actions {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.prequal-btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* ── Save button ────────────────────────────────────────────────────────────── */
+.prequal-save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1.5px solid #8B5CF6;
+    background: rgba(139, 92, 246, 0.08);
+    color: #8B5CF6;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.prequal-save-btn:hover:not(:disabled) {
+    background: rgba(139, 92, 246, 0.15);
+}
+
+.prequal-save-btn.saved {
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.08);
+    color: #10B981;
+    cursor: default;
+}
+
+.prequal-save-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────────────────────── */
+.prequal-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color, #eee);
+    border-top-color: #aa141a;
+    border-radius: 50%;
+    animation: prequal-spin 0.7s linear infinite;
+}
+
+@keyframes prequal-spin {
+    to { transform: rotate(360deg); }
+}

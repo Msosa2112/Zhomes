@@ -1,6 +1,8 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Home, Building2, Flame, LogIn, Sun, Moon, Calculator, User } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
+import { useTranslation } from 'react-i18next'
+import LanguageToggle from '../shared/LanguageToggle'
 import Grainient from '../shared/Grainient'
 import '../layout/DashboardLayout.css'
 import './PublicLayout.css'
@@ -8,15 +10,16 @@ import './PublicLayout.css'
 export default function PublicLayout() {
     const location = useLocation()
     const { theme, toggleTheme } = useTheme()
+    const { t } = useTranslation()
 
     const navItemsLeft = [
-        { path: '/', label: 'Inicio', icon: Home },
-        { path: '/propiedades', label: 'Propiedades', icon: Building2 },
+        { path: '/', label: t('nav.home'), icon: Home },
+        { path: '/propiedades', label: t('nav.properties'), icon: Building2 },
     ]
 
     const navItemsRight = [
-        { path: '/vibe', label: 'Vibe', icon: Flame },
-        { path: '/calculadora', label: 'Calculadora', icon: Calculator },
+        { path: '/vibe', label: t('nav.vibe'), icon: Flame },
+        { path: '/calculadora', label: t('nav.calculator'), icon: Calculator },
     ]
 
     const allNavItems = [...navItemsLeft, ...navItemsRight]
@@ -70,21 +73,22 @@ export default function PublicLayout() {
                         })}
                         <Link to="/login" className={`nav-link`}>
                             <LogIn size={16} />
-                            <span>Iniciar Sesión</span>
+                            <span>{t('nav.login')}</span>
                         </Link>
                     </div>
                 </nav>
 
                 <div className="screen-actions-row">
                     <div className="actions-left"></div>
-                    <div className="actions-right">
+                    <div className="actions-right" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <LanguageToggle />
                         <button className="screen-icon-btn" onClick={toggleTheme}>
                             <span className={`theme-icon ${theme === 'light' ? 'active' : ''}`}><Sun size={17} /></span>
                             <span className={`theme-icon ${theme === 'dark' ? 'active' : ''}`}><Moon size={17} /></span>
                         </button>
                         <Link to="/login" className="public-cta-btn">
                             <LogIn size={14} />
-                            <span>Portal Broker</span>
+                            <span>{t('nav.brokerPortal')}</span>
                         </Link>
                     </div>
                 </div>
@@ -96,28 +100,28 @@ export default function PublicLayout() {
                         <div className="footer-grid">
                             <div className="footer-brand">
                                 <img src="/assets/logo/LOGO HRZNTL 1.png" alt="ZHOMES" />
-                                <p>Conectando familias con las mejores propiedades de Kentucky desde Louisville.</p>
+                                <p>{t('footer.slogan')}</p>
                             </div>
                             <div className="footer-links">
-                                <h4>Explora</h4>
-                                <Link to="/propiedades">Propiedades</Link>
-                                <Link to="/realtors">Nuestros Realtors</Link>
-                                <Link to="/calculadora">Calculadora Hipoteca</Link>
+                                <h4>{t('footer.explore')}</h4>
+                                <Link to="/propiedades">{t('nav.properties')}</Link>
+                                <Link to="/realtors">{t('footer.ourRealtors')}</Link>
+                                <Link to="/calculadora">{t('footer.mortgageCalc')}</Link>
                             </div>
                             <div className="footer-links">
-                                <h4>Servicios</h4>
-                                <Link to="/propiedades">Comprar</Link>
-                                <Link to="/propiedades">Vender</Link>
-                                <Link to="/propiedades">Invertir</Link>
+                                <h4>{t('footer.services')}</h4>
+                                <Link to="/propiedades">{t('footer.buy')}</Link>
+                                <Link to="/propiedades">{t('footer.sell')}</Link>
+                                <Link to="/propiedades">{t('footer.invest')}</Link>
                             </div>
                             <div className="footer-links">
-                                <h4>Portal</h4>
-                                <Link to="/login">Portal Broker</Link>
-                                <Link to="/login">Iniciar Sesión</Link>
+                                <h4>{t('footer.portal')}</h4>
+                                <Link to="/login">{t('nav.brokerPortal')}</Link>
+                                <Link to="/login">{t('nav.login')}</Link>
                             </div>
                         </div>
                         <div className="footer-bottom">
-                            © 2025 ZHOMES Real Estate. Todos los derechos reservados.
+                            {t('footer.rights')}
                         </div>
                     </footer>
                 </main>
@@ -133,7 +137,7 @@ export default function PublicLayout() {
                 ))}
                 <Link to="/login" className={`mobile-nav-item`}>
                     <User size={20} />
-                    <span>Perfil</span>
+                    <span>{t('nav.profile')}</span>
                 </Link>
             </nav>
         </div>

@@ -1,61 +1,24 @@
-import { DollarSign, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
-import { REALTOR_COMMISSIONS } from '../../../data/mockData'
-import './CommissionsPageMobile.css'
-
-const statusMap = {
-    paid: { label: 'Pagada', color: '#22C55E' },
-    approved: { label: 'Aprobada', color: '#3B82F6' },
-    pending: { label: 'Pendiente', color: '#F59E0B' },
-}
+import { ShieldCheck, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function RealtorCommissionsMobile() {
-    const totalEarned = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').reduce((acc, c) => acc + c.netAmount, 0)
-    const totalPending = REALTOR_COMMISSIONS.filter(c => c.status !== 'paid').reduce((acc, c) => acc + c.netAmount, 0)
-    
     return (
-        <div className="mobile-comm-page">
-            <div className="mobile-comm-header">
-                <h1>Mis Comisiones</h1>
-
-                <div className="mobile-comm-kpis">
-                    <div className="m-ck-card active" style={{flex: '1 1 auto', border: '1px solid var(--zhomes-gold)'}}>
-                        <CheckCircle2 size={20} color="var(--zhomes-gold)" />
-                        <div><strong>${(totalEarned / 1000).toFixed(1)}K</strong><span>Pagadas (YTD)</span></div>
-                    </div>
-                    <div className="m-ck-card" style={{flex: '1 1 auto'}}>
-                        <Clock size={20} className="text-blue" />
-                        <div><strong>${(totalPending / 1000).toFixed(1)}K</strong><span>Pendientes</span></div>
-                    </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', padding: '40px 24px' }}>
+            <div style={{ textAlign: 'center', maxWidth: 360 }}>
+                <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(16,185,129,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                    <ShieldCheck size={28} color="#10B981" />
                 </div>
+                <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: 10 }}>Sección actualizada</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6, marginBottom: 24 }}>
+                    Conforme al NAR Settlement 2024, la compensación se acuerda por escrito con cada comprador. Consulta tu pipeline para el seguimiento de operaciones.
+                </p>
+                <Link
+                    to="/realtor/transacciones"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--zhomes-red)', color: '#fff', padding: '12px 22px', borderRadius: 12, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}
+                >
+                    Ver Transacciones <ArrowRight size={16} />
+                </Link>
             </div>
-
-            <div className="mobile-comm-list">
-                <h2>Historial de Comisiones</h2>
-                {REALTOR_COMMISSIONS.map((c, i) => (
-                    <div key={c.id} className="mobile-comm-card animate-fadeInUp" style={{ animationDelay: `${0.05 * i}s` }}>
-                        <div className="m-comm-top">
-                            <div>
-                                <h3 className="m-comm-address">{c.address}</h3>
-                            </div>
-                            <div className="m-comm-amount">${c.netAmount.toLocaleString()}</div>
-                        </div>
-
-                        <div className="m-comm-bot">
-                            <div className="m-comm-agent">
-                                <span>Total Venta: <strong>{c.salePrice}</strong></span>
-                            </div>
-
-                            <div className="m-comm-actions">
-                                <span className="m-comm-status" style={{ color: statusMap[c.status]?.color || '#888', background: `${statusMap[c.status]?.color || '#888'}20` }}>
-                                    {statusMap[c.status]?.label || 'Desconocido'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div style={{ height: '90px' }} />
         </div>
     )
 }

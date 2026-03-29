@@ -1,0 +1,64 @@
+{
+  "translation": {
+    "nav": {
+      "home": "Inicio",
+      "search": "Buscar",
+      "match": "Match",
+      "map": "Mapa",
+      "vibe": "Vibe",
+      "properties": "Propiedades",
+      "calculator": "Calculadora",
+      "profile": "Perfil",
+      "login": "Iniciar Sesión",
+      "brokerPortal": "Portal Broker"
+    },
+    "footer": {
+      "slogan": "Conectando familias con las mejores propiedades en Kentucky desde Louisville.",
+      "explore": "Explora",
+      "ourRealtors": "Nuestros Realtors",
+      "mortgageCalc": "Calculadora Hipoteca",
+      "services": "Servicios",
+      "buy": "Comprar",
+      "sell": "Vender",
+      "invest": "Invertir",
+      "portal": "Portal",
+      "rights": "© 2026 ZHOMES Real Estate. Todos los derechos reservados."
+    },
+    "home": {
+      "loading": "Cargando propiedades...",
+      "searchPlaceholder": "Ciudad, dirección o ZIP...",
+      "categories": {
+        "all": "Todas",
+        "exclusive": "Exclusivas",
+        "new": "Nuevas",
+        "under300": "Bajo $300K",
+        "luxury": "Lujo",
+        "properties": "Propiedades"
+      },
+      "match": {
+        "title": "ZHomes Match",
+        "subtitle": "Desliza y encuentra tu hogar ideal"
+      },
+      "tools": {
+        "title": "Herramientas",
+        "calculator": "Calculadora",
+        "calculatorSub": "Estima tu hipoteca",
+        "agents": "Agentes",
+        "agentsSub": "Nuestro equipo",
+        "market": "Mercado",
+        "marketSub": "Explorar todo"
+      },
+      "recent": {
+        "title": "Recién Listadas",
+        "viewAll": "Ver todas",
+        "newBadge": "NUEVO"
+      },
+      "results": "resultados",
+      "stats": {
+        "properties": "Propiedades",
+        "exclusive": "Exclusivas",
+        "avgPrice": "Precio Medio"
+      }
+    }
+  }
+}

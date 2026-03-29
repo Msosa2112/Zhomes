@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Star, MapPin, Phone, Mail, Award, Globe, Instagram, Facebook, Linkedin, Youtube, Edit3, Save, X, ExternalLink } from 'lucide-react'
-import { REALTORS, REALTOR_TRANSACTIONS, REALTOR_COMMISSIONS } from '../../data/mockData'
+import { REALTORS, REALTOR_TRANSACTIONS } from '../../data/mockData'
 import './RealtorProfile.css'
 
 // TikTok icon (not in lucide)
@@ -23,8 +23,8 @@ export default function RealtorProfile() {
     const [realtor, setRealtor] = useState(REALTORS[0])
     const [editingProfile, setEditingProfile] = useState(false)
     const [tempProfile, setTempProfile] = useState(REALTORS[0])
-    const totalSales = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').length
-    const totalVolume = REALTOR_COMMISSIONS.filter(c => c.status === 'paid').reduce((s, c) => s + c.salePrice, 0)
+    const totalSales = REALTOR_TRANSACTIONS.filter(t => t.status === 'closed').length
+    const totalVolume = REALTOR_TRANSACTIONS.filter(t => t.status === 'closed').reduce((s, t) => s + (t.price || 0), 0)
     const activeListings = REALTOR_TRANSACTIONS.filter(t => t.status !== 'closed').length
 
     // Social links state

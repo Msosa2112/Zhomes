@@ -3,12 +3,15 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Home, Search, User, Calculator, Building2, Sun, Moon, Map, Flame, Heart } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton, IonButtons } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
+import { useTranslation } from 'react-i18next'
+import LanguageToggle from '../../shared/LanguageToggle'
 import './PublicLayoutMobile.css'
 
 export default function PublicLayoutMobile() {
     const loc = useLocation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
+    const { t } = useTranslation()
 
     const [showHeader, setShowHeader] = useState(true)
     const lastScrollY = useRef(0)
@@ -25,11 +28,11 @@ export default function PublicLayoutMobile() {
         lastScrollY.current = currentScrollY;
     }
     const navs = [
-        { path: '/', icon: Home, label: 'Inicio' },
-        { path: '/propiedades', icon: Search, label: 'Buscar' },
-        { path: '/swipe', icon: Heart, label: 'Match' },
-        { path: '/mapa', icon: Map, label: 'Mapa' },
-        { path: '/vibe', icon: Flame, label: 'Vibe' },
+        { path: '/', icon: Home, label: t('nav.home') },
+        { path: '/propiedades', icon: Search, label: t('nav.search') },
+        { path: '/swipe', icon: Heart, label: t('nav.match') },
+        { path: '/mapa', icon: Map, label: t('nav.map') },
+        { path: '/vibe', icon: Flame, label: t('nav.vibe') },
     ]
 
     const isPropertyDetail = loc.pathname.startsWith('/propiedades/') && loc.pathname.length > '/propiedades/'.length;
@@ -56,8 +59,9 @@ export default function PublicLayoutMobile() {
                             <button className="m-theme-toggle" onClick={toggleTheme} style={{ background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', borderRadius:'50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', padding: '8px' }}>
                                 {theme === 'light' ? <Moon size={18} color="white" /> : <Sun size={18} color="white" />}
                             </button>
+                            <LanguageToggle />
                             <Link to="/login" className="m-pub-login" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 'bold', color: 'white', background: 'var(--zhomes-red)', padding: '8px 14px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(227, 30, 36, 0.3)' }}>
-                                <User size={16} /> Perfil
+                                <User size={16} /> {t('nav.profile')}
                             </Link>
                         </div>
                     </div>

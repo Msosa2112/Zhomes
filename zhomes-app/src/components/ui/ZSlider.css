@@ -1,0 +1,134 @@
+/* src/components/ui/ZSlider.css */
+
+.zslider-root {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none; 
+}
+
+.zslider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.zslider-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary, #111);
+}
+
+.zslider-output {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.zslider-track-wrap {
+    position: relative;
+    width: 100%;
+    height: 32px; /* Tall hit area for accessibility */
+    display: flex;
+    align-items: center;
+    touch-action: none;
+}
+
+/* Visually styled track */
+.zslider-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--bg-tertiary, #e4e4e7);
+    pointer-events: none; /* Let the native input handle interactions */
+    z-index: 1;
+}
+
+[data-theme="dark"] .zslider-track {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.zslider-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.05s ease, left 0.05s ease;
+}
+
+.zslider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+    z-index: 5;
+}
+
+/* Grow thumb slightly on drag using focus-within */
+.zslider-track-wrap:focus-within .zslider-thumb,
+.zslider-track-wrap:active .zslider-thumb {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+/* Native invisible inputs positioned perfectly over the track */
+.zslider-input {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    z-index: 10;
+}
+
+.zslider-input::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+}
+
+.zslider-input::-moz-range-track {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+}
+
+.zslider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 32px;
+    height: 32px; /* Slightly larger than visual thumb for easy touching */
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.zslider-input::-moz-range-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}

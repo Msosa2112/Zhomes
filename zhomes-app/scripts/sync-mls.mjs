@@ -1,8 +1,8 @@
 /**
- * Spark MLS → Supabase Sync Script
+ * Spark MLS → Supabase Sync Script (Full)
  * 
- * Crawls both Spark tokens (Broker + IDX) and upserts
- * all property data into the Supabase mls_properties table.
+ * Syncs properties (IDX + Broker), agents, and office data
+ * from Spark API into Supabase. Designed to run 2x/day.
  * 
  * Usage: node scripts/sync-mls.mjs
  */
@@ -17,33 +17,17 @@ const TOKENS = {
   idx: 'ayj1thvzmwsmpbn1ami7c8z85'
 };
 
-const SELECT_FIELDS = [
-  'ListingKey','ListingId','UnparsedAddress','City','StateOrProvince','PostalCode',
-  'CountyOrParish','Latitude','Longitude','ListPrice','ClosePrice','OriginalListPrice',
-  'MlsStatus','PropertyType','PropertySubType','BedroomsTotal','BathroomsTotalInteger',
-  'BathroomsFull','BathroomsHalf','LivingArea','LotSizeAcres','LotSizeUnits',
-  'YearBuilt','Stories','GarageSpaces','PublicRemarks','ListDate','CloseDate',
-  'OnMarketDate','ListAgentFullName','ListAgentKey','ListOfficeName','ListOfficeKey',
-  'BuyerOfficeMlsId','SubdivisionName','ArchitecturalStyle','ConstructionMaterials',
-  'Cooling','Heating','Roof','Sewer','WaterSource','ExteriorFeatures',
-  'PatioAndPorchFeatures','PoolFeatures','ParkingFeatures','Basement',
-  'FireplaceYN','FireplacesTotal','GarageYN','AssociationYN','AssociationFee',
-  'VirtualTourURLUnbranded','MLSAreaMajor','Directions'
-].join(',');
-
-// ── Fetch a single page from Spark ──
-async function fetchSparkPage(token, skipToken = null) {
-  let url = `${SPARK_BASE}/Property?$expand=Media`;
-  if (skipToken) url += `&$skiptoken=${skipToken}`;
-  
+// ── Generic Spark fetch ──
+async function sparkFetch(token, path, params = {}) {
+  const searchParams = new URLSearchParams(params).toString();
+  const url = `${SPARK_BASE}/${path}${searchParams ? '?' + searchParams : ''}`;
   const res = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'X-SparkApi-User-Agent': 'ZhomesApp/1.0'
     }
   });
-  
-  if (!res.ok) throw new Error(`Spark ${res.status}: ${res.statusText}`);
+  if (!res.ok) throw new Error(`Spark ${res.status} @ ${path}: ${await res.text().then(t => t.substring(0, 150))}`);
   return res.json();
 }
 
@@ -115,10 +99,9 @@ function transformProperty(raw, source) {
 }
 
 // ── Upsert batch into Supabase ──
-async function upsertBatch(rows) {
+async function upsertBatch(table, rows) {
   if (rows.length === 0) return;
-  
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/mls_properties`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -128,109 +111,216 @@ async function upsertBatch(rows) {
     },
     body: JSON.stringify(rows)
   });
-  
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Supabase upsert error ${res.status}: ${err}`);
+    throw new Error(`Supabase upsert [${table}] ${res.status}: ${err.substring(0, 200)}`);
   }
 }
 
-// ── Crawl all pages from a single Spark token ──
-async function crawlToken(tokenName, token) {
-  console.log(`\n🔄 Crawling ${tokenName} feed...`);
+// ── Crawl all pages of properties from a single Spark token ──
+async function crawlProperties(tokenName, token, maxProperties = Infinity) {
+  console.log(`\n🔄 Crawling ${tokenName} feed... (limit: ${maxProperties === Infinity ? 'none' : maxProperties.toLocaleString()})`);
   const allRows = [];
   const seenTokens = new Set();
   let skipToken = null;
   let page = 0;
 
-  while (page < 5000) { // Safety limit
+  while (page < 5000 && allRows.length < maxProperties) {
     try {
-      const data = await fetchSparkPage(token, skipToken);
-      const results = data.value || [];
-      
-      if (results.length === 0) {
-        console.log(`   📭 Empty page, done.`);
-        break;
-      }
+      const params = { '$expand': 'Media' };
+      if (skipToken) params['$skiptoken'] = skipToken;
 
-      const rows = results.map(p => transformProperty(p, tokenName));
+      const data = await sparkFetch(token, 'Property', params);
+      const results = data.value || [];
+
+      if (results.length === 0) { console.log(`   📭 Empty page. Done.`); break; }
+
+      // Respect the maxProperties cap
+      const remaining = maxProperties - allRows.length;
+      const rows = results.slice(0, remaining).map(p => transformProperty(p, tokenName));
       allRows.push(...rows);
       page++;
-      
-      if (page % 50 === 0) {
-        console.log(`   📦 Page ${page}: ${allRows.length} total properties`);
+
+      if (page % 50 === 0 || allRows.length >= maxProperties) {
+        console.log(`   📦 Page ${page}: ${allRows.length.toLocaleString()} total`);
       }
 
       // Batch upsert every 100 rows
-      if (allRows.length % 100 < 10 && allRows.length > 0) {
-        const batch = allRows.slice(-results.length);
-        await upsertBatch(batch);
+      if (allRows.length % 100 < rows.length) {
+        await upsertBatch('mls_properties', rows).catch(async () => {
+          for (let i = 0; i < rows.length; i += 25) {
+            await upsertBatch('mls_properties', rows.slice(i, i + 25)).catch(e =>
+              console.error(`   ❌ Chunk failed:`, e.message)
+            );
+          }
+        });
       }
 
-      // Check next page
+      if (allRows.length >= maxProperties) {
+        console.log(`   🏁 Reached limit of ${maxProperties.toLocaleString()} properties. Stopping.`);
+        break;
+      }
+
       const nextLink = data['@odata.nextLink'];
       if (!nextLink) break;
 
-      const nextUrl = new URL(nextLink);
-      const newSkipToken = nextUrl.searchParams.get('$skiptoken');
-      
-      if (!newSkipToken || seenTokens.has(newSkipToken)) {
-        console.log(`   🔁 Pagination loop detected at page ${page}, stopping.`);
-        break;
-      }
-      
+      const newSkipToken = new URL(nextLink).searchParams.get('$skiptoken');
+      if (!newSkipToken || seenTokens.has(newSkipToken)) { console.log(`   🔁 Pagination loop. Stopping.`); break; }
+
       seenTokens.add(newSkipToken);
       skipToken = newSkipToken;
-      
-      // Rate limiting: 100ms between requests
       await new Promise(r => setTimeout(r, 100));
-      
+
     } catch (err) {
       console.error(`   ❌ Error on page ${page}:`, err.message);
       break;
     }
   }
 
-  // Final upsert for remaining rows
-  try {
-    await upsertBatch(allRows);
-  } catch (err) {
-    // Upsert in smaller batches if full batch fails
-    console.log(`   ⚠️ Full batch failed, upserting in chunks of 50...`);
-    for (let i = 0; i < allRows.length; i += 50) {
-      const chunk = allRows.slice(i, i + 50);
-      try {
-        await upsertBatch(chunk);
-      } catch (e) {
-        console.error(`   ❌ Chunk ${i}-${i+50} failed:`, e.message);
+  // Final flush of remaining rows
+  if (allRows.length > 0) {
+    await upsertBatch('mls_properties', allRows).catch(async () => {
+      for (let i = 0; i < allRows.length; i += 50) {
+        await upsertBatch('mls_properties', allRows.slice(i, i + 50)).catch(e =>
+          console.error(`   ❌ Chunk ${i} failed:`, e.message)
+        );
       }
-    }
+    });
   }
 
-  console.log(`   ✅ ${tokenName}: ${allRows.length} properties synced (${page} pages)`);
+  console.log(`   ✅ ${tokenName}: ${allRows.length.toLocaleString()} properties synced (${page} pages)`);
   return allRows.length;
+}
+
+
+// ── Sync ZHomes Agents to Supabase ──
+async function syncAgents() {
+  console.log('\n👥 Syncing ZHomes agents...');
+  try {
+    const data = await sparkFetch(TOKENS.broker, 'Member', {
+      '$filter': `OfficeKey eq '${ZHOMES_OFFICE_KEY}'`,
+      '$select': 'MemberKey,MemberFullName,MemberFirstName,MemberLastName,MemberEmail,MemberPreferredPhone,MemberMobilePhone,MemberOfficePhone,MemberMlsId,MemberStatus,MemberStateLicense,MemberType,MemberLocalType,MemberAddress1,MemberCity,MemberStateOrProvince,MemberPostalCode,OfficeName,OfficeKey,MemberBio'
+    });
+
+    const agents = (data.value || []).map(a => ({
+      id: a.MemberKey,
+      full_name: a.MemberFullName || null,
+      first_name: a.MemberFirstName || null,
+      last_name: a.MemberLastName || null,
+      email: a.MemberEmail || null,
+      phone: a.MemberPreferredPhone || a.MemberMobilePhone || a.MemberOfficePhone || null,
+      mls_id: a.MemberMlsId || null,
+      status: a.MemberStatus || null,
+      license: a.MemberStateLicense || null,
+      member_type: a.MemberLocalType || a.MemberType || null,
+      office_name: a.OfficeName || null,
+      office_key: a.OfficeKey || null,
+      bio: a.MemberBio || null,
+      address: a.MemberAddress1 || null,
+      city: a.MemberCity || null,
+      state: a.MemberStateOrProvince || null,
+      zip: a.MemberPostalCode || null,
+      sync_timestamp: new Date().toISOString()
+    }));
+
+    if (agents.length > 0) {
+      await upsertBatch('zhomes_agents', agents);
+      console.log(`   ✅ ${agents.length} agents synced`);
+    }
+
+    // Fetch closed deals per agent for stats
+    console.log('   📊 Fetching agent stats...');
+    for (const agent of agents) {
+      try {
+        const dealsData = await sparkFetch(TOKENS.broker, 'Property', {
+          '$filter': `ListAgentKey eq '${agent.id}' and MlsStatus eq 'Closed'`,
+          '$top': '100',
+          '$orderby': 'CloseDate desc',
+          '$select': 'ListingKey,UnparsedAddress,ClosePrice,CloseDate,City'
+        });
+        const deals = dealsData.value || [];
+        const totalVolume = deals.reduce((s, d) => s + (d.ClosePrice || 0), 0);
+
+        await upsertBatch('zhomes_agents', [{
+          id: agent.id,
+          total_closed: deals.length,
+          total_volume: totalVolume,
+          avg_price: deals.length > 0 ? Math.round(totalVolume / deals.length) : 0,
+          last_close_date: deals[0]?.CloseDate || null,
+          recent_deals: deals.slice(0, 5).map(d => ({
+            address: d.UnparsedAddress, price: d.ClosePrice,
+            date: d.CloseDate, city: d.City
+          })),
+          sync_timestamp: new Date().toISOString()
+        }]);
+
+        await new Promise(r => setTimeout(r, 150)); // rate limit
+      } catch (err) {
+        console.warn(`   ⚠️  Stats for agent ${agent.full_name}: ${err.message}`);
+      }
+    }
+    console.log(`   ✅ Agent stats updated`);
+
+  } catch (err) {
+    console.error('   ❌ Agent sync failed:', err.message);
+  }
+}
+
+// ── Sync ZHomes Office to Supabase ──
+async function syncOffice() {
+  console.log('\n🏢 Syncing ZHomes office...');
+  try {
+    const office = await sparkFetch(TOKENS.broker, `Office('${ZHOMES_OFFICE_KEY}')`);
+    if (office?.OfficeKey) {
+      await upsertBatch('zhomes_office', [{
+        id: office.OfficeKey,
+        name: office.OfficeName || null,
+        phone: office.OfficePhone || null,
+        fax: office.OfficeFax || null,
+        email: office.OfficeEmail || null,
+        address: office.OfficeAddress1 || null,
+        city: office.OfficeCity || null,
+        state: office.OfficeStateOrProvince || null,
+        zip: office.OfficePostalCode || null,
+        license: office.OfficeCorporateLicense || null,
+        broker_key: office.OfficeBrokerKey || null,
+        mls_id: office.OfficeMlsId || null,
+        status: office.OfficeStatus || null,
+        sync_timestamp: new Date().toISOString()
+      }]);
+      console.log(`   ✅ Office "${office.OfficeName}" synced`);
+    }
+  } catch (err) {
+    console.error('   ❌ Office sync failed:', err.message);
+  }
 }
 
 // ── Main ──
 async function main() {
-  console.log('═══════════════════════════════════════');
-  console.log('  Spark MLS → Supabase Sync');
-  console.log('═══════════════════════════════════════');
-  
-  let total = 0;
-  
-  // Crawl Broker feed (ZHomes data with working $filter)  
-  total += await crawlToken('broker', TOKENS.broker);
-  
-  // Crawl IDX feed (all MLS data)
-  total += await crawlToken('idx', TOKENS.idx);
-  
-  console.log(`\n═══════════════════════════════════════`);
-  console.log(`  ✅ SYNC COMPLETE: ${total} properties`);
-  console.log(`═══════════════════════════════════════\n`);
+  const start = Date.now();
+  console.log('═══════════════════════════════════════════════');
+  console.log('  Spark MLS → Supabase Full Sync');
+  console.log(`  ${new Date().toLocaleString('es-US')}`);
+  console.log('═══════════════════════════════════════════════');
+
+  let totalProps = 0;
+
+  // 1. Properties (Broker: all ZHomes listings, IDX: up to 10k MLS listings)
+  totalProps += await crawlProperties('broker', TOKENS.broker);
+  totalProps += await crawlProperties('idx', TOKENS.idx, 10_000);
+
+  // 2. Agents + stats
+  await syncAgents();
+
+  // 3. Office
+  await syncOffice();
+
+  const elapsed = Math.round((Date.now() - start) / 1000);
+  console.log('\n═══════════════════════════════════════════════');
+  console.log(`  ✅ SYNC COMPLETE`);
+  console.log(`  Properties: ${totalProps}`);
+  console.log(`  Duration: ${elapsed}s`);
+  console.log('═══════════════════════════════════════════════\n');
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+main().catch(err => { console.error('Fatal:', err); process.exit(1); });

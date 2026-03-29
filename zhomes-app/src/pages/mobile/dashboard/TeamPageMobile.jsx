@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Trophy, Star, TrendingUp, Plus, Trash2, Edit3, Check, X, User, Percent } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
+import ZSlider from '../../../components/ui/ZSlider'
 import './TeamPageMobile.css'
 
 const INITIAL_AGENTS = [
@@ -206,17 +207,15 @@ export default function TeamPageMobile() {
                                 onChange={e => setNewAgent({...newAgent, phone: e.target.value})}
                             />
 
-                            <label>Comisión (%)</label>
-                            <div className="m-commission-input-row">
-                                <input 
-                                    type="range" 
-                                    min="0" max="100" 
-                                    value={newAgent.commission}
-                                    onChange={e => setNewAgent({...newAgent, commission: parseInt(e.target.value)})}
-                                    className="m-range-input"
-                                />
-                                <span className="m-range-value">{newAgent.commission}%</span>
-                            </div>
+                            <ZSlider
+                                label="Comisión"
+                                value={newAgent.commission}
+                                min={0}
+                                max={100}
+                                step={1}
+                                onChange={v => setNewAgent({...newAgent, commission: v})}
+                                formatOptions={{ style: 'percent', maximumFractionDigits: 0 }}
+                            />
                             <p className="m-commission-note">
                                 Broker retiene <strong>{100 - newAgent.commission}%</strong> · Realtor recibe <strong>{newAgent.commission}%</strong>
                             </p>

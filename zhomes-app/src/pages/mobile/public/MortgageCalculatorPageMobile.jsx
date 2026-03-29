@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Calculator, DollarSign, Percent, Home, TrendingUp, ChevronDown } from 'lucide-react'
 import { MortgageService } from '../../../services/mortgageService'
+import ZSlider from '../../../components/ui/ZSlider'
 import './MortgageCalculatorPageMobile.css'
 
 export default function MortgageCalculatorPageMobile() {
@@ -60,14 +61,13 @@ export default function MortgageCalculatorPageMobile() {
                             <span>$</span>
                             <input type="text" inputMode="numeric" value={price} onChange={e => setPrice(e.target.value.replace(/[^0-9]/g, ''))} />
                         </div>
-                        <input
-                            type="range"
-                            className="mc-slider"
+                        <ZSlider
+                            value={priceNum}
                             min={100000}
                             max={2000000}
                             step={5000}
-                            value={priceNum}
-                            onChange={e => setPrice(e.target.value)}
+                            onChange={v => setPrice(String(v))}
+                            formatOptions={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
                         />
                     </div>
                     <div className="mc-input-group">
@@ -76,14 +76,13 @@ export default function MortgageCalculatorPageMobile() {
                             <span>$</span>
                             <input type="text" inputMode="numeric" value={down} onChange={e => setDown(e.target.value.replace(/[^0-9]/g, ''))} />
                         </div>
-                        <input
-                            type="range"
-                            className="mc-slider"
-                            min={0}
-                            max={priceNum * 0.5}
-                            step={1000}
+                        <ZSlider
                             value={downNum}
-                            onChange={e => setDown(e.target.value)}
+                            min={0}
+                            max={Math.round(priceNum * 0.5)}
+                            step={1000}
+                            onChange={v => setDown(String(v))}
+                            formatOptions={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
                         />
                     </div>
                     <div className="mc-input-group">

@@ -1,18 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { Search, ArrowRight, MapPin, Heart, Star, TrendingUp, Home, DollarSign, Sparkles, ChevronRight, BedDouble, Bath, Maximize, Calculator, Users } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { MotionCarousel } from '../../../components/ui/MotionCarousel'
 import { useProperties } from '../../../context/PropertyContext'
+import { useTranslation } from 'react-i18next'
+import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
 import './LandingPageMobile.css'
-
-const CATEGORIES = [
-    { id: 'all', label: 'Todas', icon: '🏠' },
-    { id: 'exclusive', label: 'Exclusivas', icon: '⭐' },
-    { id: 'new', label: 'Nuevas', icon: '🆕' },
-    { id: 'under300', label: 'Bajo $300K', icon: '💰' },
-    { id: 'luxury', label: 'Lujo', icon: '👑' },
-]
 
 function getGreeting() {
     const h = new Date().getHours()
@@ -54,9 +48,18 @@ function AnimatedCounter({ target, suffix = '', prefix = '' }) {
 
 export default function LandingPageMobile() {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const [searchQuery, setSearchQuery] = useState('')
     const [activeCategory, setActiveCategory] = useState('all')
     const [demoUser, setDemoUser] = useState(null)
+
+    const CATEGORIES = [
+        { id: 'all', label: t('home.categories.all'), icon: '🏠' },
+        { id: 'exclusive', label: t('home.categories.exclusive'), icon: '⭐' },
+        { id: 'new', label: t('home.categories.new'), icon: '🆕' },
+        { id: 'under300', label: t('home.categories.under300'), icon: '💰' },
+        { id: 'luxury', label: t('home.categories.luxury'), icon: '👑' },
+    ]
 
     const { properties: globalProperties, loading: ctxLoading } = useProperties()
 
@@ -93,8 +96,8 @@ export default function LandingPageMobile() {
     }, [properties, activeCategory])
 
     const handleSearch = (e) => {
-        e.preventDefault()
-        navigate(searchQuery.trim() ? `/propiedades?q=${encodeURIComponent(searchQuery)}` : '/propiedades')
+        if (e && e.preventDefault) e.preventDefault()
+        navigate(searchQuery.trim() ? `/propiedades?search=${encodeURIComponent(searchQuery)}` : '/propiedades')
     }
 
     const stats = useMemo(() => ({
@@ -107,7 +110,7 @@ export default function LandingPageMobile() {
         return (
             <div className="landing-loading">
                 <img src="/assets/logo/fav.png" alt="Z" className="landing-loading-logo" />
-                <p>Cargando propiedades...</p>
+                <p>{t('home.loading')}</p>
             </div>
         )
     }
@@ -164,11 +167,14 @@ export default function LandingPageMobile() {
             {/* ─── Search ─── */}
             <form className="ah-search" onSubmit={handleSearch}>
                 <Search size={18} className="ah-search-icon" />
-                <input
-                    type="text"
-                    placeholder="Ciudad, dirección o ZIP..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+                <AddressAutocomplete 
+                    value={searchQuery} 
+                    onChange={setSearchQuery} 
+                    onSelect={(val) => {
+                        setSearchQuery(val);
+                        navigate(`/propiedades?search=${encodeURIComponent(val)}`);
+                    }}
+                    placeholder={t('home.searchPlaceholder')} 
                 />
             </form>
 
@@ -192,8 +198,8 @@ export default function LandingPageMobile() {
                         <Heart size={20} fill="currentColor" />
                     </div>
                     <div>
-                        <strong>ZHomes Match</strong>
-                        <span>Desliza y encuentra tu hogar ideal</span>
+                        <strong>{t('home.match.title')}</strong>
+                        <span>{t('home.match.subtitle')}</span>
                     </div>
                 </div>
                 <ChevronRight size={20} />
@@ -202,23 +208,23 @@ export default function LandingPageMobile() {
             {/* ─── Tools ─── */}
             <section className="ah-section">
                 <div className="ah-section-header">
-                    <h2>Herramientas</h2>
+                    <h2>{t('home.tools.title')}</h2>
                 </div>
                 <div className="ah-tools">
                     <Link to="/calculadora" className="ah-tool-card">
                         <Calculator size={24} />
-                        <strong>Calculadora</strong>
-                        <span>Estima tu hipoteca</span>
+                        <strong>{t('home.tools.calculator')}</strong>
+                        <span>{t('home.tools.calculatorSub')}</span>
                     </Link>
                     <Link to="/realtors" className="ah-tool-card">
                         <Users size={24} />
-                        <strong>Agentes</strong>
-                        <span>Nuestro equipo</span>
+                        <strong>{t('home.tools.agents')}</strong>
+                        <span>{t('home.tools.agentsSub')}</span>
                     </Link>
                     <Link to="/propiedades" className="ah-tool-card">
                         <TrendingUp size={24} />
-                        <strong>Mercado</strong>
-                        <span>Explorar todo</span>
+                        <strong>{t('home.tools.market')}</strong>
+                        <span>{t('home.tools.marketSub')}</span>
                     </Link>
                 </div>
             </section>
@@ -226,8 +232,8 @@ export default function LandingPageMobile() {
             {/* ─── Recent Carousel ─── */}
             <section className="ah-section">
                 <div className="ah-section-header">
-                    <h2>Recién Listadas</h2>
-                    <Link to="/propiedades">Ver todas <ChevronRight size={14} /></Link>
+                    <h2>{t('home.recent.title')}</h2>
+                    <Link to="/propiedades">{t('home.recent.viewAll')} <ChevronRight size={14} /></Link>
                 </div>
                 <MotionCarousel options={{ dragFree: false, containScroll: 'trimSnaps' }}>
                     {recentProps.map(prop => (
@@ -241,7 +247,7 @@ export default function LandingPageMobile() {
                                 </div>
                             ) : (
                                 <div className="ah-pc-badge" style={{background: 'rgba(0,0,0,0.5)'}}>
-                                    NUEVO
+                                    {t('home.recent.newBadge')}
                                 </div>
                             )}
 
@@ -258,8 +264,8 @@ export default function LandingPageMobile() {
             {/* ─── Category Results Grid ─── */}
             <section className="ah-section">
                 <div className="ah-section-header">
-                    <h2>{CATEGORIES.find(c => c.id === activeCategory)?.label || 'Propiedades'}</h2>
-                    <span>{filteredByCategory.length} resultados</span>
+                    <h2>{CATEGORIES.find(c => c.id === activeCategory)?.label || t('home.categories.properties')}</h2>
+                    <span>{filteredByCategory.length} {t('home.results')}</span>
                 </div>
                 <div className="ah-grid">
                     {filteredByCategory.map(prop => (
@@ -284,17 +290,17 @@ export default function LandingPageMobile() {
                 <div className="ah-stat">
                     <Home size={20} />
                     <AnimatedCounter target={stats.total} suffix="+" />
-                    <span>Propiedades</span>
+                    <span>{t('home.stats.properties')}</span>
                 </div>
                 <div className="ah-stat">
                     <Star size={20} />
                     <AnimatedCounter target={stats.exclusive} />
-                    <span>Exclusivas</span>
+                    <span>{t('home.stats.exclusive')}</span>
                 </div>
                 <div className="ah-stat">
                     <DollarSign size={20} />
                     <AnimatedCounter target={stats.avgPrice} prefix="$" suffix="K" />
-                    <span>Precio Medio</span>
+                    <span>{t('home.stats.avgPrice')}</span>
                 </div>
             </section>
 

@@ -26,6 +26,8 @@ function App() {
     return () => document.removeEventListener('mousemove', handler)
   }, [])
 
+
+
   return (
     <IonApp>
       <PropertiesProvider>

@@ -433,28 +433,31 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                                             {/* Contact Info & Redes Sociales */}
                                             <div className="panel-contact-info" style={{ marginBottom: '15px' }}>
                                                 {/* Teléfono */}
-                                                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--zhomes-red)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px' }}>
+                                                <div 
+                                                    style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--zhomes-red)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px', cursor: 'pointer' }}
+                                                    onClick={() => window.open(`tel:${r.phone || '+13055551234'}`)}
+                                                >
                                                     <Phone size={20} fill="currentColor" /> {r.phone || '+1 (305) 555-1234'}
                                                 </div>
 
                                                 {/* Iconos Redes */}
                                                 <div className="panel-socials" style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
                                                     {/* TikTok */}
-                                                    <button className="social-btn" style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
+                                                    <button className="social-btn" onClick={() => window.open('https://tiktok.com', '_blank')} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
                                                         <svg viewBox="0 0 24 24" width={18} height={18} fill="currentColor">
                                                             <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.22-1.15 4.39-2.92 5.74-1.74 1.34-4.04 1.83-6.19 1.48-2.29-.35-4.36-1.7-5.59-3.63-1.2-1.89-1.5-4.27-.85-6.38.64-2.12 2.31-3.9 4.39-4.73 2.1-.84 4.54-.92 6.72-.25v4.06c-1.15-.47-2.45-.63-3.65-.35-1.07.24-2.02.94-2.6 1.87-.56.9-.7 2-.42 3.02.26.96.95 1.79 1.84 2.21.92.44 2.03.53 3.01.27.94-.25 1.73-.89 2.19-1.74.45-.82.68-1.76.68-2.69V.03z" />
                                                         </svg>
                                                     </button>
                                                     {/* Instagram */}
-                                                    <button className="social-btn" style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
+                                                    <button className="social-btn" onClick={() => window.open('https://instagram.com', '_blank')} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
                                                         <Instagram size={20} />
                                                     </button>
                                                     {/* Facebook */}
-                                                    <button className="social-btn" style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
+                                                    <button className="social-btn" onClick={() => window.open('https://facebook.com', '_blank')} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
                                                         <Facebook size={20} />
                                                     </button>
                                                     {/* WhatsApp */}
-                                                    <button className="social-btn" style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                                    <button className="social-btn" onClick={() => window.open(`https://wa.me/${(r.phone || '13055551234').replace(/\D/g, '')}`, '_blank')} style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                                                         <svg viewBox="0 0 24 24" width={20} height={20} fill="currentColor">
                                                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
                                                         </svg>

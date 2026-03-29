@@ -206,10 +206,18 @@ export default function PropertyDetailPageMobile() {
 
             <main className="mpd-content">
                 <div className="mpd-accessories-row">
-                    <button className="mpd-play-btn" onClick={() => {}}>
+                    <button className="mpd-play-btn" onClick={() => alert('Recorrido virtual 3D próximamente disponible.')}>
                         <Play fill="white" size={16} /> VIDEO
                     </button>
-                    <button className="mpd-acc-icon-btn" onClick={() => {}}>
+                    <button className="mpd-acc-icon-btn" onClick={async () => {
+                        if (navigator.share) {
+                            try {
+                                await navigator.share({ title: property.address, url: window.location.href });
+                            } catch (err) {}
+                        } else {
+                            alert('Copiar enlace de propiedad: ' + window.location.href);
+                        }
+                    }}>
                         <Share size={18} />
                     </button>
                     <button className="mpd-acc-icon-btn" onClick={handleToggleFavorite} disabled={togglingFav}>
@@ -394,7 +402,10 @@ export default function PropertyDetailPageMobile() {
                 <BookingWidget
                     propertyAddress={property.address}
                     realtorName={selectedRealtor?.name || 'ZHomes'}
-                    onBook={(data) => console.log('Booking:', data)}
+                    onBook={(data) => {
+                        alert('¡Cita solicitada exitosamente! El equipo comercial se pondrá en contacto pronto.');
+                        setBookingOpen(false);
+                    }}
                     onClose={() => setBookingOpen(false)}
                 />
             )}

@@ -129,6 +129,7 @@ ion-content::part(scroll)::-webkit-scrollbar {
     height: 110px;
     border-radius: 12px;
     object-fit: cover;
+    object-position: top center;
 }
 
 .mr-card-info {
@@ -205,4 +206,159 @@ ion-content::part(scroll)::-webkit-scrollbar {
     color: var(--p-text);
     font-size: 0.68rem;
     font-weight: 500;
+}
+
+/* Agent Details Modal (Glassmorphism Bottom Sheet) */
+.mr-modal-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.mr-modal-card {
+    position: relative;
+    width: 100%;
+    max-height: 85vh;
+    background: var(--p-bg);
+    border-radius: 32px 32px 0 0;
+    padding: 32px 24px 100px;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+    border-top: 1px solid var(--p-card-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mr-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--p-card-bg);
+    border: 1px solid var(--p-card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--p-text-secondary);
+    cursor: pointer;
+    box-shadow: var(--p-btn-shadow);
+}
+
+.mr-modal-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    margin-bottom: 20px;
+    border: 3px solid var(--p-card-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.mr-modal-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: var(--p-text);
+    text-align: center;
+}
+
+.mr-modal-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--p-text-secondary);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mr-modal-bio {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--p-text);
+    text-align: center;
+    margin-bottom: 30px;
+    max-width: 90%;
+    opacity: 0.9;
+}
+
+.mr-modal-actions {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: center;
+    padding-bottom: 20px;
+}
+
+.mr-modal-btn {
+    flex: 1;
+    max-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 100px;
+    background: var(--p-btn-bg);
+    border: 1px solid var(--p-card-border);
+    color: var(--p-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: var(--p-btn-shadow);
+}
+
+.mr-modal-btn:hover {
+    filter: brightness(1.2);
+}
+
+.mr-modal-svg {
+    stroke: var(--p-icon-fill);
+}
+
+.mr-modal-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    justify-content: center;
+    width: 100%;
+}
+
+.mr-social-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--p-card-bg);
+    border: 1px solid var(--p-card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--p-text);
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.mr-social-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 0;
+}
+
+.mr-social-icon:hover {
+    transform: scale(1.1);
+    background: var(--p-btn-bg);
 }
