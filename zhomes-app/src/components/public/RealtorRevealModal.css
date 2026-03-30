@@ -156,8 +156,7 @@
 
 .marvel-char-card {
     position: absolute;
-    bottom: 0;                    /* anchor from bottom so body fills upward */
-    left: 50%;                    /* base center — JS translateX offsets from here */
+    /* No top/left/bottom/right — uses flex static position = centered in layer */
     transform-origin: bottom center;
     height: 70vh;
     max-height: 700px;
@@ -174,7 +173,7 @@
     width: auto;
     max-width: 100%;
     object-fit: contain;
-    object-position: center top;  /* head at top, body below */
+    object-position: center bottom; /* feet at bottom of card, body rises upward */
     pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
@@ -413,14 +412,13 @@
     }
 
     .marvel-char-card {
-        bottom: 70px;          /* above the bottom nav bar */
-        height: 72vh;
+        height: 85vh;          /* taller so more body is visible */
         max-height: unset;
     }
     
     .marvel-char-card img,
     .marvel-char-card video {
-        object-position: center top;
+        object-position: center bottom;
         -webkit-mask-image: none;
         mask-image: none;
     }
