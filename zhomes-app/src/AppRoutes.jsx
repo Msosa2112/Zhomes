@@ -12,6 +12,10 @@ import RealtorsPageMobile from './pages/mobile/public/RealtorsPageMobile'
 import MapPageMobile from './pages/mobile/public/MapPageMobile'
 import MortgageCalculatorPageMobile from './pages/mobile/public/MortgageCalculatorPageMobile'
 import LoginPageMobile from './pages/mobile/auth/LoginPageMobile'
+import RegisterPageMobile from './pages/mobile/auth/RegisterPageMobile'
+import CompleteProfileMobile from './pages/mobile/auth/CompleteProfileMobile'
+import RecoverPasswordMobile from './pages/mobile/auth/RecoverPasswordMobile'
+import UpdatePasswordMobile from './pages/mobile/auth/UpdatePasswordMobile'
 import VibeFeedMobile from './pages/mobile/public/VibeFeedMobile'
 import UserProfileMobile from './pages/mobile/public/UserProfileMobile'
 import SwipeModePageMobile from './pages/mobile/public/SwipeModePageMobile'
@@ -64,6 +68,10 @@ export default function AppRoutes() {
                 <Route path="/calculadora" element={<MortgageCalculatorPageMobile />} />
                 <Route path="/vibe" element={<VibeFeedMobile />} />
                 <Route path="/login" element={<LoginPageMobile />} />
+                <Route path="/registro" element={<RegisterPageMobile />} />
+                <Route path="/completar-perfil" element={<CompleteProfileMobile />} />
+                <Route path="/recuperar" element={<RecoverPasswordMobile />} />
+                <Route path="/actualizar-password" element={<UpdatePasswordMobile />} />
                 <Route path="/coleccion/:userId" element={<SharedCollectionPageMobile />} />
             </Route>
 

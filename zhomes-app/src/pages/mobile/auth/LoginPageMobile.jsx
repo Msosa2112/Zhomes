@@ -1,21 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Building2, User, Key, Mail, AlertCircle } from 'lucide-react'
+import { User, Key, Mail, AlertCircle, UserPlus } from 'lucide-react'
 import { supabase } from '../../../lib/supabaseClient'
 import './LoginPageMobile.css'
 
 export default function LoginPageMobile() {
     const navigate = useNavigate()
-    const [role, setRole] = useState('realtor')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
-
-    const handleRoleSwitch = (newRole) => {
-        setRole(newRole)
-        setErrorMsg('')
-    }
 
     const handleEmailLogin = async (e) => {
         e.preventDefault()
@@ -34,7 +28,8 @@ export default function LoginPageMobile() {
             
             if (error) throw error
 
-            // Si es exitoso, ruteamos según el rol
+            // Si es exitoso, ruteamos según el rol guardado en los metadatos
+            const role = data.user?.user_metadata?.role || 'client'
             if (role === 'realtor') {
                 navigate('/realtor')
             } else if (role === 'broker') {
@@ -56,7 +51,7 @@ export default function LoginPageMobile() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: window.location.origin + (role === 'realtor' ? '/realtor' : '/dashboard')
+                    redirectTo: window.location.origin + '/perfil' // Deberíamos redirigir a un manejador que verifique el rol
                 }
             })
             if (error) throw error
@@ -64,21 +59,6 @@ export default function LoginPageMobile() {
             setErrorMsg(`Error conectando con ${provider}.`)
             setLoading(false)
         }
-    }
-
-    const handleDemoLogin = () => {
-        // Bypass Supabase auth for demo purposes
-        const demoUsers = {
-            broker: { email: 'broker@zhomes.com', name: 'Gilbert Zaldivar', role: 'broker' },
-            realtor: { email: 'jessica@zhomes.com', name: 'Jessica Hernandez', role: 'realtor' },
-            client: { email: 'cliente@zhomes.com', name: 'Carlos Rivera', role: 'client' },
-        }
-        const user = demoUsers[role]
-        localStorage.setItem('zhomes_demo_user', JSON.stringify(user))
-        
-        if (role === 'realtor') navigate('/realtor')
-        else if (role === 'broker') navigate('/dashboard')
-        else navigate('/perfil')
     }
 
     return (
@@ -89,19 +69,7 @@ export default function LoginPageMobile() {
                 <div className="ml-header">
                     <img src="/assets/logo/fav.png" alt="ZHOMES" className="ml-logo animate-float" />
                     <h1>Portal ZHOMES</h1>
-                    <p>Accede a tu Centro de Mando</p>
-                </div>
-
-                <div className="ml-role-switcher">
-                    <button className={role === 'broker' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('broker')}>
-                        <Building2 size={18} /> Broker
-                    </button>
-                    <button className={role === 'realtor' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('realtor')}>
-                        <User size={18} /> Realtor
-                    </button>
-                    <button className={role === 'client' ? 'active' : ''} type="button" onClick={() => handleRoleSwitch('client')}>
-                        <User size={18} /> Cliente
-                    </button>
+                    <p>Inicia sesión en tu cuenta</p>
                 </div>
 
                 <form className="ml-form" onSubmit={handleEmailLogin}>
@@ -113,33 +81,27 @@ export default function LoginPageMobile() {
                     
                     <div className="ml-form-group">
                         <label><Mail size={14}/> Email</label>
-                        <input type="email" placeholder="ejemplo@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
+                        <input type="email" placeholder="ejemplo@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} required/>
                     </div>
                     <div className="ml-form-group">
                         <label><Key size={14}/> Contraseña</label>
-                        <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
+                        <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} required/>
+                    </div>
+
+                    <div style={{ textAlign: 'right', marginTop: '-10px', marginBottom: '20px' }}>
+                        <button 
+                            type="button" 
+                            onClick={() => navigate('/recuperar')}
+                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </button>
                     </div>
 
                     <button type="submit" className="ml-submit-btn" disabled={loading}>
-                        {loading ? 'Iniciando...' : 'Entrar con Email'}
+                        {loading ? 'Iniciando...' : 'Iniciar Sesión'}
                     </button>
                 </form>
-
-                <div style={{ textAlign: 'center', margin: '12px 0 4px' }}>
-                    <button
-                        type="button"
-                        onClick={handleDemoLogin}
-                        style={{
-                            background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.4)',
-                            color: '#8B5CF6', padding: '10px 24px', borderRadius: '10px',
-                            fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', width: '100%'
-                        }}
-                    >
-                        ⚡ Acceso Demo ({role === 'broker' ? 'Broker' : role === 'realtor' ? 'Realtor' : 'Cliente'})
-                    </button>
-                    <p style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '6px' }}>Sin contraseña — solo para pruebas</p>
-                </div>
-
 
                 <div className="ml-oauth-divider">
                     <span>O continúa con</span>
@@ -156,7 +118,25 @@ export default function LoginPageMobile() {
                     </button>
                 </div>
 
-                <p className="ml-footer" style={{ marginTop: '30px' }}>ZHOMES v1.0 Mobile Auth</p>
+                <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: 'white' }}>¿Eres nuevo en ZHomes?</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px' }}>
+                        Crea tu cuenta gratis como Cliente o aplica como Realtor asociado.
+                    </p>
+                    <button 
+                        onClick={() => navigate('/registro')}
+                        style={{
+                            background: 'white', color: 'var(--zhomes-red)', width: '100%', padding: '12px',
+                            borderRadius: '12px', fontWeight: 'bold', fontSize: '1rem',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            cursor: 'pointer', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                    >
+                        <UserPlus size={18} />
+                        Crear Cuenta Nueva
+                    </button>
+                </div>
+
             </div>
         </div>
     )
