@@ -403,6 +403,13 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                                     className="marvel-char-card"
                                     style={getCardStyle(diff)}
                                     onClick={() => handleCardClick(virtualIndex)}
+                                    onTouchEnd={(e) => {
+                                        // If minimal drag (tap), open detail directly
+                                        if (Math.abs(dragOffset) < 10) {
+                                            e.stopPropagation();
+                                            handleCardClick(virtualIndex);
+                                        }
+                                    }}
                                 >
                                     {r.video && diff === 0 && viewMode === 'detail' ? (
                                         <RobustVideo src={r.video} isExpanded={isSheetExpanded} />
