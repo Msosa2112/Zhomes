@@ -127,11 +127,15 @@ export default function PropertyDetailPageMobile() {
                 localStorage.setItem('zhomes_my_agent', agentId);
                 supabase
                     .from('zhomes_agents')
-                    .select('id, full_name, photo_url, email, phone, title')
+                    .select('id, full_name, first_name, last_name, email, phone, bio, status')
                     .eq('id', agentId)
                     .maybeSingle()
                     .then(({ data }) => {
-                        if (data) setSelectedRealtor({ ...data, name: data.full_name, photo: data.photo_url });
+                        if (data) setSelectedRealtor({
+                            ...data,
+                            name: data.full_name,
+                            photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
+                        });
                     });
             }
 

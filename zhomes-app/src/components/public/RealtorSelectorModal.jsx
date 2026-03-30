@@ -15,8 +15,10 @@ export default function RealtorSelectorModal({ isOpen, onClose, onSelect }) {
             setLoading(true)
             const { data, error } = await supabase
                 .from('zhomes_agents')
-                .select('id, full_name, photo_url, email, phone, title')
+                .select('id, full_name, first_name, last_name, email, phone, bio, status')
+                .eq('status', 'Active')
                 .order('full_name')
+            if (error) console.warn('[RealtorSelector] Error:', error.message)
             if (!error && data) setRealtors(data)
             setLoading(false)
         }
@@ -65,7 +67,7 @@ export default function RealtorSelectorModal({ isOpen, onClose, onSelect }) {
                             >
                                 <div className="r-avatar">
                                     <img
-                                        src={r.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.full_name)}&background=E31E24&color=fff`}
+                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(r.full_name)}&background=E31E24&color=fff&size=200&bold=true`}
                                         alt={r.full_name}
                                     />
                                     {selectedId === r.id && <div className="check-badge"><CheckCircle2 size={16} fill="#10B981" color="white" /></div>}
@@ -75,7 +77,7 @@ export default function RealtorSelectorModal({ isOpen, onClose, onSelect }) {
                                     <div className="r-stats">
                                         <span><Star size={12} fill="gold" color="gold" /> 5.0</span>
                                         <span>•</span>
-                                        <span>{r.title || 'ZHomes Agent'}</span>
+                                        <span>ZHomes Agent</span>
                                     </div>
                                     <div className="r-tags">
                                         <span className="tag">Español</span>

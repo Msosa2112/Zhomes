@@ -42,18 +42,21 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     const [realtors, setRealtors] = useState([])
     const [isLoadingAgents, setIsLoadingAgents] = useState(true)
 
-    // Load agents from Supabase
+    // Load agents from Supabase (no photo_url column — use avatar from name)
     useEffect(() => {
         supabase
             .from('zhomes_agents')
-            .select('id, full_name, photo_url, email, phone, title, bio')
+            .select('id, full_name, first_name, last_name, email, phone, bio, title, status')
+            .eq('status', 'Active')
             .order('full_name')
-            .then(({ data }) => {
+            .then(({ data, error }) => {
+                if (error) console.warn('[RealtorRevealModal] Supabase error:', error.message);
                 if (data && data.length > 0) {
                     setRealtors(data.map(a => ({
                         ...a,
                         name: a.full_name,
-                        photo: a.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff`
+                        // Generate avatar since MLS doesn't provide photos
+                        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`
                     })));
                 }
                 setIsLoadingAgents(false);
@@ -67,54 +70,52 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     // Placeholder appearances (no mock properties needed)
     const appearances = []
 
+    // Only trigger spin/open logic when agents are loaded AND modal is open
     useEffect(() => {
-        if (isOpen) {
-            if (openDirectly && initialIndex !== undefined && initialIndex !== null) {
-                setActiveIndex(initialIndex)
-                setViewMode('detail')
-            } else if (initialIndex !== undefined && initialIndex !== null) {
-                setActiveIndex(initialIndex)
+        if (!isOpen || isLoadingAgents || total === 0) {
+            if (!isOpen) {
                 setViewMode('carousel')
-            } else {
-                // Roulette animation
-                // Roulette animation
-                setViewMode('carousel')
-                setIsSpinning(true)
-                setActiveIndex(0) // Start at the far left
-
-                // True Infinite unidirectional slide (Shortened for speed)
-                const targetIndex = Math.floor(Math.random() * 3) + 3; // Desplaza de 3 a 5 cartas máximo
-
-                let currentSpin = 0
-
-                const runSpin = () => {
-                    if (currentSpin < targetIndex) {
-                        currentSpin++
-                        setActiveIndex(currentSpin)
-
-                        // Interpolación exponencial muy suave (motor frenando)
-                        const progress = currentSpin / targetIndex
-                        const ms = 40 + Math.pow(progress, 2.5) * 200
-                        spinTimeout.current = setTimeout(runSpin, ms)
-                    } else {
-                        // Pequeña espera para que asiente la animación
-                        setTimeout(() => setIsSpinning(false), 300)
-                    }
-                }
-
-                spinTimeout.current = setTimeout(runSpin, 40)
+                setIsSpinning(false)
+                if (spinTimeout.current) clearTimeout(spinTimeout.current)
             }
-        } else {
+            return;
+        }
+
+        if (openDirectly && initialIndex !== undefined && initialIndex !== null) {
+            setActiveIndex(initialIndex)
+            setViewMode('detail')
+        } else if (initialIndex !== undefined && initialIndex !== null) {
+            setActiveIndex(initialIndex)
             setViewMode('carousel')
-            setIsSpinning(false)
-            if (spinTimeout.current) clearTimeout(spinTimeout.current)
+        } else {
+            // Roulette animation
+            setViewMode('carousel')
+            setIsSpinning(true)
+            setActiveIndex(0)
+
+            const targetIndex = Math.min(Math.floor(Math.random() * 3) + 3, total - 1);
+            let currentSpin = 0
+
+            const runSpin = () => {
+                if (currentSpin < targetIndex) {
+                    currentSpin++
+                    setActiveIndex(currentSpin)
+                    const progress = currentSpin / targetIndex
+                    const ms = 40 + Math.pow(progress, 2.5) * 200
+                    spinTimeout.current = setTimeout(runSpin, ms)
+                } else {
+                    setTimeout(() => setIsSpinning(false), 300)
+                }
+            }
+
+            spinTimeout.current = setTimeout(runSpin, 40)
         }
 
         return () => {
             clearTimeout(wheelTimeout.current)
             if (spinTimeout.current) clearTimeout(spinTimeout.current)
         }
-    }, [isOpen, initialIndex, openDirectly, total])
+    }, [isOpen, initialIndex, openDirectly, total, isLoadingAgents])
 
     // Sincronizar el panel de detalle cuando cambia el activeIndex
     useEffect(() => {

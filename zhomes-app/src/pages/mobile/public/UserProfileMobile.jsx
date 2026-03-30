@@ -174,11 +174,15 @@ export default function UserProfileMobile() {
         if (!myAgentId) { setMyAgent(null); return; }
         supabase
             .from('zhomes_agents')
-            .select('id, full_name, photo_url, email, phone, title')
+            .select('id, full_name, first_name, last_name, email, phone, bio, status')
             .eq('id', myAgentId)
             .maybeSingle()
             .then(({ data }) => {
-                if (data) setMyAgent({ ...data, name: data.full_name, photo: data.photo_url });
+                if (data) setMyAgent({
+                    ...data,
+                    name: data.full_name,
+                    photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
+                });
             });
     }, [myAgentId]);
 
@@ -672,7 +676,11 @@ export default function UserProfileMobile() {
                 onSelect={async (agent) => {
                     localStorage.setItem('zhomes_my_agent', agent.id);
                     setMyAgentId(agent.id);
-                    setMyAgent({ ...agent, name: agent.full_name, photo: agent.photo_url });
+                    setMyAgent({
+                        ...agent,
+                        name: agent.full_name,
+                        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.full_name)}&background=E31E24&color=fff&size=200&bold=true`
+                    });
                     setShowAgentModal(false);
                     // Guardar en Supabase user_metadata
                     if (user && !user.isDemo) {
