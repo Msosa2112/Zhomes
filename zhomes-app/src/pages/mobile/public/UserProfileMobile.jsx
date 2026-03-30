@@ -552,7 +552,7 @@ export default function UserProfileMobile() {
                                 .from('prequal_estimates')
                                 .select('result, updated_at, credit_tier_label')
                                 .eq('user_id', user.id)
-                                .single()
+                                .maybeSingle()
                                 .then(({ data }) => { if (data?.result) setSavedPrequal(data) })
                         }
                     }}

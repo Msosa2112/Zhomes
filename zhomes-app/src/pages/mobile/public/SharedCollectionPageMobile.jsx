@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
+import { useProperties } from '../../../context/PropertyContext'
 import { MapPin, Heart, ExternalLink, ArrowLeft } from 'lucide-react'
 import { motion } from 'motion/react'
 import './SharedCollectionPageMobile.css'
 
 export default function SharedCollectionPageMobile() {
     const { userId } = useParams()
+    const { properties: globalProperties } = useProperties()
     const [properties, setProperties] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -16,9 +17,6 @@ export default function SharedCollectionPageMobile() {
     useEffect(() => {
         const fetchSharedFavorites = async () => {
             try {
-                // Get the user's name if we had a profiles table. For now, since user_metadata isn't directly queryable for other users via public anon, we might just show "Colección Compartida"
-                // Although, if it's the current user, we can get their name. If not, generic string.
-                
                 // Fetch the favorites
                 const { data: favs, error: favError } = await supabase
                     .from('user_favorites')
@@ -33,22 +31,21 @@ export default function SharedCollectionPageMobile() {
                     return
                 }
 
-                const propIds = favs.map(f => `'${f.property_id}'`).join(',')
-                
-                // Fetch details from Spark API
-                const data = await SparkService.getActiveListings(`Id In (${propIds})`, 50)
-                const results = data.D?.Results || []
-                
-                const mapped = results.map(p => ({
-                    id: String(p.Id),
-                    address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                    city: `${p.StandardFields.City || ''}, ${p.StandardFields.StateOrProvince || ''}`,
-                    price: p.StandardFields.ListPrice || 0,
-                    image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                    beds: p.StandardFields.BedsTotal || 0,
-                    baths: p.StandardFields.BathsTotal || 0,
-                    sqft: p.StandardFields.BuildingAreaTotal || 0,
-                }))
+                // Match against already-loaded global properties
+                const favIds = new Set(favs.map(f => String(f.property_id)))
+                const allProps = globalProperties || []
+                const mapped = allProps
+                    .filter(p => favIds.has(String(p.id)))
+                    .map(p => ({
+                        id: String(p.id),
+                        address: p.address || 'Dirección no disponible',
+                        city: p.city || '',
+                        price: p.price || 0,
+                        image: p.image || p.primary_photo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                        beds: p.beds || 0,
+                        baths: p.baths || 0,
+                        sqft: p.sqft || 0,
+                    }))
 
                 setProperties(mapped)
             } catch (err) {
@@ -65,7 +62,7 @@ export default function SharedCollectionPageMobile() {
             setError("Usuario no encontrado.")
             setLoading(false)
         }
-    }, [userId])
+    }, [userId, globalProperties])
 
     if (loading) return <div className="shared-centered">Cargando colección...</div>
     if (error) return <div className="shared-centered error">{error}</div>

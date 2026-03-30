@@ -118,7 +118,7 @@ export default function PrequalToolMobile({ onClose, userId }) {
                 .from('prequal_estimates')
                 .select('*')
                 .eq('user_id', userId)
-                .single()
+                .maybeSingle()
 
             if (data) {
                 setGrossMonthly(String(data.gross_monthly))

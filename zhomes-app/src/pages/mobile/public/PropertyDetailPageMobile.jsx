@@ -134,7 +134,7 @@ export default function PropertyDetailPageMobile() {
                 .select('*')
                 .eq('user_id', session.user.id)
                 .eq('property_id', property.id)
-                .single()
+                .maybeSingle()
 
             if (data) setIsFavorite(true)
         }
