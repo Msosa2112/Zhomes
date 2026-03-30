@@ -52,9 +52,11 @@ export default function SwipeModePageMobile() {
     const handleSwipe = async (direction, propertyId) => {
         if (direction === 'right' && user) {
             try {
+                const propertyData = properties.find(p => String(p.id) === String(propertyId));
                 await supabase.from('user_favorites').insert([{
                     user_id: user.id,
-                    property_id: propertyId
+                    property_id: propertyId,
+                    property_data: propertyData || null
                 }])
             } catch (error) {
                 console.error("Error saving favorite:", error)

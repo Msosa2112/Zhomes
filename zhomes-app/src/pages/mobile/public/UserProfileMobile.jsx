@@ -114,11 +114,18 @@ export default function UserProfileMobile() {
             }
             setUser(currentUser)
 
+            // Sync assigned agent from metadata
+            const assignedAgentId = currentUser.user_metadata?.assigned_realtor_id || localStorage.getItem('zhomes_my_agent');
+            if (assignedAgentId) {
+                setMyAgentId(assignedAgentId);
+                localStorage.setItem('zhomes_my_agent', assignedAgentId);
+            }
+
             // Fetch favorites from DB (skip for demo users to avoid UUID constraint errors)
             if (!currentUser.isDemo) {
                 const { data: favsData, error: favsError } = await supabase
                     .from('user_favorites')
-                    .select('property_id')
+                    .select('property_id, property_data')
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false })
 
@@ -127,19 +134,22 @@ export default function UserProfileMobile() {
                 }
 
                 if (favsData && favsData.length > 0) {
-                    // Match favorites against already-loaded properties from context
-                    const favIds = new Set(favsData.map(f => String(f.property_id)))
                     const allProps = globalProperties || []
-                    const matched = allProps
-                        .filter(p => favIds.has(String(p.id)))
-                        .map(p => ({
-                            id: String(p.id),
-                            address: p.address || 'Dirección no disponible',
-                            price: p.price || 0,
+                    
+                    const matched = favsData.map(fav => {
+                        const ctxMatch = allProps.find(p => String(p.id) === String(fav.property_id));
+                        const p = fav.property_data || ctxMatch || { id: fav.property_id };
+                        
+                        return {
+                            id: String(p.id || fav.property_id),
+                            address: p.address || p.UnparsedAddress || 'Dirección no disponible',
+                            price: p.price || p.ListPrice || 0,
                             image: p.image || p.primary_photo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                            beds: p.beds || 0,
-                            baths: p.baths || 0
-                        }))
+                            beds: p.beds || p.BedsTotal || 0,
+                            baths: p.baths || p.BathroomsTotalInteger || 0
+                        };
+                    })
+                    
                     setFavorites(matched)
                 }
             }
@@ -647,10 +657,20 @@ export default function UserProfileMobile() {
             <RealtorSelectorModal 
                 isOpen={showAgentModal} 
                 onClose={() => setShowAgentModal(false)}
-                onSelect={(agent) => {
+                onSelect={async (agent) => {
                     localStorage.setItem('zhomes_my_agent', agent.id);
                     setMyAgentId(agent.id);
                     setShowAgentModal(false);
+                    // Guardar en Supabase user_metadata
+                    if (user && !user.isDemo) {
+                        try {
+                            await supabase.auth.updateUser({
+                                data: { assigned_realtor_id: agent.id }
+                            });
+                        } catch (e) {
+                            console.error('Error saving agent', e);
+                        }
+                    }
                 }}
             />
         </>

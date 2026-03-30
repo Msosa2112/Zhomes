@@ -34,9 +34,13 @@ export default function CoShoppingMobile() {
             }
 
             if (!activeUser) {
-                // Save current URL to redirect back after login
+                // Save current URL to redirect back after login/register
                 localStorage.setItem('zhomes_redirect_after_login', window.location.pathname + window.location.search);
-                navigate('/login');
+                if (inviteParam) {
+                    navigate('/registro', { replace: true });
+                } else {
+                    navigate('/login', { replace: true });
+                }
                 return;
             }
             setUser(activeUser);

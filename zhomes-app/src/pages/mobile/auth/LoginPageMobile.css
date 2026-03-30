@@ -7,7 +7,7 @@
     position: relative;
     overflow-y: auto;
     background: #000;
-    padding-top: 5rem; /* Evita que el navbar superior corte el contenido */
+    padding-top: 1.5rem; /* Reduced to save space */
 }
 
 .ml-bg {
@@ -21,7 +21,7 @@
     position: relative;
     z-index: 10;
     margin-top: auto;
-    padding: 3rem 1.5rem calc(5rem + env(safe-area-inset-bottom));
+    padding: 2rem 1.5rem calc(2rem + env(safe-area-inset-bottom));
     border-top-left-radius: 32px;
     border-top-right-radius: 32px;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);

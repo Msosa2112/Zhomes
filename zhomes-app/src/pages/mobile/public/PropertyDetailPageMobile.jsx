@@ -130,6 +130,17 @@ export default function PropertyDetailPageMobile() {
         const checkFavoriteStatus = async () => {
             if (!property?.id) return
             const { data: { session } } = await supabase.auth.getSession()
+            
+            // Sync agent from metadata if user logged in
+            if (session?.user?.user_metadata?.assigned_realtor_id) {
+                const agentId = session.user.user_metadata.assigned_realtor_id;
+                const foundAgent = REALTORS.find(r => String(r.id) === String(agentId));
+                if (foundAgent) {
+                    setSelectedRealtor(foundAgent);
+                    localStorage.setItem('zhomes_my_agent', agentId);
+                }
+            }
+
             if (!session) return
 
             const { data } = await supabase
@@ -166,7 +177,8 @@ export default function PropertyDetailPageMobile() {
                     .from('user_favorites')
                     .insert([{ 
                         user_id: session.user.id, 
-                        property_id: property.id 
+                        property_id: property.id,
+                        property_data: property
                     }])
                 setIsFavorite(true)
             }

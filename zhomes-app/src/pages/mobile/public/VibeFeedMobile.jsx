@@ -400,14 +400,12 @@ function RealtorContactSheet({ realtor, onClose }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="sheet-btn primary-btn"
-                            onClick={(e) => e.stopPropagation()}
                         >
                             <MessageCircle size={20} /> Whatsapp
                         </a>
                         <a 
                             href={`tel:+${realtorPhone}`}
                             className="sheet-btn secondary-btn"
-                            onClick={(e) => e.stopPropagation()}
                         >
                             <Phone size={20} /> Llamar
                         </a>

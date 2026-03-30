@@ -139,9 +139,19 @@ export default function PropertiesPageMobile() {
         } else {
             // Add favorite
             setFavorites(prev => [...prev, pid])
+            
+            // Try to find full property data for saving offline/cache
+            const propertyObj = displayProperties.find(p => String(p.id) === pid) || 
+                                activePool.find(p => String(p.id) === pid) || 
+                                offMarketPool.find(p => String(p.id) === pid);
+
             const { error } = await supabase
                 .from('user_favorites')
-                .insert({ user_id: user.id, property_id: pid })
+                .insert({ 
+                    user_id: user.id, 
+                    property_id: pid,
+                    property_data: propertyObj || null
+                })
             if (error) {
                 console.error('[ZH-FAV] Insert error:', JSON.stringify(error))
                 // If it's a duplicate, that's fine - it's already saved

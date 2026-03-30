@@ -20,7 +20,7 @@ export default function SharedCollectionPageMobile() {
                 // Fetch the favorites
                 const { data: favs, error: favError } = await supabase
                     .from('user_favorites')
-                    .select('property_id')
+                    .select('property_id, property_data')
                     .eq('user_id', userId)
                 
                 if (favError) throw favError
@@ -31,21 +31,22 @@ export default function SharedCollectionPageMobile() {
                     return
                 }
 
-                // Match against already-loaded global properties
-                const favIds = new Set(favs.map(f => String(f.property_id)))
+                // Match against already-loaded global properties, use property_data as fallback
                 const allProps = globalProperties || []
-                const mapped = allProps
-                    .filter(p => favIds.has(String(p.id)))
-                    .map(p => ({
-                        id: String(p.id),
-                        address: p.address || 'Dirección no disponible',
+                const mapped = favs.map(fav => {
+                    const ctxMatch = allProps.find(p => String(p.id) === String(fav.property_id));
+                    const p = fav.property_data || ctxMatch || { id: fav.property_id };
+                    return {
+                        id: String(p.id || fav.property_id),
+                        address: p.address || p.UnparsedAddress || 'Dirección no disponible',
                         city: p.city || '',
-                        price: p.price || 0,
+                        price: p.price || p.ListPrice || 0,
                         image: p.image || p.primary_photo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                        beds: p.beds || 0,
-                        baths: p.baths || 0,
-                        sqft: p.sqft || 0,
-                    }))
+                        beds: p.beds || p.BedsTotal || 0,
+                        baths: p.baths || p.BathroomsTotalInteger || 0,
+                        sqft: p.sqft || p.LivingArea || 0,
+                    };
+                });
 
                 setProperties(mapped)
             } catch (err) {
