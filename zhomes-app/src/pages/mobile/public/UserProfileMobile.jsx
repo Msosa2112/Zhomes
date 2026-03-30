@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users, Search, FileCheck, Key, Home, Compass, MapPin, SlidersHorizontal, DollarSign, TrendingUp, Shield, Vault, ChevronRight, Lock, BarChart3 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
-import { SparkService } from '../../../services/sparkService'
-import { MOCK_PROPERTIES } from '../../../data/mockData'
+import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
     const navigate = useNavigate()
+    const { properties: globalProperties } = useProperties()
     const [user, setUser] = useState(null)
     const [favorites, setFavorites] = useState([])
     const [loading, setLoading] = useState(true)
@@ -108,37 +108,33 @@ export default function UserProfileMobile() {
             setUser(currentUser)
 
             // Fetch favorites from DB (skip for demo users to avoid UUID constraint errors)
-            const { data: favsData } = currentUser.isDemo ? { data: [] } : await supabase
-                .from('user_favorites')
-                .select('property_id')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false })
+            if (!currentUser.isDemo) {
+                const { data: favsData, error: favsError } = await supabase
+                    .from('user_favorites')
+                    .select('property_id')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
 
-            if (favsData && favsData.length > 0) {
-                // Fetch details from Spark API for each favorite
-                const promises = favsData.map(async (fav) => {
-                    try {
-                        const data = await SparkService.getListingDetails(fav.property_id)
-                        const p = data.D?.Results?.[0]
-                        if (p) {
-                            return {
-                                id: String(p.Id),
-                                address: p.StandardFields.UnparsedAddress || 'Dirección no disponible',
-                                price: p.StandardFields.ListPrice || 0,
-                                image: p.StandardFields.Photos?.[0]?.Uri800 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                                beds: p.StandardFields.BedsTotal || 0,
-                                baths: p.StandardFields.BathsTotal || 0
-                            }
-                        }
-                    } catch (e) {
-                        // Fallback to mock if API fails
-                        const fallbackProp = MOCK_PROPERTIES.find(mp => String(mp.id) === fav.property_id);
-                        if(fallbackProp) return { ...fallbackProp, id: String(fallbackProp.id) };
-                    }
-                    return null
-                })
-                const results = await Promise.all(promises)
-                setFavorites(results.filter(Boolean))
+                if (favsError) {
+                    console.error('[ZH-PROFILE] Error loading favorites:', favsError)
+                }
+
+                if (favsData && favsData.length > 0) {
+                    // Match favorites against already-loaded properties from context
+                    const favIds = new Set(favsData.map(f => String(f.property_id)))
+                    const allProps = globalProperties || []
+                    const matched = allProps
+                        .filter(p => favIds.has(String(p.id)))
+                        .map(p => ({
+                            id: String(p.id),
+                            address: p.address || 'Dirección no disponible',
+                            price: p.price || 0,
+                            image: p.image || p.primary_photo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
+                            beds: p.beds || 0,
+                            baths: p.baths || 0
+                        }))
+                    setFavorites(matched)
+                }
             }
             setLoading(false)
             setLoadingFavs(false)
@@ -149,7 +145,7 @@ export default function UserProfileMobile() {
                     .from('prequal_estimates')
                     .select('result, updated_at, credit_tier_label')
                     .eq('user_id', currentUser.id)
-                    .single()
+                    .maybeSingle()
                 if (prequalData?.result) setSavedPrequal(prequalData)
             }
         }
