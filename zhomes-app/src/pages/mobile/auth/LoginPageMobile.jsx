@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Key, Mail, AlertCircle, UserPlus } from 'lucide-react'
 import { supabase } from '../../../lib/supabaseClient'
@@ -8,8 +8,28 @@ export default function LoginPageMobile() {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true) // Start loading while checking auth
     const [errorMsg, setErrorMsg] = useState('')
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const demoRaw = localStorage.getItem('zhomes_demo_user')
+            if (demoRaw) {
+                navigate('/perfil', { replace: true })
+                return
+            }
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session?.user) {
+                const role = session.user.user_metadata?.role || 'client'
+                if (role === 'realtor') navigate('/realtor', { replace: true })
+                else if (role === 'broker') navigate('/dashboard', { replace: true })
+                else navigate('/perfil', { replace: true })
+            } else {
+                setLoading(false)
+            }
+        }
+        checkAuth()
+    }, [navigate])
 
     const handleEmailLogin = async (e) => {
         e.preventDefault()

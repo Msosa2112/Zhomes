@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map, ChevronDown, Tag, Lock } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react'
 import { useProperties } from '../../../context/PropertyContext'
+import { supabase } from '../../../lib/supabaseClient'
 import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
 import ZSlider from '../../../components/ui/ZSlider'
 import './PropertiesPageMobile.css'
@@ -61,6 +62,56 @@ export default function PropertiesPageMobile() {
     const [sqftMin, setSqftMin] = useState(0)
     const [sqftMax, setSqftMax] = useState(10000)
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || searchParams.get('q') || '')
+
+    const [user, setUser] = useState(null)
+    const [favorites, setFavorites] = useState([])
+
+    useEffect(() => {
+        const checkUserAndFavs = async () => {
+            let activeUser = null;
+            const demoUser = localStorage.getItem('zhomes_demo_user');
+            if (demoUser) {
+                activeUser = JSON.parse(demoUser);
+            } else {
+                const { data: { session } } = await supabase.auth.getSession();
+                activeUser = session?.user || null;
+            }
+            if (activeUser) {
+                setUser(activeUser)
+                const { data: favs } = await supabase
+                    .from('user_favorites')
+                    .select('property_id')
+                    .eq('user_id', activeUser.id)
+                if (favs) {
+                    setFavorites(favs.map(f => String(f.property_id)))
+                }
+            }
+        }
+        checkUserAndFavs()
+    }, [])
+
+    const toggleFavorite = async (e, propertyId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!user) {
+            alert("Inicia sesión para guardar favoritos")
+            return
+        }
+
+        const isFav = favorites.includes(String(propertyId))
+
+        if (isFav) {
+            setFavorites(prev => prev.filter(id => id !== String(propertyId)))
+            await supabase.from('user_favorites').delete()
+                .eq('user_id', user.id).eq('property_id', propertyId)
+        } else {
+            setFavorites(prev => [...prev, String(propertyId)])
+            await supabase.from('user_favorites').insert([{
+                user_id: user.id,
+                property_id: propertyId
+            }])
+        }
+    }
 
     const getPercent = (val, min, max) => Math.round(((val - min) / (max - min)) * 100)
 
@@ -518,8 +569,11 @@ export default function PropertiesPageMobile() {
                                 )
                             })()}
 
-                            <button className="mgc-like-btn" onClick={e => e.preventDefault()}>
-                                <Heart size={16} color="var(--zhomes-red)" />
+                            <button 
+                                className={`mgc-like-btn ${favorites.includes(String(p.id)) ? 'active' : ''}`}
+                                onClick={e => toggleFavorite(e, p.id)}
+                            >
+                                <Heart size={16} color="var(--zhomes-red)" fill={favorites.includes(String(p.id)) ? "currentColor" : "none"} />
                             </button>
 
                             <div className="mgc-overlay">

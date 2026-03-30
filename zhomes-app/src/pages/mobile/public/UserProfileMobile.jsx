@@ -124,6 +124,7 @@ export default function UserProfileMobile() {
     }, [navigate])
 
     const handleLogout = async () => {
+        localStorage.removeItem('zhomes_demo_user')
         await supabase.auth.signOut()
         navigate('/')
     }
