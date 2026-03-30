@@ -43,6 +43,7 @@ export default function PropertyDetailPageMobile() {
 
     const [isFavorite, setIsFavorite] = useState(false)
     const [togglingFav, setTogglingFav] = useState(false)
+    const [virtualTourOpen, setVirtualTourOpen] = useState(false)
 
     const zhomesLogoMarker = new L.Icon({
         iconUrl: '/assets/logo/fav.png',
@@ -102,6 +103,7 @@ export default function PropertyDetailPageMobile() {
                         lat: p.Latitude || null,
                         lng: p.Longitude || null,
                         desc: p.PublicRemarks || 'Descripción no disponible',
+                        virtual_tour_url: p.VirtualTourURLUnbranded || p.VirtualTourURLBranded || null,
                         exclusive: String(p.ListOfficeName || '').toLowerCase().includes('zhomes')
                     });
                 } else {
@@ -206,8 +208,14 @@ export default function PropertyDetailPageMobile() {
 
             <main className="mpd-content">
                 <div className="mpd-accessories-row">
-                    <button className="mpd-play-btn" onClick={() => alert('Recorrido virtual 3D próximamente disponible.')}>
-                        <Play fill="white" size={16} /> VIDEO
+                    <button className="mpd-play-btn" onClick={() => {
+                        if (property.virtual_tour_url) {
+                            setVirtualTourOpen(true)
+                        } else {
+                            alert('Esta propiedad no cuenta con un recorrido 3D / Video en el MLS.')
+                        }
+                    }}>
+                        <Play fill="white" size={16} /> {property.virtual_tour_url ? 'TOUR 3D' : 'SIN VIDEO'}
                     </button>
                     <button className="mpd-acc-icon-btn" onClick={async () => {
                         if (navigator.share) {
@@ -409,6 +417,33 @@ export default function PropertyDetailPageMobile() {
                     onClose={() => setBookingOpen(false)}
                 />
             )}
+
+            <AnimatePresence>
+                {virtualTourOpen && property.virtual_tour_url && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                        backgroundColor: '#000', zIndex: 9999, display: 'flex', flexDirection: 'column'
+                    }}>
+                        <div style={{
+                            padding: '1rem', display: 'flex', justifyContent: 'flex-end',
+                            background: 'linear-gradient(to bottom, rgba(0,0,0,0.8), transparent)'
+                        }}>
+                            <button onClick={() => setVirtualTourOpen(false)} style={{
+                                width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)',
+                                color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                                ✕
+                            </button>
+                        </div>
+                        <iframe 
+                            src={property.virtual_tour_url}
+                            style={{ flex: 1, border: 'none', width: '100%', backgroundColor: '#000' }}
+                            allow="xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen; autoplay; protected-media"
+                            allowFullScreen
+                        />
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

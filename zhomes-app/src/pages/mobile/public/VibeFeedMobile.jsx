@@ -187,25 +187,57 @@ function VibePost({ property, isActive, onOpenRealtor }) {
     const navigate = useNavigate();
     const videoRef = useRef(null);
 
+    const [localPlay, setLocalPlay] = useState(true);
     const aiBullets = extractAIHighlights(property.description);
 
-    // Play/pause video based on active state
+    // Play/pause video based on active state and local play state
     useEffect(() => {
         if (!videoRef.current) return;
-        if (isActive) {
-            videoRef.current.play().catch(() => {});
+        
+        if (isActive && localPlay) {
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // Ignore autoplay interruptions gracefully
+                });
+            }
         } else {
             videoRef.current.pause();
-            videoRef.current.currentTime = 0;
+            if (!isActive) {
+                videoRef.current.currentTime = 0;
+                setLocalPlay(true); // reset if we scroll away
+            }
         }
-    }, [isActive]);
+    }, [isActive, localPlay]);
+
+    const togglePlay = () => {
+        setLocalPlay(!localPlay);
+    };
 
     const handleLike = () => {
         setLiked(!liked);
     };
 
+    const handleShare = async () => {
+        const shareData = {
+            title: `🏠 ZHomes Vibe: ${property.property_address || property.address}`,
+            text: `¡Mira esta increíble propiedad en ${property.city} por $${property.price?.toLocaleString()}!`,
+            url: window.location.origin + `/propiedades/${property.id}`,
+        };
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                navigator.clipboard.writeText(shareData.url);
+                alert("Enlace copiado al portapapeles");
+            }
+        } catch (err) {
+            console.error("Error sharing:", err);
+        }
+    };
+
     return (
-        <div className="vibe-post">
+        <div className="vibe-post" onClick={togglePlay}>
             {/* Native Video Background */}
             <div className="vibe-media-wrapper">
                 <video
@@ -215,9 +247,16 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                     loop
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="auto"
                 />
                 <div className="vibe-gradient-overlay"></div>
+                
+                {/* Visual indicator when paused */}
+                {!localPlay && (
+                    <div className="vibe-center-play">
+                        <Play size={48} color="white" fill="white" />
+                    </div>
+                )}
             </div>
 
 
@@ -225,30 +264,30 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
             {/* Right Action Column */}
             <div className="vibe-action-col">
-                <div className="vibe-action-item" onClick={onOpenRealtor}>
+                <div className="vibe-action-item" onClick={(e) => { e.stopPropagation(); onOpenRealtor(); }}>
                     <div className="vibe-realtor-profile">
                         <img src="/assets/logo/fav.png" alt="ZHomes" />
                         <button className="vibe-realtor-add">+</button>
                     </div>
                 </div>
 
-                <div className="vibe-action-item" onClick={handleLike}>
-                    <motion.div whileTap={{ scale: 0.8 }}>
-                        <Heart size={32} color={liked ? '#e31e24' : 'white'} fill={liked ? '#e31e24' : 'transparent'} />
+                <div className="vibe-action-item" onClick={(e) => { e.stopPropagation(); handleLike(); }}>
+                    <motion.div whileTap={{ scale: 0.8 }} className="vibe-icon-bg">
+                        <Heart size={26} color={liked ? '#e31e24' : 'white'} fill={liked ? '#e31e24' : 'transparent'} />
                     </motion.div>
                     <span>{Math.floor(Math.random() * 500) + 12}</span>
                 </div>
 
-                <div className="vibe-action-item" onClick={() => navigate(`/propiedades/${property.id}`)}>
+                <div className="vibe-action-item" onClick={(e) => { e.stopPropagation(); navigate(`/propiedades/${property.id}`); }}>
                     <motion.div whileTap={{ scale: 0.8 }} className="vibe-icon-bg">
-                        <Info size={28} color="white" />
+                        <Info size={26} color="white" />
                     </motion.div>
                     <span>Detalles</span>
                 </div>
 
-                <div className="vibe-action-item">
-                    <motion.div whileTap={{ scale: 0.8 }}>
-                        <Share2 size={32} color="white" />
+                <div className="vibe-action-item" onClick={(e) => { e.stopPropagation(); handleShare(); }}>
+                    <motion.div whileTap={{ scale: 0.8 }} className="vibe-icon-bg">
+                        <Share2 size={26} color="white" />
                     </motion.div>
                     <span>Compartir</span>
                 </div>
@@ -274,7 +313,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                     <div className="v-stat"><Bed size={16}/> {property.beds} Hab</div>
                     <div className="v-stat"><Bath size={16}/> {property.baths} Ba</div>
                     {/* 🔥 NEW: Calculadora de Hipoteca Interactiva */}
-                    <div className="v-stat mortgage-clickable" onClick={() => setShowMortgage(!showMortgage)}>
+                    <div className="v-stat mortgage-clickable" onClick={(e) => { e.stopPropagation(); setShowMortgage(!showMortgage); }}>
                         <Square size={16}/> 
                         {showMortgage ? `~$${Math.round(property.price * 0.0068).toLocaleString()}/mes` : `${property.sqft} sqft`}
                     </div>
@@ -301,7 +340,7 @@ function RealtorContactSheet({ realtor, onClose }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
         >
             <motion.div 
                 className="vibe-realtor-sheet"

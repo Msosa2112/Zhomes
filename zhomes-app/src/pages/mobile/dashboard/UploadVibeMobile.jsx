@@ -7,7 +7,7 @@ import './UploadVibeMobile.css';
 
 export default function UploadVibeMobile() {
     const navigate = useNavigate();
-    const { zhomesAgents } = useProperties();
+    const { zhomesAgents, properties } = useProperties();
     const fileInputRef = useRef(null);
 
     const [videoFile, setVideoFile] = useState(null);
@@ -175,6 +175,39 @@ export default function UploadVibeMobile() {
 
                 {/* Property Details Form */}
                 <div className="upload-form">
+                    <div className="form-group">
+                        <label>Vincular a Propiedad Existente</label>
+                        <select
+                            onChange={(e) => {
+                                const propId = e.target.value;
+                                if (!propId) return;
+                                const p = properties?.find(x => String(x.id) === String(propId));
+                                if (p) {
+                                    setForm(prev => ({
+                                        ...prev,
+                                        property_address: p.address || p.property_address || '',
+                                        city: p.city || 'Louisville',
+                                        zip: p.zip || '',
+                                        price: p.price || '',
+                                        beds: p.beds || '',
+                                        baths: p.baths || '',
+                                        sqft: p.sqft || '',
+                                        description: p.description || '',
+                                        realtor_name: p.agentName || p.realtor_name || '',
+                                    }));
+                                }
+                            }}
+                        >
+                            <option value="">Selecciona una propiedad (Opcional)</option>
+                            {properties?.map(p => (
+                                <option key={p.id} value={p.id}>
+                                    {p.address || p.property_address} - ${p.price?.toLocaleString()}
+                                </option>
+                            ))}
+                        </select>
+                        <small style={{ color: '#aaa', marginTop: 4, display: 'block' }}>Al seleccionar se autocompletarán los datos.</small>
+                    </div>
+
                     <div className="form-group">
                         <label>Dirección *</label>
                         <input

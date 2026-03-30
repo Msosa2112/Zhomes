@@ -55,5 +55,10 @@ export default function ProtectedRoute() {
         return <Navigate to="/login" replace />
     }
 
+    const role = user.user_metadata?.role || user.role
+    if (!role) {
+        return <Navigate to="/completar-perfil" replace />
+    }
+
     return <Outlet />
 }

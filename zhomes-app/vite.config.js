@@ -95,6 +95,11 @@ export default defineConfig(({ mode }) => {
               proxyReq.setHeader('X-SparkApi-User-Agent', 'ZhomesApp/1.0');
             });
           }
+        },
+        '/api/walkscore': {
+          target: 'https://api.walkscore.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/walkscore/, '/score')
         }
       }
     },
