@@ -42,11 +42,11 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     const [realtors, setRealtors] = useState([])
     const [isLoadingAgents, setIsLoadingAgents] = useState(true)
 
-    // Load agents from Supabase (no photo_url column — use avatar from name)
+    // Load agents from Supabase — uses real photo if available, avatar as fallback
     useEffect(() => {
         supabase
             .from('zhomes_agents')
-            .select('id, full_name, first_name, last_name, email, phone, bio, title, status')
+            .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
             .eq('status', 'Active')
             .order('full_name')
             .then(({ data, error }) => {
@@ -55,8 +55,7 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                     setRealtors(data.map(a => ({
                         ...a,
                         name: a.full_name,
-                        // Generate avatar since MLS doesn't provide photos
-                        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`
+                        photo: a.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`
                     })));
                 }
                 setIsLoadingAgents(false);

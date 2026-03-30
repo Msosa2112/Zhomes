@@ -14,7 +14,7 @@ export default function RealtorsPageMobile() {
         const fetchAgents = async () => {
             const { data, error } = await supabase
                 .from('zhomes_agents')
-                .select('id, full_name, first_name, last_name, email, phone, bio, status')
+                .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
                 .eq('status', 'Active')
                 .order('full_name')
             if (error) console.warn('[RealtorsPage] Error:', error.message)
@@ -23,8 +23,7 @@ export default function RealtorsPageMobile() {
                 setRealtors(data.map(a => ({
                     ...a,
                     name: a.full_name,
-                    // No photo column in MLS data — use generated avatar
-                    photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`,
+                    photo: a.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`,
                     title: 'ZHomes Real Estate Agent',
                 })))
             }

@@ -174,14 +174,14 @@ export default function UserProfileMobile() {
         if (!myAgentId) { setMyAgent(null); return; }
         supabase
             .from('zhomes_agents')
-            .select('id, full_name, first_name, last_name, email, phone, bio, status')
+            .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
             .eq('id', myAgentId)
             .maybeSingle()
             .then(({ data }) => {
                 if (data) setMyAgent({
                     ...data,
                     name: data.full_name,
-                    photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
+                    photo: data.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
                 });
             });
     }, [myAgentId]);
