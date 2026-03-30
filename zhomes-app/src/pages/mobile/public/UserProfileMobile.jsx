@@ -51,6 +51,40 @@ export default function UserProfileMobile() {
     })
     const vaultComplete = Object.values(vaultDocs).every(Boolean)
 
+    // Edit Profile State
+    const [showEditProfile, setShowEditProfile] = useState(false)
+    const [editName, setEditName] = useState('')
+    const [editPhone, setEditPhone] = useState('')
+    const [savingProfile, setSavingProfile] = useState(false)
+
+    const openEditProfile = () => {
+        setEditName(user?.user_metadata?.full_name || '')
+        setEditPhone(user?.user_metadata?.phone || user?.phone || '')
+        setShowEditProfile(true)
+    }
+
+    const handleSaveProfile = async () => {
+        setSavingProfile(true)
+        try {
+            const { data, error } = await supabase.auth.updateUser({
+                data: {
+                    full_name: editName,
+                    phone: editPhone,
+                }
+            })
+            if (error) throw error
+            setUser(prev => ({
+                ...prev,
+                user_metadata: { ...prev.user_metadata, full_name: editName, phone: editPhone }
+            }))
+            setShowEditProfile(false)
+        } catch (err) {
+            alert('Error al guardar: ' + err.message)
+        } finally {
+            setSavingProfile(false)
+        }
+    }
+
     useEffect(() => {
         const fetchUserAndFavorites = async () => {
             // Check demo user bypass first (localStorage)
@@ -148,7 +182,7 @@ export default function UserProfileMobile() {
                 <p>{userEmail}</p>
 
                 <div className="up-actions">
-                    <button className="up-btn outline" onClick={() => alert('Función de edición de perfil próximamente disponible.')}>Editar Perfil</button>
+                    <button className="up-btn outline" onClick={openEditProfile}>Editar Perfil</button>
                     <button className="up-btn flat" onClick={handleLogout}><LogOut size={16}/> Salir</button>
                 </div>
             </header>
@@ -528,6 +562,61 @@ export default function UserProfileMobile() {
                     }}
                     userId={user?.id}
                 />
+            )}
+            {/* Edit Profile Modal */}
+            {showEditProfile && (
+                <div className="up-modal-overlay" onClick={() => setShowEditProfile(false)}>
+                    <div className="up-modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="up-modal-header">
+                            <h2><User size={24} color="var(--zhomes-red)" /> Editar Perfil</h2>
+                            <button className="up-modal-close" onClick={() => setShowEditProfile(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Nombre Completo</label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={e => setEditName(e.target.value)}
+                                    placeholder="Tu nombre completo"
+                                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Teléfono</label>
+                                <input
+                                    type="tel"
+                                    value={editPhone}
+                                    onChange={e => setEditPhone(e.target.value)}
+                                    placeholder="+1 (555) 123-4567"
+                                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Correo Electrónico</label>
+                                <input
+                                    type="email"
+                                    value={user?.email || ''}
+                                    disabled
+                                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', cursor: 'not-allowed' }}
+                                />
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '4px', display: 'block' }}>El correo no se puede cambiar desde aquí</span>
+                            </div>
+                        </div>
+
+                        <button
+                            className="up-btn flat"
+                            style={{ width: '100%', marginTop: '24px', background: 'var(--zhomes-red)', color: 'white', opacity: savingProfile ? 0.6 : 1 }}
+                            onClick={handleSaveProfile}
+                            disabled={savingProfile}
+                        >
+                            {savingProfile ? 'Guardando...' : 'Guardar Cambios'}
+                        </button>
+                    </div>
+                </div>
             )}
         </>
     )

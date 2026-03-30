@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map, ChevronDown, Tag, Lock } from 'lucide-react'
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react'
 import { useProperties } from '../../../context/PropertyContext'
 import { supabase } from '../../../lib/supabaseClient'
@@ -49,6 +49,7 @@ const normalize = (p, offMarket = false) => ({
 
 export default function PropertiesPageMobile() {
     const { properties: globalProperties, offMarketListings, loading: ctxLoading } = useProperties()
+    const navigate = useNavigate()
     const [searchParams] = useSearchParams()
 
     const [typeFilter, setTypeFilter] = useState('Casas')
@@ -94,22 +95,30 @@ export default function PropertiesPageMobile() {
         e.preventDefault();
         e.stopPropagation();
         if (!user) {
-            alert("Inicia sesión para guardar favoritos")
+            navigate('/login')
             return
         }
 
-        const isFav = favorites.includes(String(propertyId))
+        const pid = String(propertyId)
+        const isFav = favorites.includes(pid)
 
         if (isFav) {
-            setFavorites(prev => prev.filter(id => id !== String(propertyId)))
-            await supabase.from('user_favorites').delete()
-                .eq('user_id', user.id).eq('property_id', propertyId)
+            setFavorites(prev => prev.filter(id => id !== pid))
+            const { error } = await supabase.from('user_favorites').delete()
+                .eq('user_id', user.id).eq('property_id', pid)
+            if (error) {
+                console.error('Error removing favorite:', error)
+                setFavorites(prev => [...prev, pid]) // rollback
+            }
         } else {
-            setFavorites(prev => [...prev, String(propertyId)])
-            await supabase.from('user_favorites').insert([{
-                user_id: user.id,
-                property_id: propertyId
-            }])
+            setFavorites(prev => [...prev, pid])
+            const { error } = await supabase.from('user_favorites')
+                .upsert([{ user_id: user.id, property_id: pid }], 
+                    { onConflict: 'user_id,property_id', ignoreDuplicates: true })
+            if (error) {
+                console.error('Error saving favorite:', error)
+                setFavorites(prev => prev.filter(id => id !== pid)) // rollback
+            }
         }
     }
 
