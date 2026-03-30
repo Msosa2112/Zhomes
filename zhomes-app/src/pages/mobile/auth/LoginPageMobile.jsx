@@ -154,9 +154,19 @@ export default function LoginPageMobile() {
                         </button>
                     </div>
 
-                    <button type="submit" className="ml-submit-btn" disabled={loading}>
-                        {loading ? 'Iniciando...' : 'Iniciar Sesión'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button type="submit" className="ml-submit-btn" disabled={loading} style={{ margin: 0, flex: 1, padding: '16px 10px', fontSize: '1rem' }}>
+                            {loading ? 'Iniciando...' : 'Inicia Sesión'}
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => navigate('/registro')}
+                            className="ml-submit-btn" 
+                            style={{ margin: 0, flex: 1, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', padding: '16px 10px', fontSize: '1rem' }}
+                        >
+                            Crear Cuenta
+                        </button>
+                    </div>
                 </form>
 
                 <div className="ml-oauth-divider">
@@ -171,25 +181,6 @@ export default function LoginPageMobile() {
                     <button type="button" className="oauth-btn apple-btn" onClick={() => handleOAuthLogin('apple')} disabled={loading}>
                         <img src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" width="20" />
                         Apple
-                    </button>
-                </div>
-
-                <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: 'white' }}>¿Eres nuevo en ZHomes?</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px' }}>
-                        Crea tu cuenta gratis como Cliente o aplica como Realtor asociado.
-                    </p>
-                    <button 
-                        onClick={() => navigate('/registro')}
-                        style={{
-                            background: 'white', color: 'var(--zhomes-red)', width: '100%', padding: '12px',
-                            borderRadius: '12px', fontWeight: 'bold', fontSize: '1rem',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            cursor: 'pointer', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        }}
-                    >
-                        <UserPlus size={18} />
-                        Crear Cuenta Nueva
                     </button>
                 </div>
 
