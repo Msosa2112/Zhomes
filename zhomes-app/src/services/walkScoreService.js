@@ -2,9 +2,8 @@
  * WalkScore API Service
  * Free tier: 5,000 calls/day
  * Docs: https://www.walkscore.com/professional/api.php
+ * Note: Calls go through /api/walkscore serverless proxy (no CORS issues)
  */
-
-const WALKSCORE_API_KEY = import.meta.env.VITE_WALKSCORE_API_KEY || '';
 
 export const WalkScoreService = {
   /**
@@ -15,22 +14,13 @@ export const WalkScoreService = {
    * @returns {Promise<{walkscore: number, transit: {score: number}, bike: {score: number}, description: string}>}
    */
   async getScore(address, lat, lon) {
-    if (!WALKSCORE_API_KEY) {
-      console.warn('WalkScore API key not configured. Set VITE_WALKSCORE_API_KEY in .env');
-      return null;
-    }
+    if (!address || !lat || !lon) return null;
 
     try {
-      // WalkScore API requires server-side proxy due to CORS
-      // We use our Vite dev server proxy or Supabase Edge Function
       const params = new URLSearchParams({
-        format: 'json',
         address: address,
         lat: lat,
         lon: lon,
-        transit: 1,
-        bike: 1,
-        wsapikey: WALKSCORE_API_KEY
       });
 
       const response = await fetch(`/api/walkscore?${params.toString()}`);
