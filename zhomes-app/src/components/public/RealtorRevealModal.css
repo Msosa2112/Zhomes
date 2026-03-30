@@ -170,8 +170,10 @@
 .marvel-char-card video {
     height: 100%;
     width: auto;
+    max-width: 100%;
     object-fit: contain;
-    pointer-events: none; /* Allows clicks to pass through transparent video areas to buttons below! */
+    object-position: center bottom;   /* anchor from feet up */
+    pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
 }
@@ -404,17 +406,18 @@
     }
 
     .marvel-interaction-layer {
-        padding-top: 120px;
+        padding-top: 80px;
         padding-bottom: 0;
     }
 
     .marvel-char-card {
-        height: 75vh;
-        max-height: auto;
+        height: 80vh;
+        max-height: unset;
     }
     
     .marvel-char-card img,
     .marvel-char-card video {
+        object-position: center bottom;
         -webkit-mask-image: none;
         mask-image: none;
     }
