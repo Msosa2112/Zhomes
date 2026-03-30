@@ -66,6 +66,12 @@ export default function PropertiesPageMobile() {
 
     const [user, setUser] = useState(null)
     const [favorites, setFavorites] = useState([])
+    const [favToast, setFavToast] = useState(null)
+
+    const showToast = (msg, isError = false) => {
+        setFavToast({ msg, isError })
+        setTimeout(() => setFavToast(null), 4000)
+    }
 
     useEffect(() => {
         const checkUserAndFavs = async () => {
@@ -79,12 +85,18 @@ export default function PropertiesPageMobile() {
             }
             if (activeUser) {
                 setUser(activeUser)
-                const { data: favs } = await supabase
-                    .from('user_favorites')
-                    .select('property_id')
-                    .eq('user_id', activeUser.id)
-                if (favs) {
-                    setFavorites(favs.map(f => String(f.property_id)))
+                // Only fetch favorites for real Supabase users (not demo)
+                if (!activeUser.isDemo && activeUser.id && activeUser.id !== 'demo-client-001') {
+                    const { data: favs, error } = await supabase
+                        .from('user_favorites')
+                        .select('property_id')
+                        .eq('user_id', activeUser.id)
+                    if (error) {
+                        console.error('[ZH-FAV] Error loading favorites:', error)
+                    }
+                    if (favs) {
+                        setFavorites(favs.map(f => String(f.property_id)))
+                    }
                 }
             }
         }
@@ -94,8 +106,15 @@ export default function PropertiesPageMobile() {
     const toggleFavorite = async (e, propertyId) => {
         e.preventDefault();
         e.stopPropagation();
+        
         if (!user) {
             navigate('/login')
+            return
+        }
+
+        // Demo users can't save favorites
+        if (user.isDemo || user.id === 'demo-client-001') {
+            showToast('Regístrate con email para guardar favoritos', true)
             return
         }
 
@@ -103,21 +122,37 @@ export default function PropertiesPageMobile() {
         const isFav = favorites.includes(pid)
 
         if (isFav) {
+            // Remove favorite
             setFavorites(prev => prev.filter(id => id !== pid))
-            const { error } = await supabase.from('user_favorites').delete()
-                .eq('user_id', user.id).eq('property_id', pid)
+            const { error } = await supabase
+                .from('user_favorites')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('property_id', pid)
             if (error) {
-                console.error('Error removing favorite:', error)
-                setFavorites(prev => [...prev, pid]) // rollback
+                console.error('[ZH-FAV] Delete error:', error)
+                setFavorites(prev => [...prev, pid])
+                showToast('Error al quitar favorito: ' + error.message, true)
+            } else {
+                showToast('Eliminada de favoritos')
             }
         } else {
+            // Add favorite
             setFavorites(prev => [...prev, pid])
-            const { error } = await supabase.from('user_favorites')
-                .upsert([{ user_id: user.id, property_id: pid }], 
-                    { onConflict: 'user_id,property_id', ignoreDuplicates: true })
+            const { error } = await supabase
+                .from('user_favorites')
+                .insert({ user_id: user.id, property_id: pid })
             if (error) {
-                console.error('Error saving favorite:', error)
-                setFavorites(prev => prev.filter(id => id !== pid)) // rollback
+                console.error('[ZH-FAV] Insert error:', JSON.stringify(error))
+                // If it's a duplicate, that's fine - it's already saved
+                if (error.code === '23505') {
+                    showToast('¡Ya la tenías guardada!')
+                } else {
+                    setFavorites(prev => prev.filter(id => id !== pid))
+                    showToast('Error: ' + error.message, true)
+                }
+            } else {
+                showToast('♥ Guardada en favoritos')
             }
         }
     }
@@ -255,6 +290,19 @@ export default function PropertiesPageMobile() {
 
     return (
         <div className="mobile-props-page">
+            {/* Toast notification for favorites */}
+            {favToast && (
+                <div style={{
+                    position: 'fixed', top: 80, left: '50%', transform: 'translateX(-50%)',
+                    zIndex: 9999, padding: '10px 20px', borderRadius: '12px',
+                    background: favToast.isError ? '#ef4444' : '#10b981',
+                    color: 'white', fontWeight: 600, fontSize: '0.85rem',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.3)', maxWidth: '90vw',
+                    textAlign: 'center', animation: 'slideDown 0.3s ease'
+                }}>
+                    {favToast.msg}
+                </div>
+            )}
             {/* ── Search bar ── */}
             <div className="mpp-header">
                 <form className="mpp-search-bar" onSubmit={(e) => e.preventDefault()} style={{ flex: 1, margin: 0 }}>
