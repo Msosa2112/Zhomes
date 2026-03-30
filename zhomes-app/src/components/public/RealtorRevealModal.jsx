@@ -116,14 +116,9 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
             if (spinTimeout.current) clearTimeout(spinTimeout.current)
         }
     }, [isOpen, initialIndex, openDirectly, total, isLoadingAgents])
-
-    // Sincronizar el panel de detalle cuando cambia el activeIndex
-    useEffect(() => {
-        if (viewMode === 'detail' && onSelect) {
-            const realIndex = ((activeIndex % total) + total) % total;
-            onSelect(realtors[realIndex])
-        }
-    }, [activeIndex, viewMode, onSelect, total])
+    // NOTE: onSelect is called explicitly by the "CONTACT AGENT" button in the detail panel,
+    // NOT automatically when entering detail view. This prevents the parent from closing
+    // the modal prematurely before the user has confirmed their choice.
 
     if (!isOpen) return null
 
