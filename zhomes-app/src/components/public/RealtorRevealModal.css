@@ -156,13 +156,15 @@
 
 .marvel-char-card {
     position: absolute;
+    bottom: 0;                    /* anchor from bottom so body fills upward */
+    left: 50%;                    /* base center — JS translateX offsets from here */
+    transform-origin: bottom center;
     height: 70vh;
     max-height: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    transform-origin: bottom center;
     will-change: transform, opacity;
 }
 
@@ -172,7 +174,7 @@
     width: auto;
     max-width: 100%;
     object-fit: contain;
-    object-position: center bottom;   /* anchor from feet up */
+    object-position: center top;  /* head at top, body below */
     pointer-events: none;
     -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
@@ -411,13 +413,14 @@
     }
 
     .marvel-char-card {
-        height: 80vh;
+        bottom: 70px;          /* above the bottom nav bar */
+        height: 72vh;
         max-height: unset;
     }
     
     .marvel-char-card img,
     .marvel-char-card video {
-        object-position: center bottom;
+        object-position: center top;
         -webkit-mask-image: none;
         mask-image: none;
     }

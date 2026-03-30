@@ -279,7 +279,8 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
         }
 
         return {
-            transform: `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`,
+            // CSS has left:50% so we always start with -50% to truly center, then add carousel offset
+            transform: `translateX(calc(-50% + ${translateX}px)) translateY(${translateY}px) scale(${scale})`,
             opacity,
             zIndex,
             filter,
