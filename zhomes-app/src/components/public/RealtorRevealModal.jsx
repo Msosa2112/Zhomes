@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight, Star, Instagram, Facebook, Phone } from 'lucide-react'
-import { REALTORS, MOCK_PROPERTIES } from '../../data/mockData'
+import { supabase } from '../../lib/supabaseClient'
 import './RealtorRevealModal.css'
 
 // Robust Video Component for iOS Safari compatibility
@@ -39,12 +39,33 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     const [sheetDragStartY, setSheetDragStartY] = useState(null)
     const [wasSwiped, setWasSwiped] = useState(false)
 
+    const [realtors, setRealtors] = useState([])
+    const [isLoadingAgents, setIsLoadingAgents] = useState(true)
+
+    // Load agents from Supabase
+    useEffect(() => {
+        supabase
+            .from('zhomes_agents')
+            .select('id, full_name, photo_url, email, phone, title, bio')
+            .order('full_name')
+            .then(({ data }) => {
+                if (data && data.length > 0) {
+                    setRealtors(data.map(a => ({
+                        ...a,
+                        name: a.full_name,
+                        photo: a.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff`
+                    })));
+                }
+                setIsLoadingAgents(false);
+            });
+    }, []);
+
     const wheelTimeout = useRef(null)
     const spinTimeout = useRef(null)
-    const total = REALTORS.length
+    const total = realtors.length
 
-    // 3 Mock posters for Appearances
-    const appearances = MOCK_PROPERTIES.slice(0, 3).map(p => p.image).filter(Boolean)
+    // Placeholder appearances (no mock properties needed)
+    const appearances = []
 
     useEffect(() => {
         if (isOpen) {
@@ -99,11 +120,19 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     useEffect(() => {
         if (viewMode === 'detail' && onSelect) {
             const realIndex = ((activeIndex % total) + total) % total;
-            onSelect(REALTORS[realIndex])
+            onSelect(realtors[realIndex])
         }
     }, [activeIndex, viewMode, onSelect, total])
 
     if (!isOpen) return null
+
+    if (isLoadingAgents) {
+        return (
+            <div className="marvel-overlay active" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ color: 'white', fontSize: '1.2rem' }}>Cargando agentes...</div>
+            </div>
+        )
+    }
 
     // --- Touch / Mouse Drag ---
     const handlePointerDown = (e) => {
@@ -312,7 +341,7 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
         visibleItems.push({
             virtualIndex,
             realIndex,
-            realtor: REALTORS[realIndex],
+            realtor: realtors[realIndex],
             diff: i
         });
     }

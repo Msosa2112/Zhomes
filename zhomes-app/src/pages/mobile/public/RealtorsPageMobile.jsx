@@ -1,12 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Phone, MessageCircle, X, Mail } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { REALTORS } from '../../../data/mockData'
+import { supabase } from '../../../lib/supabaseClient'
 import './RealtorsPageMobile.css'
 
 export default function RealtorsPageMobile() {
     const [selectedAgent, setSelectedAgent] = useState(null)
+    const [realtors, setRealtors] = useState([])
+    const [loading, setLoading] = useState(true)
     const closeModal = () => setSelectedAgent(null)
+
+    useEffect(() => {
+        const fetchAgents = async () => {
+            const { data, error } = await supabase
+                .from('zhomes_agents')
+                .select('id, full_name, photo_url, email, phone, title, bio')
+                .order('full_name')
+            if (!error && data) {
+                // Map DB fields to what the template expects
+                setRealtors(data.map(a => ({
+                    ...a,
+                    name: a.full_name,
+                    photo: a.photo_url,
+                })))
+            }
+            setLoading(false)
+        }
+        fetchAgents()
+    }, [])
 
     return (
         <div className="mobile-r-page">
@@ -18,49 +39,55 @@ export default function RealtorsPageMobile() {
                     <p>Zhomes Exclusive Agents</p>
                 </header>
 
-                <div className="mr-list">
-                    {REALTORS.map((a, i) => (
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
-                            key={a.id}
-                            className="mr-card"
-                            onClick={() => setSelectedAgent(a)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <motion.img 
-                                src={a.photo} 
-                                alt={a.name} 
-                                className="mr-card-img" 
-                                initial={{ filter: 'grayscale(100%) contrast(1.1)' }}
-                                whileInView={{ filter: 'grayscale(0%) contrast(1.1)' }}
-                                viewport={{ margin: '-35% 0px -35% 0px' }}
-                                transition={{ duration: 0.4 }}
-                            />
-                            <div className="mr-card-info">
-                                <div className="mr-name-wrap">
-                                    <h2>{a.name}</h2>
-                                    <span className="mr-title">{a.title}</span>
-                                </div>
-                                
-                                <div className="mr-contact-rows">
-                                    <div className="mr-c-row"><span className="mr-c-label">M:</span> <span className="mr-c-val">{a.phone}</span></div>
-                                </div>
+                {loading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+                        Cargando agentes...
+                    </div>
+                ) : (
+                    <div className="mr-list">
+                        {realtors.map((a, i) => (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ duration: 0.5, delay: i * 0.1 }}
+                                key={a.id}
+                                className="mr-card"
+                                onClick={() => setSelectedAgent(a)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <motion.img 
+                                    src={a.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=E31E24&color=fff`}
+                                    alt={a.name} 
+                                    className="mr-card-img" 
+                                    initial={{ filter: 'grayscale(100%) contrast(1.1)' }}
+                                    whileInView={{ filter: 'grayscale(0%) contrast(1.1)' }}
+                                    viewport={{ margin: '-35% 0px -35% 0px' }}
+                                    transition={{ duration: 0.4 }}
+                                />
+                                <div className="mr-card-info">
+                                    <div className="mr-name-wrap">
+                                        <h2>{a.name}</h2>
+                                        <span className="mr-title">{a.title}</span>
+                                    </div>
+                                    
+                                    <div className="mr-contact-rows">
+                                        <div className="mr-c-row"><span className="mr-c-label">M:</span> <span className="mr-c-val">{a.phone}</span></div>
+                                    </div>
 
-                                <div className="mr-card-actions">
-                                    <button className="mr-a-btn-round" onClick={(e) => { e.stopPropagation(); window.location.href = `tel:${a.phone}`; }}>
-                                        <Phone size={14} className="mr-action-svg" />
-                                    </button>
-                                    <button className="mr-a-btn-round" onClick={(e) => { e.stopPropagation(); window.location.href = `mailto:${a.email}`; }}>
-                                        <MessageCircle size={14} className="mr-action-svg" />
-                                    </button>
+                                    <div className="mr-card-actions">
+                                        <button className="mr-a-btn-round" onClick={(e) => { e.stopPropagation(); window.location.href = `tel:${a.phone}`; }}>
+                                            <Phone size={14} className="mr-action-svg" />
+                                        </button>
+                                        <button className="mr-a-btn-round" onClick={(e) => { e.stopPropagation(); window.location.href = `mailto:${a.email}`; }}>
+                                            <MessageCircle size={14} className="mr-action-svg" />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
                 <div style={{ height: '110px' }} />
             </div>
@@ -86,7 +113,11 @@ export default function RealtorsPageMobile() {
                                 <X size={20} />
                             </button>
 
-                            <img src={selectedAgent.photo || '/assets/agents/Gil Zaldivar.jpg'} alt={selectedAgent.name} className="mr-modal-avatar" />
+                            <img 
+                                src={selectedAgent.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedAgent.name)}&background=E31E24&color=fff`}
+                                alt={selectedAgent.name} 
+                                className="mr-modal-avatar" 
+                            />
                             
                             <h2 className="mr-modal-name">{selectedAgent.name}</h2>
                             <span className="mr-modal-title">{selectedAgent.title || 'ZHomes Real Estate Agent'}</span>

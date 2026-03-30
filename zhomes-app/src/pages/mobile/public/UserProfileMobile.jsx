@@ -6,7 +6,6 @@ import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
 import RealtorSelectorModal from '../../../components/public/RealtorSelectorModal'
-import { REALTORS } from '../../../data/mockData'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
@@ -68,7 +67,7 @@ export default function UserProfileMobile() {
     // Agent Selection State
     const [myAgentId, setMyAgentId] = useState(() => localStorage.getItem('zhomes_my_agent'))
     const [showAgentModal, setShowAgentModal] = useState(false)
-    const myAgent = myAgentId ? REALTORS.find(r => String(r.id) === String(myAgentId)) : null
+    const [myAgent, setMyAgent] = useState(null)
 
     const handleSaveProfile = async () => {
         setSavingProfile(true)
@@ -169,6 +168,19 @@ export default function UserProfileMobile() {
 
         fetchUserAndFavorites()
     }, [navigate])
+
+    // Load the full agent object from Supabase whenever myAgentId changes
+    useEffect(() => {
+        if (!myAgentId) { setMyAgent(null); return; }
+        supabase
+            .from('zhomes_agents')
+            .select('id, full_name, photo_url, email, phone, title')
+            .eq('id', myAgentId)
+            .maybeSingle()
+            .then(({ data }) => {
+                if (data) setMyAgent({ ...data, name: data.full_name, photo: data.photo_url });
+            });
+    }, [myAgentId]);
 
     const handleLogout = async () => {
         localStorage.removeItem('zhomes_demo_user')
@@ -660,6 +672,7 @@ export default function UserProfileMobile() {
                 onSelect={async (agent) => {
                     localStorage.setItem('zhomes_my_agent', agent.id);
                     setMyAgentId(agent.id);
+                    setMyAgent({ ...agent, name: agent.full_name, photo: agent.photo_url });
                     setShowAgentModal(false);
                     // Guardar en Supabase user_metadata
                     if (user && !user.isDemo) {

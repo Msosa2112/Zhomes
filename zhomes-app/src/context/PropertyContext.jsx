@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { MOCK_PROPERTIES } from '../data/mockData'
 import { SupabasePropertyService } from '../services/supabasePropertyService'
 import { supabase } from '../lib/supabaseClient'
 import { SparkService } from '../services/sparkService'
@@ -11,13 +10,7 @@ export function useProperties() {
 }
 
 export function PropertiesProvider({ children }) {
-    // Initialize with normalized mock data as fallback
-    const normalizedMock = MOCK_PROPERTIES.map(p => ({
-        ...p, id: String(p.id), images: p.images || [p.image],
-        status: p.status || 'Active', exclusive: p.exclusive || false
-    }))
-
-    const [properties, setProperties] = useState(normalizedMock)
+    const [properties, setProperties] = useState([])
     const [zhomesAgents, setZhomesAgents] = useState([])
     const [zhomesOffice, setZhomesOffice] = useState(null)
     const [offMarketListings, setOffMarketListings] = useState([])  // app-uploaded (Fix&Flip, exclusives)
@@ -51,8 +44,8 @@ export function PropertiesProvider({ children }) {
                     const zhomesActive = formattedProps.filter(p => p.exclusive).length;
                     console.log(`✅ Loaded ${formattedProps.length} active MLS properties (${zhomesActive} ZHomes)`);
                 } else {
-                    console.warn('⚠️ Supabase returned 0 active properties, using mock data');
-                    setProperties(normalizedMock);
+                    console.warn('⚠️ Supabase returned 0 active properties');
+                    setProperties([]);
                 }
 
                 // ── Off Market: propiedades subidas desde la app (no vienen del MLS) ──
@@ -119,8 +112,8 @@ export function PropertiesProvider({ children }) {
                 }
 
             } catch (err) {
-                console.warn('⚠️ Data loading error, using mock data:', err.message);
-                setProperties(normalizedMock);
+                console.warn('⚠️ Data loading error:', err.message);
+                setProperties([]);
             } finally {
                 setLoading(false);
             }

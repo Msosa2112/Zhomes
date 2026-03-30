@@ -6,7 +6,6 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useTheme } from '../../../context/ThemeContext'
-import { MOCK_PROPERTIES, REALTORS } from '../../../data/mockData'
 import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
@@ -36,10 +35,7 @@ export default function PropertyDetailPageMobile() {
     const [realtorSelectorOpen, setRealtorSelectorOpen] = useState(false)
     const [viewerOpen, setViewerOpen] = useState(false)
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
-    const [selectedRealtor, setSelectedRealtor] = useState(() => {
-        const savedId = localStorage.getItem('zhomes_my_agent');
-        return savedId ? REALTORS.find(r => String(r.id) === String(savedId)) : null;
-    })
+    const [selectedRealtor, setSelectedRealtor] = useState(null)
     const [bookingOpen, setBookingOpen] = useState(false)
     const { theme } = useTheme()
     const { properties: ctxProperties } = useProperties()
@@ -114,14 +110,8 @@ export default function PropertyDetailPageMobile() {
                 }
             })
             .catch(err => {
-                console.warn("Fallback to mock data:", err.message);
-                const fallbackProp = MOCK_PROPERTIES.find(p => String(p.id) === String(id)) || MOCK_PROPERTIES[0];
-                setProperty({
-                    ...fallbackProp,
-                    id: String(fallbackProp.id),
-                    photos: fallbackProp.images || [fallbackProp.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
-                    desc: fallbackProp.description || 'Hermosa casa completamente renovada en una de las mejores zonas de la ciudad.'
-                });
+                console.warn("Spark fallback failed:", err.message);
+                setProperty(null);
             })
             .finally(() => setLoading(false));
     }, [id, ctxProperties]);
@@ -131,14 +121,18 @@ export default function PropertyDetailPageMobile() {
             if (!property?.id) return
             const { data: { session } } = await supabase.auth.getSession()
             
-            // Sync agent from metadata if user logged in
-            if (session?.user?.user_metadata?.assigned_realtor_id) {
-                const agentId = session.user.user_metadata.assigned_realtor_id;
-                const foundAgent = REALTORS.find(r => String(r.id) === String(agentId));
-                if (foundAgent) {
-                    setSelectedRealtor(foundAgent);
-                    localStorage.setItem('zhomes_my_agent', agentId);
-                }
+            // Sync agent from metadata/localStorage using Supabase
+            const agentId = session?.user?.user_metadata?.assigned_realtor_id || localStorage.getItem('zhomes_my_agent');
+            if (agentId) {
+                localStorage.setItem('zhomes_my_agent', agentId);
+                supabase
+                    .from('zhomes_agents')
+                    .select('id, full_name, photo_url, email, phone, title')
+                    .eq('id', agentId)
+                    .maybeSingle()
+                    .then(({ data }) => {
+                        if (data) setSelectedRealtor({ ...data, name: data.full_name, photo: data.photo_url });
+                    });
             }
 
             if (!session) return
