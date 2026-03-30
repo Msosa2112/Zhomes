@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users, Search, FileCheck, Key, Home, Compass, MapPin, SlidersHorizontal, DollarSign, TrendingUp, Shield, Vault, ChevronRight, Lock, BarChart3 } from 'lucide-react'
+import { Heart, User, Settings, LogOut, ArrowRight, Share, Cpu, X, FileText, UploadCloud, CheckCircle2, Users, Search, FileCheck, Key, Home, Compass, MapPin, SlidersHorizontal, DollarSign, TrendingUp, Shield, Vault, ChevronRight, Lock, BarChart3, UserPlus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
+import RealtorSelectorModal from '../../../components/public/RealtorSelectorModal'
+import { REALTORS } from '../../../data/mockData'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
@@ -62,6 +64,11 @@ export default function UserProfileMobile() {
         setEditPhone(user?.user_metadata?.phone || user?.phone || '')
         setShowEditProfile(true)
     }
+
+    // Agent Selection State
+    const [myAgentId, setMyAgentId] = useState(() => localStorage.getItem('zhomes_my_agent'))
+    const [showAgentModal, setShowAgentModal] = useState(false)
+    const myAgent = myAgentId ? REALTORS.find(r => String(r.id) === String(myAgentId)) : null
 
     const handleSaveProfile = async () => {
         setSavingProfile(true)
@@ -363,6 +370,28 @@ export default function UserProfileMobile() {
                     </div>
                 </Link>
 
+                {/* Mi Agente Inmobiliario */}
+                <div className="up-section-title" style={{marginTop: '24px'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                        <User size={20} color="var(--zhomes-red)" />
+                        <h3>Mi Agente Inmobiliario</h3>
+                    </div>
+                </div>
+                {myAgent ? (
+                    <div className="up-agent-card" style={{display:'flex', gap:'12px', padding:'16px', background:'var(--bg-secondary)', borderRadius:'16px', border:'1px solid var(--border-color)', alignItems:'center', marginBottom: '24px'}}>
+                        <img src={myAgent.image || myAgent.avatar || `https://ui-avatars.com/api/?name=${myAgent.name}`} style={{width:'50px', height:'50px', borderRadius:'25px', objectFit:'cover'}} />
+                        <div style={{flex: 1}}>
+                            <h4 style={{margin:0, fontSize:'1rem', color:'var(--text-primary)'}}>{myAgent.name}</h4>
+                            <span style={{fontSize:'0.85rem', color:'var(--zhomes-red)', fontWeight:600}}>Tu Asesor Elegido</span>
+                        </div>
+                        <button onClick={() => setShowAgentModal(true)} style={{background:'transparent', border:'none', color:'var(--text-secondary)'}}><Settings size={20}/></button>
+                    </div>
+                ) : (
+                    <button className="up-btn outline" style={{width:'100%', padding:'16px', display:'flex', justifyContent:'center', gap:'8px', marginBottom: '24px'}} onClick={() => setShowAgentModal(true)}>
+                        <UserPlus size={20} /> Seleccionar Agente
+                    </button>
+                )}
+
                 <div className="up-section-title">
                     <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
                         <Heart size={20} color="var(--zhomes-red)" fill="var(--zhomes-red)" />
@@ -614,6 +643,16 @@ export default function UserProfileMobile() {
                     </div>
                 </div>
             )}
+
+            <RealtorSelectorModal 
+                isOpen={showAgentModal} 
+                onClose={() => setShowAgentModal(false)}
+                onSelect={(agent) => {
+                    localStorage.setItem('zhomes_my_agent', agent.id);
+                    setMyAgentId(agent.id);
+                    setShowAgentModal(false);
+                }}
+            />
         </>
     )
 }

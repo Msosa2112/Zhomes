@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Heart, UserPlus, Link as LinkIcon, CheckCircle2, Copy, Search, ArrowRight, ChevronLeft } from 'lucide-react'
+import { Heart, UserPlus, Share2, CheckCircle2, Copy, Search, ArrowRight, ChevronLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
@@ -15,6 +15,15 @@ export default function CoShoppingMobile() {
 
     useEffect(() => {
         const fetchUserAndMatches = async () => {
+            // Search for invite code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const inviteParam = urlParams.get('invite');
+            
+            if (inviteParam) {
+                // Save invite to process after login
+                localStorage.setItem('zhomes_pending_invite', inviteParam);
+            }
+
             let activeUser = null;
             const demoUser = localStorage.getItem('zhomes_demo_user');
             if (demoUser) {
@@ -25,10 +34,22 @@ export default function CoShoppingMobile() {
             }
 
             if (!activeUser) {
+                // Save current URL to redirect back after login
+                localStorage.setItem('zhomes_redirect_after_login', window.location.pathname + window.location.search);
                 navigate('/login');
                 return;
             }
             setUser(activeUser);
+
+            // Process any pending invites
+            const pendingInvite = localStorage.getItem('zhomes_pending_invite');
+            if (pendingInvite && pendingInvite !== activeUser.id) {
+                localStorage.setItem('zhomes_partner_linked', 'true');
+                localStorage.removeItem('zhomes_pending_invite');
+                
+                // Remove ?invite= from URL for cleanliness
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
 
             // SIMULATION: Check if linked. We use localStorage to mock this for now.
             const isLinked = localStorage.getItem('zhomes_partner_linked') === 'true'
@@ -47,10 +68,41 @@ export default function CoShoppingMobile() {
         fetchUserAndMatches()
     }, [navigate])
 
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText(`${window.location.origin}/pareja?invite=${user?.id}`)
-        setLinkCopied(true)
-        setTimeout(() => setLinkCopied(false), 2000)
+    const handleShareLink = async () => {
+        const inviteUrl = `${window.location.origin}/pareja?invite=${user?.id}`;
+        
+        // Try native share first (mobile)
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'ZHomes - Modo Parejas',
+                    text: '¡Únete conmigo para buscar casa juntos en ZHomes! 🏠❤️',
+                    url: inviteUrl
+                });
+            } catch (err) {
+                // User cancelled share - that's ok
+                if (err.name !== 'AbortError') {
+                    console.error('Share failed:', err);
+                }
+            }
+        } else {
+            // Fallback: copy to clipboard
+            try {
+                await navigator.clipboard.writeText(inviteUrl);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+            } catch (err) {
+                // Final fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = inviteUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+            }
+        }
         
         // Simular que la pareja aceptó después de 3 segundos para la demo
         if (!partnerLinked) {
@@ -93,9 +145,9 @@ export default function CoShoppingMobile() {
                         <h4>Invita a tu pareja</h4>
                         <p>Envíale este enlace exclusivo para vincular sus cuentas.</p>
                         
-                        <button className="co-copy-btn" onClick={handleCopyLink}>
-                            {linkCopied ? <CheckCircle2 size={18} /> : <LinkIcon size={18} />}
-                            {linkCopied ? '¡Enlace Copiado!' : 'Copiar Enlace de Invitación'}
+                        <button className="co-copy-btn" onClick={handleShareLink}>
+                            {linkCopied ? <CheckCircle2 size={18} /> : <Share2 size={18} />}
+                            {linkCopied ? '¡Enlace Copiado!' : 'Compartir Enlace de Invitación'}
                         </button>
                     </div>
 

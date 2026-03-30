@@ -8,18 +8,30 @@ export default function LoginPageMobile() {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [loginRole, setLoginRole] = useState('client') // 'client', 'realtor', 'broker'
     const [loading, setLoading] = useState(true) // Start loading while checking auth
     const [errorMsg, setErrorMsg] = useState('')
 
     useEffect(() => {
         const checkAuth = async () => {
+            const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
             const demoRaw = localStorage.getItem('zhomes_demo_user')
             if (demoRaw) {
-                navigate('/perfil', { replace: true })
+                if (redirectUrl) {
+                    localStorage.removeItem('zhomes_redirect_after_login');
+                    navigate(redirectUrl, { replace: true });
+                } else {
+                    navigate('/perfil', { replace: true })
+                }
                 return
             }
             const { data: { session } } = await supabase.auth.getSession()
             if (session?.user) {
+                if (redirectUrl) {
+                    localStorage.removeItem('zhomes_redirect_after_login');
+                    navigate(redirectUrl, { replace: true });
+                    return;
+                }
                 const role = session.user.user_metadata?.role || 'client'
                 if (role === 'realtor') navigate('/realtor', { replace: true })
                 else if (role === 'broker') navigate('/dashboard', { replace: true })
@@ -50,6 +62,14 @@ export default function LoginPageMobile() {
 
             // Si es exitoso, ruteamos según el rol guardado en los metadatos
             const role = data.user?.user_metadata?.role || 'client'
+            
+            const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
+            if (redirectUrl) {
+                localStorage.removeItem('zhomes_redirect_after_login');
+                navigate(redirectUrl);
+                return;
+            }
+
             if (role === 'realtor') {
                 navigate('/realtor')
             } else if (role === 'broker') {
@@ -88,8 +108,24 @@ export default function LoginPageMobile() {
             <div className="ml-content">
                 <div className="ml-header">
                     <img src="/assets/logo/fav.png" alt="ZHOMES" className="ml-logo animate-float" />
-                    <h1>Portal ZHOMES</h1>
-                    <p>Inicia sesión en tu cuenta</p>
+                    <h1>{loginRole === 'broker' ? 'Portal Broker' : 'Portal ZHOMES'}</h1>
+                    <p>
+                        {loginRole === 'broker' 
+                            ? 'Si no eres Gilbert o Ernesto, ¿qué haces aquí? 👀' 
+                            : 'Inicia sesión en tu cuenta'}
+                    </p>
+                </div>
+
+                <div className="ml-role-switcher" style={{ marginBottom: '20px' }}>
+                    <button className={loginRole === 'client' ? 'active' : ''} type="button" onClick={() => setLoginRole('client')}>
+                        <User size={16} /> Cliente
+                    </button>
+                    <button className={loginRole === 'realtor' ? 'active' : ''} type="button" onClick={() => setLoginRole('realtor')}>
+                        <User size={16} /> Realtor
+                    </button>
+                    <button className={loginRole === 'broker' ? 'active' : ''} type="button" onClick={() => setLoginRole('broker')}>
+                        <Key size={16} /> Broker
+                    </button>
                 </div>
 
                 <form className="ml-form" onSubmit={handleEmailLogin}>

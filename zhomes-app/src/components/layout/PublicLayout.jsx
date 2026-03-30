@@ -86,10 +86,7 @@ export default function PublicLayout() {
                             <span className={`theme-icon ${theme === 'light' ? 'active' : ''}`}><Sun size={17} /></span>
                             <span className={`theme-icon ${theme === 'dark' ? 'active' : ''}`}><Moon size={17} /></span>
                         </button>
-                        <Link to="/login" className="public-cta-btn">
-                            <LogIn size={14} />
-                            <span>{t('nav.brokerPortal')}</span>
-                        </Link>
+                        {/* CTA button removed for privacy */}
                     </div>
                 </div>
 
@@ -116,8 +113,8 @@ export default function PublicLayout() {
                             </div>
                             <div className="footer-links">
                                 <h4>{t('footer.portal')}</h4>
-                                <Link to="/login">{t('nav.brokerPortal')}</Link>
                                 <Link to="/login">{t('nav.login')}</Link>
+                                <Link to="/register">{t('nav.register', 'Registrarse')}</Link>
                             </div>
                         </div>
                         <div className="footer-bottom">

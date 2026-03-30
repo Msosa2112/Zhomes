@@ -36,7 +36,10 @@ export default function PropertyDetailPageMobile() {
     const [realtorSelectorOpen, setRealtorSelectorOpen] = useState(false)
     const [viewerOpen, setViewerOpen] = useState(false)
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
-    const [selectedRealtor, setSelectedRealtor] = useState(null)
+    const [selectedRealtor, setSelectedRealtor] = useState(() => {
+        const savedId = localStorage.getItem('zhomes_my_agent');
+        return savedId ? REALTORS.find(r => String(r.id) === String(savedId)) : null;
+    })
     const [bookingOpen, setBookingOpen] = useState(false)
     const { theme } = useTheme()
     const { properties: ctxProperties } = useProperties()

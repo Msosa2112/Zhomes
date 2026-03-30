@@ -188,6 +188,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
     const videoRef = useRef(null);
 
     const [localPlay, setLocalPlay] = useState(true);
+    const [isFollowing, setIsFollowing] = useState(false);
     const aiBullets = extractAIHighlights(property.description);
 
     // Play/pause video based on active state and local play state
@@ -212,6 +213,11 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
     const togglePlay = () => {
         setLocalPlay(!localPlay);
+    };
+
+    const handleFollow = (e) => {
+        e.stopPropagation();
+        setIsFollowing(true);
     };
 
     const handleLike = () => {
@@ -267,7 +273,11 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                 <div className="vibe-action-item" onClick={(e) => { e.stopPropagation(); onOpenRealtor(); }}>
                     <div className="vibe-realtor-profile">
                         <img src="/assets/logo/fav.png" alt="ZHomes" />
-                        <button className="vibe-realtor-add">+</button>
+                        {!isFollowing ? (
+                            <button className="vibe-realtor-add" onClick={handleFollow}>+</button>
+                        ) : (
+                            <button className="vibe-realtor-add" style={{background: 'var(--zhomes-red)'}} onClick={(e) => e.stopPropagation()}>✓</button>
+                        )}
                     </div>
                 </div>
 
@@ -334,6 +344,9 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 }
 
 function RealtorContactSheet({ realtor, onClose }) {
+    const realtorPhone = '15024686208'; // ZHomes main number
+    const whatsappMsg = encodeURIComponent(`¡Hola! Vi esta propiedad en ZHomes Vibe: ${realtor?.address || realtor?.property_address || 'una propiedad'}. Me interesa obtener más información.`);
+
     return (
         <motion.div 
             className="vibe-realtor-sheet-overlay"
@@ -382,12 +395,22 @@ function RealtorContactSheet({ realtor, onClose }) {
                     </div>
 
                     <div className="sheet-actions">
-                        <button className="sheet-btn primary-btn">
+                        <a 
+                            href={`https://wa.me/${realtorPhone}?text=${whatsappMsg}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="sheet-btn primary-btn"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <MessageCircle size={20} /> Whatsapp
-                        </button>
-                        <button className="sheet-btn secondary-btn">
+                        </a>
+                        <a 
+                            href={`tel:+${realtorPhone}`}
+                            className="sheet-btn secondary-btn"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <Phone size={20} /> Llamar
-                        </button>
+                        </a>
                     </div>
                 </div>
             </motion.div>
