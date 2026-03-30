@@ -64,6 +64,7 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
 
     const wheelTimeout = useRef(null)
     const spinTimeout = useRef(null)
+    const dragDistanceRef = useRef(0)  // track drag distance synchronously for click guard
     const total = realtors.length
 
     // Placeholder appearances (no mock properties needed)
@@ -137,16 +138,17 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     // --- Touch / Mouse Drag ---
     const handlePointerDown = (e) => {
         setDragging(true)
+        dragDistanceRef.current = 0  // reset on every new touch/click
         setDragStartX(e.clientX ?? e.touches?.[0]?.clientX)
         setDragOffset(0)
     }
 
     const handlePointerMove = (e) => {
         if (!dragging || dragStartX === null) return
-        if (viewMode === 'detail') return // Disable horizontal drag in detail view
-
-        const clientX = e.clientX ?? e.touches?.[0]?.clientX
-        setDragOffset(clientX - dragStartX)
+        const x = e.clientX ?? e.touches?.[0]?.clientX
+        const offset = x - dragStartX
+        dragDistanceRef.current = Math.abs(offset)  // track synchronously for click guard
+        setDragOffset(offset)
     }
 
     const handlePointerUp = () => {
@@ -214,6 +216,8 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     }
 
     const handleCardClick = (virtualIndex) => {
+        // Guard: if the user was dragging (swiping), ignore click
+        if (dragDistanceRef.current > 8) return
         if (viewMode === 'carousel') {
             setActiveIndex(virtualIndex)
             setViewMode('detail')
@@ -403,13 +407,6 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                                     className="marvel-char-card"
                                     style={getCardStyle(diff)}
                                     onClick={() => handleCardClick(virtualIndex)}
-                                    onTouchEnd={(e) => {
-                                        // If minimal drag (tap), open detail directly
-                                        if (Math.abs(dragOffset) < 10) {
-                                            e.stopPropagation();
-                                            handleCardClick(virtualIndex);
-                                        }
-                                    }}
                                 >
                                     {r.video && diff === 0 && viewMode === 'detail' ? (
                                         <RobustVideo src={r.video} isExpanded={isSheetExpanded} />
