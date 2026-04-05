@@ -7,7 +7,7 @@
  * Protected by CRON_SECRET to prevent unauthorized calls.
  */
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://bnbvzcllyfmzuhnjltxg.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const SPARK_BASE   = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 const ZHOMES_OFFICE_KEY = '20141212170001416260000000';
