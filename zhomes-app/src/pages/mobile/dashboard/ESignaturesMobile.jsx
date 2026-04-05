@@ -139,6 +139,13 @@ export default function ESignaturesMobile() {
 
                         {/* Document List */}
                         <div className="esign-list">
+                            {filteredDocs.length === 0 && (
+                                <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>
+                                    <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+                                    <p style={{ margin: 0, fontWeight: 600 }}>No hay documentos</p>
+                                    <p style={{ fontSize: '14px', marginTop: '8px' }}>No tienes contratos o firmas en este estado.</p>
+                                </div>
+                            )}
                             {filteredDocs.map((doc, idx) => {
                                 const status = STATUS_MAP[doc.status]
                                 const StatusIcon = status.icon

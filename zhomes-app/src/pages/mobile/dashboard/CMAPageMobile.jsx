@@ -63,22 +63,28 @@ export default function CMAPageMobile() {
                 <p>Análisis Comparativo de Mercado</p>
             </div>
 
-            {/* Search */}
-            <div className="cma-search">
-                <Search size={16} />
-                <input
-                    type="text"
-                    placeholder="Ingresa dirección de la propiedad..."
-                    value={searchAddress}
-                    onChange={e => setSearchAddress(e.target.value)}
-                />
-                <button className="cma-search-btn" onClick={handleAnalyze}>Analizar</button>
+            {/* Select Property */}
+            <div className="cma-search" style={{ display: 'flex', flexDirection: 'column', padding: '0 20px', gap: '8px', borderBottom: 'none' }}>
+                <label style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Seleccionar Propiedad a Evaluar</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <select 
+                        value={searchAddress}
+                        onChange={e => setSearchAddress(e.target.value)}
+                        style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+                    >
+                        <option value="">Buscar en MLS de prueba...</option>
+                        {properties.map(p => (
+                            <option key={p.id} value={p.address}>{p.address} - {p.city}</option>
+                        ))}
+                    </select>
+                    <button className="cma-search-btn" onClick={handleAnalyze} disabled={!searchAddress}>Analizar</button>
+                </div>
             </div>
 
             {!showReport && (
                 <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                     <Search size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-                    <p>Ingresa una dirección para buscar propiedades comparables en Spark MLS e iniciar el análisis CMA.</p>
+                    <p>Selecciona una dirección de la lista superior para analizar comparables en el Spark MLS.</p>
                 </div>
             )}
 
