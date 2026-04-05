@@ -21,7 +21,14 @@ export default function LoginPageMobile() {
                     localStorage.removeItem('zhomes_redirect_after_login');
                     navigate(redirectUrl, { replace: true });
                 } else {
-                    navigate('/perfil', { replace: true })
+                    try {
+                        const demoUser = JSON.parse(demoRaw)
+                        if (demoUser.role === 'realtor') navigate('/realtor', { replace: true })
+                        else if (demoUser.role === 'broker') navigate('/dashboard', { replace: true })
+                        else navigate('/perfil', { replace: true })
+                    } catch (e) {
+                        navigate('/perfil', { replace: true })
+                    }
                 }
                 return
             }
@@ -81,6 +88,26 @@ export default function LoginPageMobile() {
             setErrorMsg(error.message || 'Error al iniciar sesión.')
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleDemoLogin = () => {
+        localStorage.setItem('zhomes_demo_user', JSON.stringify({ 
+            id: 'demo-123', 
+            name: loginRole === 'broker' ? 'Gilbert Demo' : (loginRole === 'realtor' ? 'Jessy Demo' : 'Client Demo'),
+            role: loginRole 
+        }))
+        
+        const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
+        if (redirectUrl) {
+            localStorage.removeItem('zhomes_redirect_after_login');
+            navigate(redirectUrl, { replace: true });
+        } else if (loginRole === 'realtor') {
+            navigate('/realtor', { replace: true })
+        } else if (loginRole === 'broker') {
+            navigate('/dashboard', { replace: true })
+        } else {
+            navigate('/perfil', { replace: true })
         }
     }
 
@@ -167,6 +194,15 @@ export default function LoginPageMobile() {
                             Crear Cuenta
                         </button>
                     </div>
+                    
+                    <button 
+                        type="button" 
+                        onClick={handleDemoLogin}
+                        className="ml-submit-btn" 
+                        style={{ marginTop: '10px', width: '100%', background: 'linear-gradient(135deg, #FFB800, #F3A000)', color: '#1a1a1a', fontWeight: 'bold', border: 'none', padding: '16px 10px', fontSize: '1rem' }}
+                    >
+                        Acceso Rápido (Modo Demo)
+                    </button>
                 </form>
 
                 <div className="ml-oauth-divider">

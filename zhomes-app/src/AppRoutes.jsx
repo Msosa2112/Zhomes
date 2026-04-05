@@ -34,6 +34,7 @@ import ShowingScheduleMobile from './pages/mobile/dashboard/ShowingScheduleMobil
 import ESignaturesMobile from './pages/mobile/dashboard/ESignaturesMobile'
 import CMAPageMobile from './pages/mobile/dashboard/CMAPageMobile'
 import MarketReportsMobile from './pages/mobile/dashboard/MarketReportsMobile'
+import BrokerProfile from './pages/broker/BrokerProfile'
 
 import SuperAdminKeysMobile from './pages/admin/SuperAdminKeysMobile'
 
@@ -101,6 +102,7 @@ export default function AppRoutes() {
                     <Route path="/firmas" element={<ESignaturesMobile />} />
                     <Route path="/cma" element={<CMAPageMobile />} />
                     <Route path="/mercado" element={<MarketReportsMobile />} />
+                    <Route path="/dashboard/perfil" element={<BrokerProfile />} />
                 </Route>
                 
                 {/* Admin Configurations */}
