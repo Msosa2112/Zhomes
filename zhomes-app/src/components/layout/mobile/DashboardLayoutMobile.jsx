@@ -32,13 +32,7 @@ export default function DashboardLayoutMobile() {
 
     const extras = [
         { path: '/dashboard/perfil', icon: User, label: 'Mi Perfil' },
-        { path: '/crm', icon: UserPlus, label: 'CRM' },
         { path: '/visitas', icon: Calendar, label: 'Visitas' },
-        { path: '/firmas', icon: PenTool, label: 'Firmas' },
-        { path: '/cma', icon: BarChart3, label: 'CMA' },
-        { path: '/mercado', icon: TrendingUp, label: 'Mercado' },
-        { path: '/equipo', icon: Users, label: 'Equipo' },
-        { path: '/admin/config', icon: ShieldAlert, label: 'Sistema' },
     ]
 
     return (

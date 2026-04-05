@@ -113,6 +113,7 @@ export default function AppRoutes() {
                     <Route path="/realtor" element={<RealtorDashboardMobile />} />
                     <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
                     <Route path="/realtor/documentos" element={<RealtorDocumentsMobile />} />
+                    <Route path="/realtor/firmas" element={<ESignaturesMobile />} />
                     <Route path="/realtor/mensajes" element={<RealtorMessagesMobile />} />
                     <Route path="/realtor/perfil" element={<RealtorProfile />} />
                     <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />

@@ -1,35 +1,59 @@
 import { useState } from 'react'
-import { BarChart3, Home, MapPin, DollarSign, TrendingUp, TrendingDown, Calendar, Download, ChevronRight, Search, Ruler, BedDouble, Bath, Car, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { BarChart3, Home, MapPin, DollarSign, TrendingUp, TrendingDown, Calendar, Download, ChevronRight, Search, Ruler, BedDouble, Bath, Car, ArrowUpRight, ArrowDownRight, AlertCircle } from 'lucide-react'
+import { useProperties } from '../../../context/PropertyContext'
 import './CMAPageMobile.css'
 
-const SAMPLE_COMPS = [
-    { id: 1, address: '4020 Craig Ave', city: 'Louisville, KY 40216', price: 172000, sqft: 1450, beds: 3, baths: 2, garage: 1, soldDate: '2026-02-15', daysOnMarket: 12, pricePerSqft: 119, distanceMi: 0.2, status: 'sold', photo: null },
-    { id: 2, address: '4300 Hillview Ave', city: 'Louisville, KY 40216', price: 185000, sqft: 1600, beds: 3, baths: 2, garage: 2, soldDate: '2026-01-28', daysOnMarket: 18, pricePerSqft: 116, distanceMi: 0.4, status: 'sold', photo: null },
-    { id: 3, address: '3918 River Park Dr', city: 'Louisville, KY 40216', price: 165000, sqft: 1380, beds: 3, baths: 1, garage: 1, soldDate: '2026-03-05', daysOnMarket: 8, pricePerSqft: 120, distanceMi: 0.3, status: 'sold', photo: null },
-    { id: 4, address: '4215 Vermont Ave', city: 'Louisville, KY 40216', price: 179000, sqft: 1520, beds: 4, baths: 2, garage: 1, soldDate: '2026-02-20', daysOnMarket: 21, pricePerSqft: 118, distanceMi: 0.5, status: 'sold', photo: null },
-    { id: 5, address: '4100 Lees Ln', city: 'Louisville, KY 40216', price: 158000, sqft: 1280, beds: 3, baths: 1, garage: 0, soldDate: '2026-01-10', daysOnMarket: 35, pricePerSqft: 123, distanceMi: 0.6, status: 'sold', photo: null },
-]
-
-const SUBJECT_PROPERTY = {
-    address: '4132 Craig Ave',
-    city: 'Louisville, KY 40216',
-    sqft: 1480,
-    beds: 3,
-    baths: 2,
-    garage: 1,
-    yearBuilt: 1965,
-    lotSize: '0.25 acres',
-}
-
 export default function CMAPageMobile() {
+    const { properties } = useProperties()
     const [searchAddress, setSearchAddress] = useState('')
-    const [showReport, setShowReport] = useState(true)
+    const [showReport, setShowReport] = useState(false)
     const [selectedComp, setSelectedComp] = useState(null)
+    const [subjectProperty, setSubjectProperty] = useState(null)
+    const [comps, setComps] = useState([])
 
-    const avgPrice = SAMPLE_COMPS.reduce((a, c) => a + c.price, 0) / SAMPLE_COMPS.length
-    const avgPriceSqft = SAMPLE_COMPS.reduce((a, c) => a + c.pricePerSqft, 0) / SAMPLE_COMPS.length
-    const avgDOM = SAMPLE_COMPS.reduce((a, c) => a + c.daysOnMarket, 0) / SAMPLE_COMPS.length
-    const suggestedPrice = Math.round(SUBJECT_PROPERTY.sqft * avgPriceSqft / 1000) * 1000
+    const handleAnalyze = () => {
+        // En un entorno real, buscaría la propiedad en una API pública. Aquí la simulamos.
+        let subject = properties.find(p => p.address.toLowerCase().includes(searchAddress.toLowerCase()))
+        if (!subject && properties.length > 0) subject = properties[0]; // Fallback
+
+        if (subject) {
+            setSubjectProperty({
+                address: subject.address,
+                city: subject.city,
+                sqft: subject.sqft || 1500,
+                beds: subject.beds,
+                baths: subject.baths,
+                garage: 2,
+                yearBuilt: subject.yearBuilt || 2005,
+                lotSize: '0.25 acres'
+            })
+            // Buscar comparables (usamos otras propiedades del contexto para demo)
+            const availableComps = properties.filter(p => p.id !== subject.id).slice(0, 5)
+            setComps(availableComps.map(p => ({
+                id: p.id,
+                address: p.address,
+                city: p.city,
+                price: p.price,
+                sqft: p.sqft || 1500,
+                beds: p.beds,
+                baths: p.baths,
+                garage: 2,
+                soldDate: 'Hace ' + Math.floor(Math.random() * 30 + 5) + ' días',
+                daysOnMarket: Math.floor(Math.random() * 20 + 5),
+                pricePerSqft: Math.round(p.price / (p.sqft || 1500)),
+                distanceMi: (Math.random() * 0.8 + 0.1).toFixed(1),
+                status: 'sold'
+            })))
+            setShowReport(true)
+        } else {
+            alert("No se encontró la propiedad en el MLS de prueba. Intenta con otra.");
+        }
+    }
+
+    const avgPrice = comps.length > 0 ? comps.reduce((a, c) => a + c.price, 0) / comps.length : 0
+    const avgPriceSqft = comps.length > 0 ? comps.reduce((a, c) => a + c.pricePerSqft, 0) / comps.length : 0
+    const avgDOM = comps.length > 0 ? comps.reduce((a, c) => a + c.daysOnMarket, 0) / comps.length : 0
+    const suggestedPrice = subjectProperty ? Math.round(subjectProperty.sqft * avgPriceSqft / 1000) * 1000 : 0
     const priceRange = { low: suggestedPrice - 8000, high: suggestedPrice + 8000 }
 
     return (
@@ -48,10 +72,17 @@ export default function CMAPageMobile() {
                     value={searchAddress}
                     onChange={e => setSearchAddress(e.target.value)}
                 />
-                <button className="cma-search-btn" onClick={() => setShowReport(true)}>Analizar</button>
+                <button className="cma-search-btn" onClick={handleAnalyze}>Analizar</button>
             </div>
 
-            {showReport && (
+            {!showReport && (
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    <Search size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+                    <p>Ingresa una dirección para buscar propiedades comparables en Spark MLS e iniciar el análisis CMA.</p>
+                </div>
+            )}
+
+            {showReport && subjectProperty && (
                 <>
                     {/* Subject Property */}
                     <div className="cma-subject">
@@ -60,14 +91,14 @@ export default function CMAPageMobile() {
                             <h3>Propiedad en Análisis</h3>
                         </div>
                         <div className="cma-subject-info">
-                            <strong>{SUBJECT_PROPERTY.address}</strong>
-                            <span>{SUBJECT_PROPERTY.city}</span>
+                            <strong>{subjectProperty.address}</strong>
+                            <span>{subjectProperty.city}</span>
                         </div>
                         <div className="cma-subject-specs">
-                            <div className="cma-spec"><Ruler size={14} /><span>{SUBJECT_PROPERTY.sqft} sqft</span></div>
-                            <div className="cma-spec"><BedDouble size={14} /><span>{SUBJECT_PROPERTY.beds} BR</span></div>
-                            <div className="cma-spec"><Bath size={14} /><span>{SUBJECT_PROPERTY.baths} BA</span></div>
-                            <div className="cma-spec"><Car size={14} /><span>{SUBJECT_PROPERTY.garage} Gar</span></div>
+                            <div className="cma-spec"><Ruler size={14} /><span>{subjectProperty.sqft} sqft</span></div>
+                            <div className="cma-spec"><BedDouble size={14} /><span>{subjectProperty.beds} BR</span></div>
+                            <div className="cma-spec"><Bath size={14} /><span>{subjectProperty.baths} BA</span></div>
+                            <div className="cma-spec"><Car size={14} /><span>{subjectProperty.garage} Gar</span></div>
                         </div>
                     </div>
 
@@ -105,16 +136,16 @@ export default function CMAPageMobile() {
                         <div className="cma-stat-card">
                             <Home size={16} className="cma-icon violet" />
                             <span>Comparables</span>
-                            <strong>{SAMPLE_COMPS.length}</strong>
+                            <strong>{comps.length}</strong>
                         </div>
                     </div>
 
                     {/* Comps List */}
                     <div className="cma-comps-section">
                         <h3>Comparables Vendidos</h3>
-                        <span className="cma-comps-subtitle">Últimos 6 meses · Radio 0.6 mi</span>
+                        <span className="cma-comps-subtitle">Últimos 6 meses · Radio 1.5 mi</span>
 
-                        {SAMPLE_COMPS.map((comp, idx) => {
+                        {comps.map((comp, idx) => {
                             const priceDiff = comp.price - suggestedPrice
                             const isAbove = priceDiff > 0
                             return (

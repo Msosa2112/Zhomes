@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, TrendingUp, Users, Target, Activity, AlertCircle, CheckCircle2, ChevronRight, X, Plus, Trash2, Save } from 'lucide-react'
+import { Brain, TrendingUp, Users, Target, Activity, AlertCircle, CheckCircle2, ChevronRight, X, Plus, Trash2, Save, PenTool, LineChart, MessageSquare, Briefcase } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import './DashboardPageMobile.css'
 
@@ -61,10 +61,22 @@ export default function DashboardPageMobile() {
                     <p>Aquí tienes el estado de tu agencia.</p>
                 </div>
 
-                <div className="mobile-quick-actions">
+                <div className="mobile-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', paddingBottom: '16px' }}>
                     <Link to="/equipo" className="m-quick-btn">
-                        <div className="mq-icon"><Users size={24} /></div>
+                        <div className="mq-icon" style={{ background: 'rgba(59,130,246,0.1)' }}><Users size={22} color="#3B82F6" /></div>
                         <span>Equipo</span>
+                    </Link>
+                    <Link to="/crm" className="m-quick-btn">
+                        <div className="mq-icon" style={{ background: 'rgba(245,158,11,0.1)' }}><Briefcase size={22} color="#F59E0B" /></div>
+                        <span>CRM</span>
+                    </Link>
+                    <Link to="/dashboard/firmas" className="m-quick-btn">
+                        <div className="mq-icon" style={{ background: 'rgba(16,185,129,0.1)' }}><PenTool size={22} color="#10B981" /></div>
+                        <span>Firmas</span>
+                    </Link>
+                    <Link to="/cma" className="m-quick-btn">
+                        <div className="mq-icon" style={{ background: 'rgba(236,72,153,0.1)' }}><LineChart size={22} color="#EC4899" /></div>
+                        <span>CMA</span>
                     </Link>
                 </div>
 

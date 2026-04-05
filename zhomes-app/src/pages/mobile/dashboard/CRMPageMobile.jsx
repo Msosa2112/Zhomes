@@ -26,7 +26,6 @@ const SOURCES = ['Todos', 'Facebook', 'Instagram', 'Google Ads', 'Website', 'Ref
 
 export default function CRMPageMobile() {
     const [leads, setLeads] = useState(INITIAL_LEADS)
-    const [view, setView] = useState('pipeline') // 'pipeline' | 'list'
     const [selectedLead, setSelectedLead] = useState(null)
     const [showAddLead, setShowAddLead] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
@@ -145,91 +144,8 @@ export default function CRMPageMobile() {
                     </div>
                 </div>
 
-                {/* View Toggle */}
-                <div className="crm-view-toggle">
-                    <button className={view === 'pipeline' ? 'active' : ''} onClick={() => setView('pipeline')}>Pipeline</button>
-                    <button className={view === 'list' ? 'active' : ''} onClick={() => setView('list')}>Lista</button>
-                </div>
-
-                {/* Pipeline View */}
-                {view === 'pipeline' && (
-                    <div className="crm-pipeline">
-                        {/* Stage Selector (horizontal scroll) */}
-                        <div className="crm-stage-scroller" ref={scrollRef}>
-                            {stageStats.map(s => (
-                                <button
-                                    key={s.id}
-                                    className={`crm-stage-chip ${activeStage === s.id ? 'active' : ''}`}
-                                    style={{ '--stage-color': s.color }}
-                                    onClick={() => setActiveStage(activeStage === s.id ? null : s.id)}
-                                >
-                                    <s.icon size={14} />
-                                    <span>{s.label}</span>
-                                    <span className="crm-stage-count">{s.count}</span>
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Stage Cards */}
-                        {PIPELINE_STAGES
-                            .filter(s => !activeStage || s.id === activeStage)
-                            .map(stage => {
-                                const stageLeads = getStageLeads(stage.id)
-                                if (stageLeads.length === 0 && activeStage) return null
-                                return (
-                                    <div key={stage.id} className="crm-stage-section">
-                                        <div className="crm-stage-header" style={{ '--stage-color': stage.color }}>
-                                            <div className="crm-stage-title">
-                                                <div className="crm-stage-dot" />
-                                                <h3>{stage.label}</h3>
-                                                <span className="crm-stage-badge">{stageLeads.length}</span>
-                                            </div>
-                                        </div>
-
-                                        {stageLeads.map((lead, idx) => (
-                                            <div
-                                                key={lead.id}
-                                                className={`crm-lead-card animate-fadeInUp ${lead.priority === 'high' ? 'priority-high' : ''}`}
-                                                style={{ animationDelay: `${idx * 0.05}s` }}
-                                                onClick={() => setSelectedLead(lead)}
-                                            >
-                                                <div className="crm-lead-top">
-                                                    <div className="crm-lead-info">
-                                                        <strong>{lead.name}</strong>
-                                                        <span className="crm-lead-meta">
-                                                            {lead.language} · {lead.source}
-                                                            {lead.priority === 'high' && <span className="crm-hot-tag">🔥</span>}
-                                                        </span>
-                                                    </div>
-                                                    <ChevronRight size={16} className="crm-chevron" />
-                                                </div>
-                                                <div className="crm-lead-details">
-                                                    <span><MapPin size={12} /> {lead.area}</span>
-                                                    <span><DollarSign size={12} /> {lead.budget}</span>
-                                                </div>
-                                                <div className="crm-lead-footer">
-                                                    <span className="crm-lead-agent">
-                                                        <User size={12} />
-                                                        {lead.agent || 'Sin asignar'}
-                                                    </span>
-                                                    {lead.lastContact && (
-                                                        <span className={`crm-days-ago ${daysSince(lead.lastContact) > 3 ? 'stale' : ''}`}>
-                                                            <Clock size={12} />
-                                                            {daysSince(lead.lastContact) === 0 ? 'Hoy' : `hace ${daysSince(lead.lastContact)}d`}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )
-                            })}
-                    </div>
-                )}
-
                 {/* List View */}
-                {view === 'list' && (
-                    <div className="crm-list-view">
+                <div className="crm-list-view">
                         {filteredLeads.map((lead, idx) => {
                             const stage = PIPELINE_STAGES.find(s => s.id === lead.stage)
                             return (
@@ -253,7 +169,6 @@ export default function CRMPageMobile() {
                             )
                         })}
                     </div>
-                )}
 
                 <div style={{ height: '100px' }} />
             </div>

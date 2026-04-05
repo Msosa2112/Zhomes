@@ -40,7 +40,14 @@ const STATUS_MAP = {
 }
 
 export default function ESignaturesMobile() {
-    const [docs, setDocs] = useState(DOCUMENTS)
+    const userRole = localStorage.getItem('zhomes_temp_role') || 'broker'
+    const agentName = localStorage.getItem('zhomes_temp_email') === 'realtor@demo.com' ? 'Jessica Hernandez' : 'Gilbert Zaldivar'
+
+    const initialDocs = userRole === 'realtor' 
+        ? DOCUMENTS.filter(d => d.agent === agentName)
+        : DOCUMENTS;
+
+    const [docs, setDocs] = useState(initialDocs)
     const [view, setView] = useState('docs') // 'docs' | 'templates'
     const [selectedDoc, setSelectedDoc] = useState(null)
     const [showCreate, setShowCreate] = useState(false)

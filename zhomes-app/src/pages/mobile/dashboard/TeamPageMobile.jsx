@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trophy, Star, TrendingUp, Plus, Trash2, Edit3, Check, X, User, Percent } from 'lucide-react'
+import { Trophy, Star, TrendingUp, Plus, Trash2, Edit3, Check, X, User, Percent, Phone, Mail } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
 import ZSlider from '../../../components/ui/ZSlider'
 import './TeamPageMobile.css'
@@ -119,12 +119,18 @@ export default function TeamPageMobile() {
                     <div key={a.id} className="m-agent-row">
                         <span className="m-rank">#{idx + 1}</span>
                         {a.avatar 
-                            ? <img src={a.avatar} alt="" />
-                            : <div className="m-agent-avatar-placeholder"><User size={20} /></div>
+                            ? <img src={a.avatar} alt="" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random` }} />
+                            : <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random`} alt="" />
                         }
                         <div className="m-ainfo">
                             <strong>{a.name} {a.isBroker ? '👑' : ''}</strong>
-                            <span>{a.deals > 0 ? `${a.deals} cierres · ${a.vol}` : `${a.experience || 0} años exp`} · {a.phone}</span>
+                            <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                {a.deals > 0 ? `${a.deals} cierres · ${a.vol}` : `${a.experience || 0} años exp`} · {a.languages}
+                            </span>
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
+                                <a href={`tel:${a.phone}`} style={{ color: 'var(--zhomes-red)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', textDecoration: 'none' }}><Phone size={10} /> {a.phone}</a>
+                                <a href={`mailto:${a.email}`} style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', textDecoration: 'none' }}><Mail size={10} /> Email</a>
+                            </div>
                         </div>
                         
                         {/* Commission edit */}

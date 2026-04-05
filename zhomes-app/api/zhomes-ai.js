@@ -25,7 +25,12 @@ export default async function handler(req, res) {
                 });
             } else if (action === "smart_followup") {
                 return res.status(200).json({
-                    message: `¡Hola ${data.clientData?.name?.split(' ')[0] || ''}! Noté que estabas viendo propiedades recientemente. Tengo justo un par de "pocket listings" off-market que encajan 100% con tu estilo. ¿Te late si te las mando por aquí o coordinamos una visita rápida esta semana? 😎`
+                    message: `¡Hola ${data?.clientData?.name?.split(' ')[0] || ''}! Noté que estabas viendo propiedades recientemente. Tengo justo un par de "pocket listings" off-market que encajan 100% con tu estilo. ¿Te late si te las mando por aquí o coordinamos una visita rápida esta semana? 😎`
+                });
+            } else if (action === "broker_compliance") {
+                return res.status(200).json({
+                    allPassed: true,
+                    report: "✓ Todos los documentos cumplen con las normativas (Agency Disclosure, Lead-Based Paint, etc) y las comisiones están correctamente declaradas. Listo para cerrar."
                 });
             }
             return res.status(500).json({ error: "OpenAI API Key not configured." });

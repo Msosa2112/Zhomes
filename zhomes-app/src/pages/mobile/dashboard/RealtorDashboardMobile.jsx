@@ -1,4 +1,4 @@
-import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut, Activity, X, MessageSquare, Calendar, Users, MapPin, Building2, Award, LineChart } from 'lucide-react'
+import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut, Activity, X, MessageSquare, Calendar, Users, MapPin, Building2, Award, LineChart, PenTool } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabaseClient'
@@ -129,9 +129,9 @@ export default function RealtorDashboardMobile() {
                     <div className="mq-icon"><MessageSquare size={22} /></div>
                     <span>Chat</span>
                 </Link>
-                <Link to="/dashboard/deal" className="m-quick-btn">
-                    <div className="mq-icon" style={{ background: 'rgba(139,92,246,0.15)' }}><Brain size={22} color="#8B5CF6" /></div>
-                    <span>Deal Room</span>
+                <Link to="/realtor/firmas" className="m-quick-btn">
+                    <div className="mq-icon" style={{ background: 'rgba(16,185,129,0.1)' }}><PenTool size={22} color="#10B981" /></div>
+                    <span>Firmas</span>
                 </Link>
                 <Link to="/cma" className="m-quick-btn">
                     <div className="mq-icon" style={{ background: 'rgba(56,189,248,0.1)' }}><LineChart size={22} color="#38BDF8" /></div>
