@@ -75,11 +75,30 @@ const propertyIcon = L.divIcon({
     iconAnchor: [12, 12],
 })
 
-export default function NeighborhoodMap({ lat, lng, address }) {
+// Mock data de puntos de interés (sirve como fallback si el API falla)
+export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
     const [activeTab, setActiveTab] = useState('map')
     const [activeLayers, setActiveLayers] = useState(['schools', 'dining', 'lifestyle', 'commute'])
+    const [realPois, setRealPois] = useState(null)
+    const [loading, setLoading] = useState(false)
 
-    const pois = useMemo(() => generatePOIs(lat, lng), [lat, lng])
+    useEffect(() => {
+        if (!propertyId || !lat || !lng) return;
+        
+        setLoading(true);
+        fetch(`/api/neighborhood?property_id=${propertyId}&lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.data) setRealPois(data.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("OSM Error:", err);
+                setLoading(false);
+            })
+    }, [propertyId, lat, lng])
+
+    const pois = useMemo(() => realPois || generatePOIs(lat, lng), [lat, lng, realPois])
 
     const toggleLayer = (layer) => {
         setActiveLayers(prev =>
