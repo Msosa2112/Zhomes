@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X, User, Download, Edit3, PenTool, ChevronRight, Shield, ExternalLink } from 'lucide-react'
-import { DocusealForm } from '@docuseal/react'
+import {
+    FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X,
+    User, Download, Edit3, PenTool, ChevronRight, Shield, Filter
+} from 'lucide-react'
 import './ESignaturesMobile.css'
 
 const TEMPLATES = [
@@ -14,84 +16,131 @@ const TEMPLATES = [
 ]
 
 const DOCUMENTS = [
-    { 
-        id: 999, 
-        title: 'Acuerdo de Renta - 1300 Brickell Ave', 
-        template: 'Contrato Residencial (Miami-Dade)', 
-        client: 'Marcos de la Torre', 
-        agent: 'Jessica Hernandez', 
-        agentAvatar: '/assets/agents/Jessica Hernandez.png', 
-        status: 'pending', 
-        sentDate: new Date().toISOString().split('T')[0], 
-        signedDate: null, 
-        signers: [{ name: 'Marcos de la Torre', signed: false }, { name: 'Gilbert Zaldivar', signed: true }] 
+    {
+        id: 999,
+        title: 'Acuerdo de Renta - 1300 Brickell Ave',
+        template: 'Contrato Residencial',
+        client: 'Marcos de la Torre',
+        clientEmail: 'marcos@demo.com',
+        agent: 'Jessica Hernandez',
+        agentAvatar: '/assets/agents/Jessica Hernandez.png',
+        status: 'pending',
+        sentDate: new Date().toISOString().split('T')[0],
+        signedDate: null,
+        signers: [{ name: 'Marcos de la Torre', signed: false }, { name: 'Gilbert Zaldivar', signed: true }]
     },
-    { id: 101, title: 'Oferta - 4132 Craig Ave', template: 'Oferta de Compra', client: 'Rosa Gutiérrez', agent: 'Jessica Hernandez', agentAvatar: '/assets/agents/Jessica Hernandez.png', status: 'signed', sentDate: '2026-03-22', signedDate: '2026-03-23', signers: [{ name: 'Rosa Gutiérrez', signed: true }, { name: 'Gilbert Zaldivar', signed: true }] },
-    { id: 102, title: 'Listado - 220 River Rd', template: 'Acuerdo de Listado', client: 'Pedro Sánchez', agent: 'Miriam C Castaño', agentAvatar: '/assets/agents/Miriam Castano.png', status: 'pending', sentDate: '2026-03-25', signedDate: null, signers: [{ name: 'Pedro Sánchez', signed: false }, { name: 'Gilbert Zaldivar', signed: true }] },
-    { id: 103, title: 'Representación - Ana Martínez', template: 'Acuerdo de Representación', client: 'Ana Martínez', agent: 'Judith N Gonzalez', agentAvatar: '/assets/agents/Judith Gonzalez.png', status: 'draft', sentDate: null, signedDate: null, signers: [] },
-    { id: 104, title: 'Inspección - 2215 Tremont Dr', template: 'Addendum de Inspección', client: 'Carlos Rodríguez', agent: 'Rocio Martinez', agentAvatar: '/assets/agents/Rocio Martinez.png', status: 'expired', sentDate: '2026-03-18', signedDate: null, signers: [{ name: 'Carlos Rodríguez', signed: false }] },
+    {
+        id: 101,
+        title: 'Oferta - 4132 Craig Ave',
+        template: 'Oferta de Compra',
+        client: 'Rosa Gutiérrez',
+        clientEmail: 'rosa@demo.com',
+        agent: 'Jessica Hernandez',
+        agentAvatar: '/assets/agents/Jessica Hernandez.png',
+        status: 'signed',
+        sentDate: '2026-03-22',
+        signedDate: '2026-03-23',
+        signers: [{ name: 'Rosa Gutiérrez', signed: true }, { name: 'Gilbert Zaldivar', signed: true }]
+    },
+    {
+        id: 102,
+        title: 'Listado - 220 River Rd',
+        template: 'Acuerdo de Listado',
+        client: 'Pedro Sánchez',
+        clientEmail: 'pedro@demo.com',
+        agent: 'Miriam C Castaño',
+        agentAvatar: '/assets/agents/Miriam Castano.png',
+        status: 'pending',
+        sentDate: '2026-03-25',
+        signedDate: null,
+        signers: [{ name: 'Pedro Sánchez', signed: false }, { name: 'Gilbert Zaldivar', signed: true }]
+    },
+    {
+        id: 103,
+        title: 'Representación - Ana Martínez',
+        template: 'Acuerdo de Representación',
+        client: 'Ana Martínez',
+        clientEmail: 'ana@demo.com',
+        agent: 'Judith N Gonzalez',
+        agentAvatar: '/assets/agents/Judith Gonzalez.png',
+        status: 'draft',
+        sentDate: null,
+        signedDate: null,
+        signers: []
+    },
+    {
+        id: 104,
+        title: 'Inspección - 2215 Tremont Dr',
+        template: 'Addendum de Inspección',
+        client: 'Carlos Rodríguez',
+        clientEmail: 'carlos@demo.com',
+        agent: 'Rocio Martinez',
+        agentAvatar: '/assets/agents/Rocio Martinez.png',
+        status: 'expired',
+        sentDate: '2026-03-18',
+        signedDate: null,
+        signers: [{ name: 'Carlos Rodríguez', signed: false }]
+    },
 ]
 
 const STATUS_MAP = {
-    draft: { label: 'Borrador', color: '#6B7280', icon: Edit3 },
+    draft:   { label: 'Borrador',        color: '#6B7280', icon: Edit3 },
     pending: { label: 'Pendiente Firma', color: '#F59E0B', icon: Clock },
-    signed: { label: 'Firmado', color: '#10B981', icon: CheckCircle2 },
-    expired: { label: 'Expirado', color: '#EF4444', icon: AlertCircle },
+    signed:  { label: 'Firmado',         color: '#10B981', icon: CheckCircle2 },
+    expired: { label: 'Expirado',        color: '#EF4444', icon: AlertCircle },
 }
 
 export default function ESignaturesMobile() {
-    const initialDocs = DOCUMENTS;
-
-    const [docs, setDocs] = useState(initialDocs)
-    const [view, setView] = useState('docs') // 'docs' | 'templates'
+    const [docs, setDocs] = useState(DOCUMENTS)
+    const [view, setView] = useState('docs')
+    const [filter, setFilter] = useState('all')
     const [selectedDoc, setSelectedDoc] = useState(null)
     const [showCreate, setShowCreate] = useState(false)
-    const [filter, setFilter] = useState('all')
     const [signingDoc, setSigningDoc] = useState(null)
 
     const filteredDocs = filter === 'all' ? docs : docs.filter(d => d.status === filter)
 
-    const confirmCompletion = () => {
-        if (!signingDoc) return;
-        setDocs(docs.map(d => d.id === signingDoc.id ? {
+    const confirmCompletion = (docId) => {
+        setDocs(prev => prev.map(d => d.id === docId ? {
             ...d,
             status: 'signed',
             signedDate: new Date().toISOString().split('T')[0],
             signers: d.signers.map(s => ({ ...s, signed: true }))
         } : d))
-        setSigningDoc(null);
-    };
-
-    useEffect(() => {
-        const handleMessage = (event) => {
-            // Verificar si el mensaje viene de DocuSeal
-            if (event.data?.type === 'docuseal:completed' || event.data?.event === 'completed' || event.data === 'docuseal:completed') {
-                console.log('Firma completada detectada:', event.data);
-                if (signingDoc) confirmCompletion();
-            }
-        };
-        window.addEventListener('message', handleMessage);
-        return () => window.removeEventListener('message', handleMessage);
-    }, [signingDoc, docs]);
+        setSigningDoc(null)
+        setSelectedDoc(null)
+    }
 
     const sendForSignature = (docId) => {
-        setDocs(docs.map(d => d.id === docId ? {
+        setDocs(prev => prev.map(d => d.id === docId ? {
             ...d,
             status: 'pending',
             sentDate: new Date().toISOString().split('T')[0],
             signers: [{ name: d.client, signed: false }, { name: 'Gilbert Zaldivar', signed: true }]
         } : d))
-        if (selectedDoc?.id === docId) setSelectedDoc(null)
+        setSelectedDoc(null)
     }
 
+    useEffect(() => {
+        const handleMsg = (e) => {
+            if (e.data?.type === 'docuseal:completed' || e.data === 'docuseal:completed') {
+                if (signingDoc) confirmCompletion(signingDoc.id)
+            }
+        }
+        window.addEventListener('message', handleMsg)
+        return () => window.removeEventListener('message', handleMsg)
+    }, [signingDoc])
+
     return (
-        <>
+        <div className="esign-root">
+            {/* ── MAIN PAGE ── */}
             <div className="esign-page">
+                {/* Header */}
                 <div className="esign-header">
                     <div className="esign-title-row">
                         <h1>Firmas</h1>
-                        <button className="crm-add-btn" onClick={() => setShowCreate(true)}>
-                            <Plus size={18} /> Crear
+                        <button className="esign-create-btn" onClick={() => setShowCreate(true)}>
+                            <Plus size={16} /> Crear
                         </button>
                     </div>
 
@@ -115,165 +164,165 @@ export default function ESignaturesMobile() {
                     </div>
                 </div>
 
-                {/* View Toggle */}
-                <div className="crm-view-toggle">
+                {/* View Tabs */}
+                <div className="esign-tabs">
                     <button className={view === 'docs' ? 'active' : ''} onClick={() => setView('docs')}>Documentos</button>
                     <button className={view === 'templates' ? 'active' : ''} onClick={() => setView('templates')}>Plantillas</button>
                 </div>
 
+                {/* Docs View */}
                 {view === 'docs' && (
                     <>
-                        {/* Filters */}
-                        <div className="crm-source-filters">
+                        {/* Filter Pills */}
+                        <div className="esign-filters">
                             {['all', 'draft', 'pending', 'signed', 'expired'].map(f => (
-                                <button key={f} className={`crm-source-pill ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+                                <button
+                                    key={f}
+                                    className={`esign-filter-pill ${filter === f ? 'active' : ''}`}
+                                    onClick={() => setFilter(f)}
+                                    style={filter === f && f !== 'all' ? {
+                                        background: `${STATUS_MAP[f].color}20`,
+                                        color: STATUS_MAP[f].color,
+                                        borderColor: `${STATUS_MAP[f].color}40`
+                                    } : {}}
+                                >
                                     {f === 'all' ? 'Todos' : STATUS_MAP[f].label}
                                 </button>
                             ))}
                         </div>
 
-                        {/* Document List */}
+                        {/* Doc List */}
                         <div className="esign-list">
-                            {filteredDocs.length === 0 && (
-                                <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-tertiary)' }}>
-                                    <FileText size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-                                    <p style={{ margin: 0, fontWeight: 600 }}>No hay documentos</p>
-                                    <p style={{ fontSize: '14px', marginTop: '8px' }}>No tienes contratos o firmas en este estado.</p>
+                            {filteredDocs.length === 0 ? (
+                                <div className="esign-empty">
+                                    <FileText size={40} />
+                                    <p>No hay documentos en este estado</p>
                                 </div>
-                            )}
-                            {filteredDocs.map((doc, idx) => {
-                                const status = STATUS_MAP[doc.status]
-                                const StatusIcon = status.icon
-                                return (
-                                    <div
-                                        key={doc.id}
-                                        className="esign-card animate-fadeInUp"
-                                        style={{ animationDelay: `${idx * 0.05}s` }}
-                                        onClick={() => setSelectedDoc(doc)}
-                                    >
-                                        <div className="esign-card-left">
+                            ) : (
+                                filteredDocs.map((doc, idx) => {
+                                    const status = STATUS_MAP[doc.status]
+                                    const StatusIcon = status.icon
+                                    return (
+                                        <div
+                                            key={doc.id}
+                                            className="esign-card animate-fadeInUp"
+                                            style={{ animationDelay: `${idx * 0.05}s` }}
+                                            onClick={() => setSelectedDoc(doc)}
+                                        >
                                             <div className="esign-icon-wrap" style={{ background: `${status.color}15`, color: status.color }}>
                                                 <StatusIcon size={18} />
                                             </div>
-                                        </div>
-                                        <div className="esign-card-info">
-                                            <strong>{doc.title}</strong>
-                                            <span className="esign-meta">{doc.template}</span>
-                                            <div className="esign-card-row">
-                                                <span className="esign-agent-mini">
-                                                    <img src={doc.agentAvatar} alt="" />
-                                                    {doc.agent.split(' ')[0]}
-                                                </span>
-                                                <span className="esign-status-pill" style={{ color: status.color, background: `${status.color}15` }}>
-                                                    {status.label}
-                                                </span>
+                                            <div className="esign-card-info">
+                                                <strong>{doc.title}</strong>
+                                                <span className="esign-meta">{doc.template}</span>
+                                                <div className="esign-card-row">
+                                                    <span className="esign-agent-mini">
+                                                        <img src={doc.agentAvatar} alt="" />
+                                                        {doc.agent.split(' ')[0]}
+                                                    </span>
+                                                    <span className="esign-pill" style={{ color: status.color, background: `${status.color}15` }}>
+                                                        {status.label}
+                                                    </span>
+                                                </div>
                                             </div>
+                                            <ChevronRight size={16} className="esign-chevron" />
                                         </div>
-                                        <ChevronRight size={16} className="esign-chevron" />
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })
+                            )}
                         </div>
                     </>
                 )}
 
+                {/* Templates View */}
                 {view === 'templates' && (
                     <div className="esign-templates">
                         {TEMPLATES.map((t, idx) => (
                             <div key={t.id} className="esign-template-card animate-fadeInUp" style={{ animationDelay: `${idx * 0.05}s` }}>
-                                <span className="esign-template-icon">{t.icon}</span>
-                                <div className="esign-template-info">
+                                <span className="esign-tpl-icon">{t.icon}</span>
+                                <div className="esign-tpl-info">
                                     <strong>{t.name}</strong>
                                     <span>{t.description}</span>
-                                    <span className="esign-template-fields">{t.fields} campos</span>
+                                    <span className="esign-tpl-fields">{t.fields} campos</span>
                                 </div>
-                                <button className="esign-use-btn" onClick={() => { setShowCreate(true) }}>
-                                    Usar
-                                </button>
+                                <button className="esign-use-btn" onClick={() => setShowCreate(true)}>Usar</button>
                             </div>
                         ))}
                     </div>
                 )}
 
-                <div style={{ height: '100px' }} />
+                <div style={{ height: '110px' }} />
             </div>
 
-            {/* Doc Detail */}
+            {/* ── DOC DETAIL MODAL ── */}
             {selectedDoc && createPortal(
-                <div className="crm-modal-overlay" onClick={() => setSelectedDoc(null)} style={{ zIndex: 999999 }}>
-                    <div className="crm-modal" onClick={e => e.stopPropagation()}>
-                        <div className="crm-modal-header">
+                <div className="esign-overlay" onClick={() => setSelectedDoc(null)}>
+                    <div className="esign-modal" onClick={e => e.stopPropagation()}>
+                        <div className="esign-modal-header">
                             <h2>{selectedDoc.title}</h2>
-                            <button onClick={() => setSelectedDoc(null)}><X size={20} /></button>
+                            <button className="esign-close-btn" onClick={() => setSelectedDoc(null)}>
+                                <X size={20} />
+                            </button>
                         </div>
-                        <div className="crm-modal-body">
-                            <div className="showing-detail-banner" style={{ background: `${STATUS_MAP[selectedDoc.status].color}15` }}>
+                        <div className="esign-modal-body">
+                            {/* Status Banner */}
+                            <div className="esign-status-banner" style={{ background: `${STATUS_MAP[selectedDoc.status].color}15`, borderColor: `${STATUS_MAP[selectedDoc.status].color}30` }}>
                                 <span style={{ color: STATUS_MAP[selectedDoc.status].color, fontWeight: 700 }}>
                                     {STATUS_MAP[selectedDoc.status].label}
                                 </span>
                                 {selectedDoc.sentDate && <span>Enviado: {selectedDoc.sentDate}</span>}
                             </div>
 
-                            <div className="crm-detail-section">
-                                <h4>Información</h4>
-                                <div className="crm-detail-grid">
-                                    <div className="crm-detail-item"><span>Plantilla</span><strong>{selectedDoc.template}</strong></div>
-                                    <div className="crm-detail-item"><span>Cliente</span><strong>{selectedDoc.client}</strong></div>
-                                    <div className="crm-detail-item"><span>Agente</span><strong>{selectedDoc.agent}</strong></div>
-                                    <div className="crm-detail-item"><span>Firmado</span><strong>{selectedDoc.signedDate || '—'}</strong></div>
+                            {/* Info Grid */}
+                            <div className="esign-info-section">
+                                <h4>Información del Documento</h4>
+                                <div className="esign-info-grid">
+                                    <div><span>Plantilla</span><strong>{selectedDoc.template}</strong></div>
+                                    <div><span>Cliente</span><strong>{selectedDoc.client}</strong></div>
+                                    <div><span>Agente</span><strong>{selectedDoc.agent}</strong></div>
+                                    <div><span>Firmado</span><strong>{selectedDoc.signedDate || '—'}</strong></div>
                                 </div>
                             </div>
 
+                            {/* Signers */}
                             {selectedDoc.signers.length > 0 && (
-                                <div className="crm-detail-section">
+                                <div className="esign-info-section">
                                     <h4>Firmantes</h4>
                                     {selectedDoc.signers.map((s, i) => (
                                         <div key={i} className="esign-signer-row">
-                                            <User size={16} />
+                                            <User size={15} />
                                             <span>{s.name}</span>
-                                            {s.signed ?
-                                                <CheckCircle2 size={16} color="#10B981" /> :
-                                                <Clock size={16} color="#F59E0B" />
+                                            {s.signed
+                                                ? <CheckCircle2 size={16} color="#10B981" />
+                                                : <Clock size={16} color="#F59E0B" />
                                             }
                                         </div>
                                     ))}
                                 </div>
                             )}
 
-                            <div className="esign-doc-actions">
+                            {/* Actions */}
+                            <div className="esign-actions">
                                 {selectedDoc.status === 'draft' && (
-                                    <button className="crm-submit-btn" onClick={() => sendForSignature(selectedDoc.id)}>
+                                    <button className="esign-action-btn primary" onClick={() => sendForSignature(selectedDoc.id)}>
                                         <Send size={16} /> Enviar para Firma
-                                    </button>
-                                )}
-                                {selectedDoc.status === 'signed' && (
-                                    <button 
-                                        className="crm-submit-btn" 
-                                        style={{ background: '#3B82F6' }}
-                                        onClick={() => {
-                                            if (selectedDoc.pdfUrl) {
-                                                const a = document.createElement('a');
-                                                a.href = selectedDoc.pdfUrl;
-                                                a.download = `${selectedDoc.title.replace(/\s+/g, '_')}_Firmado.pdf`;
-                                                a.click();
-                                            } else {
-                                                alert("El archivo PDF original se encuentra accesible mediante el proveedor E-Sign.");
-                                            }
-                                        }}
-                                    >
-                                        <Download size={16} /> Descargar PDF
                                     </button>
                                 )}
                                 {selectedDoc.status === 'pending' && (
                                     <>
-                                        <button className="crm-submit-btn" style={{ background: '#F59E0B' }} onClick={() => setSigningDoc(selectedDoc)}>
+                                        <button className="esign-action-btn amber" onClick={() => { setSigningDoc(selectedDoc); setSelectedDoc(null) }}>
                                             <PenTool size={16} /> Firmar Ahora
                                         </button>
-                                        <div className="esign-pending-notice">
-                                            <Shield size={16} />
+                                        <div className="esign-notice">
+                                            <Shield size={14} />
                                             <span>Esperando firma de {selectedDoc.signers.find(s => !s.signed)?.name || 'firmantes'}</span>
                                         </div>
                                     </>
+                                )}
+                                {selectedDoc.status === 'signed' && (
+                                    <button className="esign-action-btn blue" onClick={() => alert('El PDF firmado está disponible en el proveedor E-Sign.')}>
+                                        <Download size={16} /> Descargar PDF
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -282,36 +331,37 @@ export default function ESignaturesMobile() {
                 document.body
             )}
 
-            {/* Create New Doc (simple prompt) */}
+            {/* ── CREATE MODAL ── */}
             {showCreate && createPortal(
-                <div className="crm-modal-overlay" onClick={() => setShowCreate(false)} style={{ zIndex: 999999 }}>
-                    <div className="crm-modal" onClick={e => e.stopPropagation()}>
-                        <div className="crm-modal-header">
+                <div className="esign-overlay" onClick={() => setShowCreate(false)}>
+                    <div className="esign-modal" onClick={e => e.stopPropagation()}>
+                        <div className="esign-modal-header">
                             <h2>Nuevo Documento</h2>
-                            <button onClick={() => setShowCreate(false)}><X size={20} /></button>
+                            <button className="esign-close-btn" onClick={() => setShowCreate(false)}>
+                                <X size={20} />
+                            </button>
                         </div>
-                        <div className="crm-modal-body">
+                        <div className="esign-modal-body">
                             <div className="esign-api-notice">
                                 <Shield size={24} color="#3B82F6" />
-                                <h3>Integración e-Sign</h3>
-                                <p>Elije un proveedor certificado (DocuSign, DotLoop, HelloSign) para gestionar estos contratos con validez legal nativa.</p>
+                                <h3>Integración E-Sign</h3>
+                                <p>Conecta DocuSign, DotLoop o HelloSign para gestionar contratos con validez legal nativa.</p>
                             </div>
-
-                            <div className="crm-form-group">
-                                <label>Seleccionar Plantilla</label>
-                                <select className="crm-select">
+                            <div className="esign-form-group">
+                                <label>Plantilla</label>
+                                <select className="esign-select">
                                     {TEMPLATES.map(t => <option key={t.id}>{t.name}</option>)}
                                 </select>
                             </div>
-                            <div className="crm-form-group">
-                                <label>Cliente</label>
-                                <input type="text" placeholder="Nombre del cliente" className="crm-select" />
+                            <div className="esign-form-group">
+                                <label>Nombre del Cliente</label>
+                                <input type="text" placeholder="Nombre completo" className="esign-select" />
                             </div>
-                            <div className="crm-form-group">
-                                <label>Email del cliente</label>
-                                <input type="email" placeholder="email@ejemplo.com" className="crm-select" />
+                            <div className="esign-form-group">
+                                <label>Email del Cliente</label>
+                                <input type="email" placeholder="email@ejemplo.com" className="esign-select" />
                             </div>
-                            <button className="crm-submit-btn" onClick={() => setShowCreate(false)}>
+                            <button className="esign-action-btn primary" style={{ marginTop: '8px' }} onClick={() => setShowCreate(false)}>
                                 <FileText size={16} /> Crear Borrador
                             </button>
                         </div>
@@ -320,74 +370,40 @@ export default function ESignaturesMobile() {
                 document.body
             )}
 
+            {/* ── SIGNING MODAL ── */}
             {signingDoc && createPortal(
-                <div 
-                    className="docuseal-overlay" 
-                    style={{ 
-                        position: 'fixed',
-                        top: 0, left: 0, right: 0, bottom: 0,
-                        background: '#000', 
-                        zIndex: 999999, // Super high z-index
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
-                    <div className="docuseal-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '15px 20px', background: '#fff', alignItems: 'center' }}>
-                        <h3 style={{ margin: 0, fontSize: '16px', color: '#000' }}>{signingDoc.title}</h3>
-                        <button 
-                            onClick={() => setSigningDoc(null)} 
-                            style={{ background: 'none', border: 'none', color: '#666', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
-                        >
-                            <X size={18} /> Cancelar y Cerrar
+                <div className="esign-sign-overlay">
+                    <div className="esign-sign-header">
+                        <h3>{signingDoc.title}</h3>
+                        <button onClick={() => setSigningDoc(null)}>
+                            <X size={18} /> Cancelar
                         </button>
                     </div>
-                    {/* Contenedor del Iframe */}
-                    {/* Modal Alternativo Gratuito (Abre en Nueva Pestaña) */}
-                    <div style={{ flex: 1, width: '100%', height: '100%', overflow: 'hidden', background: '#f5f5f5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', textAlign: 'center' }}>
-                        
-                        <div style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', maxWidth: '400px', width: '100%' }}>
-                            <div style={{ width: '60px', height: '60px', background: '#E3F2FD', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#1a73e8' }}>
-                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                    <polyline points="10 9 9 9 8 9"></polyline>
-                                </svg>
-                            </div>
-                            
-                            <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', color: '#333' }}>Firma Electrónica Segura</h3>
-                            <p style={{ margin: '0 0 25px 0', fontSize: '14px', color: '#666', lineHeight: '1.5' }}>
-                                Serás redirigido al portal seguro de DocuSeal para trazar tu firma. Una vez que termines, vuelve a esta pantalla.
-                            </p>
-
-                            <button 
+                    <div className="esign-sign-body">
+                        <div className="esign-sign-card">
+                            <div className="esign-sign-icon">✍️</div>
+                            <h3>Firma Electrónica Segura</h3>
+                            <p>Serás redirigido al portal seguro de DocuSeal para completar la firma. Una vez que termines, regresa aquí.</p>
+                            <button
+                                className="esign-action-btn primary"
                                 onClick={() => {
-                                    const docusealUrl = `https://docuseal-railway-production-97d8.up.railway.app/d/nzWzy3TSqNZgQr?email=${encodeURIComponent(signingDoc.clientEmail || '')}&name=${encodeURIComponent(signingDoc.client || '')}`;
-                                    window.open(docusealUrl, '_blank');
-                                }}
-                                style={{
-                                    width: '100%', padding: '14px', background: '#1a73e8', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px'
+                                    const url = `https://docuseal-railway-production-97d8.up.railway.app/d/nzWzy3TSqNZgQr?email=${encodeURIComponent(signingDoc.clientEmail || '')}&name=${encodeURIComponent(signingDoc.client || '')}`
+                                    window.open(url, '_blank')
                                 }}
                             >
-                                <span>Abrir Documento y Firmar</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                Abrir Documento y Firmar →
                             </button>
-
-                            <button 
-                                onClick={confirmCompletion}
-                                style={{
-                                    width: '100%', padding: '14px', background: 'transparent', color: '#1a73e8', border: '1px solid #1a73e8', borderRadius: '8px', fontSize: '16px', fontWeight: '600', cursor: 'pointer'
-                                }}
+                            <button
+                                className="esign-action-btn outline"
+                                onClick={() => confirmCompletion(signingDoc.id)}
                             >
-                                Ya firmé el documento
+                                Ya firmé el documento ✓
                             </button>
                         </div>
-
                     </div>
                 </div>,
                 document.body
             )}
-        </>
+        </div>
     )
 }

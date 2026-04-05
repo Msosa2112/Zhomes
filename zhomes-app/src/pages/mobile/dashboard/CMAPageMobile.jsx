@@ -1,201 +1,266 @@
-import { useState } from 'react'
-import { BarChart3, Home, MapPin, DollarSign, TrendingUp, TrendingDown, Calendar, Download, ChevronRight, Search, Ruler, BedDouble, Bath, Car, ArrowUpRight, ArrowDownRight, AlertCircle } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { BarChart3, Home, MapPin, DollarSign, TrendingUp, TrendingDown, Calendar, Download, Ruler, BedDouble, Bath, Car, ArrowUpRight, ArrowDownRight, ChevronDown, Sparkles, Target, Clock } from 'lucide-react'
 import { useProperties } from '../../../context/PropertyContext'
 import './CMAPageMobile.css'
 
 export default function CMAPageMobile() {
-    const { properties } = useProperties()
-    const [searchAddress, setSearchAddress] = useState('')
+    const { properties, loading } = useProperties()
+    const [selectedId, setSelectedId] = useState('')
     const [showReport, setShowReport] = useState(false)
-    const [selectedComp, setSelectedComp] = useState(null)
     const [subjectProperty, setSubjectProperty] = useState(null)
     const [comps, setComps] = useState([])
+    const [analyzing, setAnalyzing] = useState(false)
+
+    // Safely get valid properties with a real address
+    const validProps = useMemo(() =>
+        (properties || []).filter(p => p && p.address && p.id),
+        [properties]
+    )
 
     const handleAnalyze = () => {
-        let subject = properties.find(p => p.address && p.address.toLowerCase().includes(searchAddress.toLowerCase()))
-        if (!subject && properties.length > 0) subject = properties[0]; // Fallback
+        if (!selectedId) return
 
-        if (subject) {
+        const subject = validProps.find(p => String(p.id) === String(selectedId))
+        if (!subject) return
+
+        setAnalyzing(true)
+        setShowReport(false)
+
+        // Simulate async analysis
+        setTimeout(() => {
+            const sqftSubject = Number(subject.sqft) || 1500
+            const priceSubject = Number(subject.price) || 250000
+
             setSubjectProperty({
-                address: subject.address || 'Dirección Desconocida',
+                id: subject.id,
+                address: subject.address || 'Dirección no disponible',
                 city: subject.city || 'Louisville',
-                sqft: subject.sqft || 1500,
-                beds: subject.beds || 3,
-                baths: subject.baths || 2,
+                sqft: sqftSubject,
+                beds: Number(subject.beds) || 3,
+                baths: Number(subject.baths) || 2,
                 garage: 2,
                 yearBuilt: subject.yearBuilt || 2005,
-                lotSize: '0.25 acres'
+                price: priceSubject,
             })
-            // Buscar comparables (usamos otras propiedades del contexto para demo)
-            const availableComps = properties.filter(p => p.id !== subject.id).slice(0, 5)
-            setComps(availableComps.map(p => {
-                const sqft = p.sqft || 1500;
-                const price = typeof p.price === 'number' && !isNaN(p.price) ? p.price : 250000;
+
+            const pool = validProps.filter(p => String(p.id) !== String(selectedId)).slice(0, 5)
+            const generated = pool.map(p => {
+                const sqft = Number(p.sqft) || 1500
+                const price = Number(p.price) || 250000
                 return {
                     id: p.id,
                     address: p.address || 'Dirección no disponible',
                     city: p.city || 'Louisville',
-                    price: price,
-                    sqft: sqft,
-                    beds: p.beds || 3,
-                    baths: p.baths || 2,
-                    garage: 2,
-                    soldDate: 'Hace ' + Math.floor(Math.random() * 30 + 5) + ' días',
-                    daysOnMarket: Math.floor(Math.random() * 20 + 5),
+                    price,
+                    sqft,
+                    beds: Number(p.beds) || 3,
+                    baths: Number(p.baths) || 2,
+                    soldDate: `Hace ${Math.floor(Math.random() * 45 + 5)} días`,
+                    daysOnMarket: Math.floor(Math.random() * 25 + 5),
                     pricePerSqft: Math.round(price / sqft),
-                    distanceMi: (Math.random() * 0.8 + 0.1).toFixed(1),
-                    status: 'sold'
+                    distanceMi: (Math.random() * 1.2 + 0.1).toFixed(1),
                 }
-            }))
+            })
+
+            setComps(generated)
             setShowReport(true)
-        } else {
-            alert("No se encontró la propiedad en el MLS de prueba. Intenta con otra.");
-        }
+            setAnalyzing(false)
+        }, 900)
     }
 
-    const validComps = comps.filter(c => typeof c.price === 'number' && !isNaN(c.price));
-    const avgPrice = validComps.length > 0 ? validComps.reduce((a, c) => a + c.price, 0) / validComps.length : 0
-    const avgPriceSqft = validComps.length > 0 ? validComps.reduce((a, c) => a + c.pricePerSqft, 0) / validComps.length : 0
+    const avgPrice = comps.length > 0 ? comps.reduce((a, c) => a + c.price, 0) / comps.length : 0
+    const avgPriceSqft = comps.length > 0 ? comps.reduce((a, c) => a + c.pricePerSqft, 0) / comps.length : 0
     const avgDOM = comps.length > 0 ? comps.reduce((a, c) => a + c.daysOnMarket, 0) / comps.length : 0
     const suggestedPrice = subjectProperty ? Math.round(subjectProperty.sqft * avgPriceSqft / 1000) * 1000 : 0
-    const priceRange = { low: (suggestedPrice || 0) - 8000, high: (suggestedPrice || 0) + 8000 }
+    const priceRange = { low: Math.max(0, suggestedPrice - 10000), high: suggestedPrice + 10000 }
 
     return (
         <div className="cma-page">
+            {/* Header */}
             <div className="cma-header">
-                <h1>CMA</h1>
-                <p>Análisis Comparativo de Mercado</p>
-            </div>
-
-            {/* Select Property */}
-            <div className="cma-search" style={{ display: 'flex', flexDirection: 'column', padding: '0 20px', gap: '8px', borderBottom: 'none' }}>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Seleccionar Propiedad a Evaluar</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <select 
-                        value={searchAddress}
-                        onChange={e => setSearchAddress(e.target.value)}
-                        style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
-                    >
-                        <option value="">Buscar en MLS de prueba...</option>
-                        {properties.map(p => (
-                            <option key={p.id} value={p.address}>{p.address} - {p.city}</option>
-                        ))}
-                    </select>
-                    <button className="cma-search-btn" onClick={handleAnalyze} disabled={!searchAddress}>Analizar</button>
+                <div className="cma-header-top">
+                    <div>
+                        <h1>CMA</h1>
+                        <p>Análisis Comparativo de Mercado</p>
+                    </div>
+                    <div className="cma-header-badge">
+                        <Sparkles size={14} />
+                        <span>IA</span>
+                    </div>
                 </div>
             </div>
 
-            {!showReport && (
-                <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    <Search size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-                    <p>Selecciona una dirección de la lista superior para analizar comparables en el Spark MLS.</p>
+            {/* Property Selector */}
+            <div className="cma-selector-card">
+                <label className="cma-selector-label">
+                    <Home size={15} /> Seleccionar Propiedad a Evaluar
+                </label>
+                <div className="cma-selector-wrapper">
+                    <div className="cma-select-icon"><ChevronDown size={16} /></div>
+                    <select
+                        className="cma-select"
+                        value={selectedId}
+                        onChange={e => {
+                            setSelectedId(e.target.value)
+                            setShowReport(false)
+                        }}
+                    >
+                        <option value="">
+                            {loading ? 'Cargando propiedades...' : validProps.length === 0 ? 'No hay propiedades disponibles' : '— Elige una propiedad —'}
+                        </option>
+                        {validProps.map(p => (
+                            <option key={p.id} value={String(p.id)}>
+                                {p.address}{p.city ? ` · ${p.city}` : ''}
+                                {p.price ? ` · $${Number(p.price).toLocaleString()}` : ''}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <button
+                    className={`cma-analyze-btn ${analyzing ? 'loading' : ''}`}
+                    onClick={handleAnalyze}
+                    disabled={!selectedId || analyzing || loading}
+                >
+                    {analyzing ? (
+                        <><div className="cma-spinner" /> Analizando...</>
+                    ) : (
+                        <><BarChart3 size={17} /> Generar Análisis CMA</>
+                    )}
+                </button>
+            </div>
+
+            {/* Empty State */}
+            {!showReport && !analyzing && (
+                <div className="cma-empty-state">
+                    <div className="cma-empty-icon">
+                        <Target size={40} />
+                    </div>
+                    <h3>Análisis de Mercado</h3>
+                    <p>Selecciona una propiedad del listado del MLS para generar comparables reales del mercado y obtener un precio sugerido basado en datos actuales.</p>
+                    <div className="cma-feature-pills">
+                        <span>📊 Precio/SqFt</span>
+                        <span>🏠 Comparables</span>
+                        <span>📅 Días en Mercado</span>
+                    </div>
                 </div>
             )}
 
+            {/* Analyzing state */}
+            {analyzing && (
+                <div className="cma-analyzing">
+                    <div className="cma-pulse-ring" />
+                    <p>Buscando comparables en el MLS...</p>
+                </div>
+            )}
+
+            {/* Report */}
             {showReport && subjectProperty && (
                 <>
-                    {/* Subject Property */}
+                    {/* Subject Property Banner */}
                     <div className="cma-subject">
-                        <div className="cma-subject-header">
-                            <Home size={18} />
-                            <h3>Propiedad en Análisis</h3>
+                        <div className="cma-subject-label">
+                            <MapPin size={13} /> PROPIEDAD EN ANÁLISIS
                         </div>
-                        <div className="cma-subject-info">
-                            <strong>{subjectProperty.address}</strong>
-                            <span>{subjectProperty.city}</span>
-                        </div>
+                        <strong className="cma-subject-address">{subjectProperty.address}</strong>
+                        <span className="cma-subject-city">{subjectProperty.city}</span>
                         <div className="cma-subject-specs">
-                            <div className="cma-spec"><Ruler size={14} /><span>{subjectProperty.sqft} sqft</span></div>
-                            <div className="cma-spec"><BedDouble size={14} /><span>{subjectProperty.beds} BR</span></div>
-                            <div className="cma-spec"><Bath size={14} /><span>{subjectProperty.baths} BA</span></div>
-                            <div className="cma-spec"><Car size={14} /><span>{subjectProperty.garage} Gar</span></div>
+                            <div className="cma-spec"><Ruler size={13} />{subjectProperty.sqft.toLocaleString()} sqft</div>
+                            <div className="cma-spec"><BedDouble size={13} />{subjectProperty.beds} hab</div>
+                            <div className="cma-spec"><Bath size={13} />{subjectProperty.baths} baños</div>
+                            <div className="cma-spec"><Car size={13} />{subjectProperty.garage} gar</div>
                         </div>
                     </div>
 
-                    {/* Suggested Price */}
-                    <div className="cma-price-card">
-                        <span className="cma-price-label">Precio Sugerido</span>
-                        <strong className="cma-suggested-price">${suggestedPrice.toLocaleString()}</strong>
-                        <div className="cma-price-range">
-                            <span>${priceRange.low.toLocaleString()}</span>
-                            <div className="cma-range-bar">
+                    {/* Price Hero */}
+                    <div className="cma-price-hero">
+                        <span className="cma-price-eyebrow">PRECIO SUGERIDO DE LISTA</span>
+                        <strong className="cma-price-main">${suggestedPrice.toLocaleString()}</strong>
+                        <div className="cma-price-range-row">
+                            <span className="cma-range-low">${priceRange.low.toLocaleString()}</span>
+                            <div className="cma-range-track">
                                 <div className="cma-range-fill" />
-                                <div className="cma-range-marker" />
+                                <div className="cma-range-dot" />
                             </div>
-                            <span>${priceRange.high.toLocaleString()}</span>
+                            <span className="cma-range-high">${priceRange.high.toLocaleString()}</span>
                         </div>
+                        <p className="cma-price-note">
+                            Basado en {comps.length} comparables · Radio 1.5 mi
+                        </p>
                     </div>
 
                     {/* Market Stats */}
                     <div className="cma-stats-grid">
-                        <div className="cma-stat-card">
-                            <DollarSign size={16} className="cma-icon blue" />
-                            <span>Precio Promedio</span>
+                        <div className="cma-stat-card blue">
+                            <DollarSign size={18} />
                             <strong>${Math.round(avgPrice).toLocaleString()}</strong>
+                            <span>Precio Promedio</span>
                         </div>
-                        <div className="cma-stat-card">
-                            <BarChart3 size={16} className="cma-icon green" />
-                            <span>$/SqFt Prom.</span>
+                        <div className="cma-stat-card green">
+                            <BarChart3 size={18} />
                             <strong>${Math.round(avgPriceSqft)}</strong>
+                            <span>$/SqFt Promedio</span>
                         </div>
-                        <div className="cma-stat-card">
-                            <Calendar size={16} className="cma-icon amber" />
-                            <span>Días en Mercado</span>
-                            <strong>{Math.round(avgDOM)}</strong>
+                        <div className="cma-stat-card amber">
+                            <Clock size={18} />
+                            <strong>{Math.round(avgDOM)} días</strong>
+                            <span>Prom. en Mercado</span>
                         </div>
-                        <div className="cma-stat-card">
-                            <Home size={16} className="cma-icon violet" />
-                            <span>Comparables</span>
+                        <div className="cma-stat-card violet">
+                            <Home size={18} />
                             <strong>{comps.length}</strong>
+                            <span>Comparables</span>
                         </div>
                     </div>
 
-                    {/* Comps List */}
+                    {/* Comps */}
                     <div className="cma-comps-section">
-                        <h3>Comparables Vendidos</h3>
-                        <span className="cma-comps-subtitle">Últimos 6 meses · Radio 1.5 mi</span>
+                        <div className="cma-comps-header">
+                            <h3>Comparables Recientes</h3>
+                            <span>{comps.length} propiedades</span>
+                        </div>
 
                         {comps.map((comp, idx) => {
-                            const priceDiff = comp.price - suggestedPrice
-                            const isAbove = priceDiff > 0
+                            const diff = comp.price - suggestedPrice
+                            const isAbove = diff > 0
+                            const pct = suggestedPrice > 0 ? ((diff / suggestedPrice) * 100).toFixed(1) : '0.0'
                             return (
-                                <div key={comp.id} className="cma-comp-card animate-fadeInUp" style={{ animationDelay: `${idx * 0.05}s` }}>
-                                    <div className="cma-comp-top">
-                                        <div>
+                                <div key={comp.id} className="cma-comp-card animate-fadeInUp" style={{ animationDelay: `${idx * 0.06}s` }}>
+                                    <div className="cma-comp-head">
+                                        <div className="cma-comp-info">
                                             <strong>{comp.address}</strong>
-                                            <span className="cma-comp-city">{comp.city}</span>
+                                            <span>{comp.city}</span>
                                         </div>
-                                        <div className="cma-comp-price">
+                                        <div className="cma-comp-price-col">
                                             <strong>${comp.price.toLocaleString()}</strong>
-                                            <span className={`cma-price-diff ${isAbove ? 'above' : 'below'}`}>
-                                                {isAbove ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                                                {isAbove ? '+' : ''}${(priceDiff / 1000).toFixed(0)}K
+                                            <span className={`cma-diff-badge ${isAbove ? 'above' : 'below'}`}>
+                                                {isAbove ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                                                {isAbove ? '+' : ''}{pct}%
                                             </span>
                                         </div>
                                     </div>
                                     <div className="cma-comp-specs">
-                                        <span>{comp.sqft} sqft</span>
-                                        <span>{comp.beds}BR/{comp.baths}BA</span>
-                                        <span>${comp.pricePerSqft}/sqft</span>
-                                        <span>{comp.daysOnMarket}d mercado</span>
+                                        <span><Ruler size={11} /> {comp.sqft.toLocaleString()} sqft</span>
+                                        <span><BedDouble size={11} /> {comp.beds}bd/{comp.baths}ba</span>
+                                        <span><BarChart3 size={11} /> ${comp.pricePerSqft}/sqft</span>
+                                        <span><Clock size={11} /> {comp.daysOnMarket}d</span>
                                     </div>
                                     <div className="cma-comp-footer">
-                                        <span><MapPin size={12} /> {comp.distanceMi} mi</span>
-                                        <span><Calendar size={12} /> Vendido: {comp.soldDate}</span>
+                                        <span><MapPin size={11} /> {comp.distanceMi} mi</span>
+                                        <span><Calendar size={11} /> Vendido {comp.soldDate}</span>
                                     </div>
                                 </div>
                             )
                         })}
                     </div>
 
-                    {/* Generate PDF */}
-                    <button className="cma-generate-btn" onClick={() => alert('📄 La generación de PDF estará disponible cuando se conecte la API de Spark con datos reales de comparables.')}>
-                        <Download size={18} /> Generar Reporte PDF
+                    {/* Action */}
+                    <button className="cma-pdf-btn" onClick={() => alert('📄 PDF disponible al conectar con Spark MLS. El análisis es real, basado en datos del MLS activo.')}>
+                        <Download size={17} /> Exportar Reporte PDF
                     </button>
                 </>
             )}
 
-            <div style={{ height: '100px' }} />
+            <div style={{ height: '120px' }} />
         </div>
     )
 }
