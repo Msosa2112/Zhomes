@@ -17,7 +17,7 @@
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     padding: 24px 20px;
-    padding-bottom: env(safe-area-inset-bottom, 24px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 90px);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     max-height: 90vh;
     overflow-y: auto;
