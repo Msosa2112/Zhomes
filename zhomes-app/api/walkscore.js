@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const apiKey = process.env.VITE_WALKSCORE_API_KEY;
+  // Accept both WALKSCORE_API_KEY (correct server-side name) and VITE_WALKSCORE_API_KEY (legacy)
+  const apiKey = process.env.WALKSCORE_API_KEY || process.env.VITE_WALKSCORE_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'WalkScore API key not configured' });
   }

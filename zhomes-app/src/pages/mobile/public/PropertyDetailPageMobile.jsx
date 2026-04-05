@@ -14,6 +14,7 @@ import { MortgageService } from '../../../services/mortgageService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
 import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
+import CommuteIntel from '../../../components/public/CommuteIntel'
 import BookingWidget from '../../../components/public/BookingWidget'
 import './PropertyDetailPageMobile.css'
 
@@ -317,6 +318,13 @@ export default function PropertyDetailPageMobile() {
                     address={property.address}
                     lat={property.lat}
                     lng={property.lng}
+                />
+
+                {/* Commute Intelligence — Saved Locations */}
+                <CommuteIntel 
+                    propertyAddress={`${property.address}, ${property.city}`}
+                    propLat={property.lat}
+                    propLng={property.lng}
                 />
 
                 {/* Quick Mortgage Estimate */}

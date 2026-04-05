@@ -7,14 +7,14 @@
  * Protected by CRON_SECRET to prevent unauthorized calls.
  */
 
-const SUPABASE_URL = 'https://elhqcwpqbnxafaepmswl.supabase.co';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://bnbvzcllyfmzuhnjltxg.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const SPARK_BASE   = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 const ZHOMES_OFFICE_KEY = '20141212170001416260000000';
 
 const TOKENS = {
-  broker: process.env.SPARK_BROKER_TOKEN || '6ojczz7todkepnsvryhw7m8ka',
-  idx:    process.env.SPARK_IDX_TOKEN    || 'ayj1thvzmwsmpbn1ami7c8z85'
+  broker: process.env.SPARK_BROKER_TOKEN || process.env.VITE_SPARK_API_KEY,
+  idx:    process.env.SPARK_IDX_TOKEN    || process.env.VITE_SPARK_API_KEY
 };
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -173,11 +173,46 @@ async function syncOffice() {
   }]);
 }
 
+// ── Sync Logging Helpers ──
+async function createSyncLog(triggeredBy = 'cron') {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/sync_logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ status: 'running', triggered_by: triggeredBy })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data[0]?.id || null;
+  } catch { return null; }
+}
+
+async function updateSyncLog(logId, updates) {
+  if (!logId) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/sync_logs?id=eq.${logId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ ...updates, completed_at: new Date().toISOString() })
+    });
+  } catch { /* non-critical */ }
+}
+
 // ── Vercel Handler ──
 export default async function handler(req, res) {
   // Security: only allow Vercel Cron or requests with CRON_SECRET
   const authHeader = req.headers['authorization'];
   const cronSecret = process.env.CRON_SECRET;
+  const triggeredBy = req.query.trigger || (req.headers['x-vercel-cron'] ? 'cron' : 'manual');
   
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -185,6 +220,7 @@ export default async function handler(req, res) {
 
   const start = Date.now();
   const log = [];
+  const logId = await createSyncLog(triggeredBy);
 
   try {
     log.push('Starting MLS sync...');
@@ -204,6 +240,16 @@ export default async function handler(req, res) {
     const elapsed = Math.round((Date.now() - start) / 1000);
     log.push(`Done in ${elapsed}s`);
 
+    // Write success to sync_logs
+    await updateSyncLog(logId, {
+      status: 'success',
+      duration_seconds: elapsed,
+      properties_upserted: brokerTotal + idxTotal,
+      agents_upserted: agentCount,
+      office_updated: true,
+      details: { log }
+    });
+
     return res.status(200).json({
       success: true,
       timestamp: new Date().toISOString(),
@@ -211,7 +257,17 @@ export default async function handler(req, res) {
       log
     });
   } catch (err) {
+    const elapsed = Math.round((Date.now() - start) / 1000);
     console.error('Sync error:', err);
+
+    // Write failure to sync_logs
+    await updateSyncLog(logId, {
+      status: 'failed',
+      duration_seconds: elapsed,
+      error_message: err.message,
+      details: { log }
+    });
+
     return res.status(500).json({ success: false, error: err.message, log });
   }
 }

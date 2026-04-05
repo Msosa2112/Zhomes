@@ -6,6 +6,7 @@ import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
 import RealtorSelectorModal from '../../../components/public/RealtorSelectorModal'
+import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
@@ -15,6 +16,14 @@ export default function UserProfileMobile() {
     const [favorites, setFavorites] = useState([])
     const [loading, setLoading] = useState(true)
     const [loadingFavs, setLoadingFavs] = useState(true)
+
+    // Saved Locations
+    const [savedLocations, setSavedLocations] = useState([])
+    const [loadingLocations, setLoadingLocations] = useState(true)
+    const [showAddLocationModal, setShowAddLocationModal] = useState(false)
+    const [newLocationLabel, setNewLocationLabel] = useState('')
+    const [newLocationAddress, setNewLocationAddress] = useState('')
+    const [savingLocation, setSavingLocation] = useState(false)
 
     // Pre-qual saved summary (for card display)
     const [savedPrequal, setSavedPrequal] = useState(null)
@@ -163,7 +172,16 @@ export default function UserProfileMobile() {
                     .eq('user_id', currentUser.id)
                     .maybeSingle()
                 if (prequalData?.result) setSavedPrequal(prequalData)
+
+                // Load saved locations
+                const { data: locationsData } = await supabase
+                    .from('user_saved_locations')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                if (locationsData) setSavedLocations(locationsData)
             }
+            setLoadingLocations(false)
         }
 
         fetchUserAndFavorites()
@@ -190,6 +208,43 @@ export default function UserProfileMobile() {
         localStorage.removeItem('zhomes_demo_user')
         await supabase.auth.signOut()
         navigate('/')
+    }
+
+    const handleSaveLocation = async () => {
+        if (!newLocationLabel || !newLocationAddress) {
+            alert('Por favor ingresa un nombre y selecciona una dirección.')
+            return
+        }
+        setSavingLocation(true)
+        try {
+            const { data, error } = await supabase
+                .from('user_saved_locations')
+                .insert([{
+                    user_id: user.id,
+                    label: newLocationLabel,
+                    address: newLocationAddress
+                }])
+                .select()
+                .single()
+            if (error) throw error
+            setSavedLocations([data, ...savedLocations])
+            setShowAddLocationModal(false)
+            setNewLocationLabel('')
+            setNewLocationAddress('')
+        } catch (err) {
+            alert('Error guardando ubicación: ' + err.message)
+        } finally {
+            setSavingLocation(false)
+        }
+    }
+
+    const handleDeleteLocation = async (id) => {
+        try {
+            await supabase.from('user_saved_locations').delete().eq('id', id)
+            setSavedLocations(savedLocations.filter(loc => loc.id !== id))
+        } catch (err) {
+            console.error('Error deleting location', err)
+        }
     }
 
     if (loading) {
@@ -416,6 +471,40 @@ export default function UserProfileMobile() {
                     <button className="up-btn outline" style={{width:'100%', padding:'16px', display:'flex', justifyContent:'center', gap:'8px', marginBottom: '24px'}} onClick={() => setShowAgentModal(true)}>
                         <UserPlus size={20} /> Seleccionar Agente
                     </button>
+                )}
+
+                {/* Mis Lugares Frecuentes */}
+                <div className="up-section-title">
+                    <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                        <MapPin size={20} color="var(--zhomes-red)" />
+                        <h3>Mis Lugares Frecuentes</h3>
+                    </div>
+                </div>
+                {!loadingLocations && savedLocations.length === 0 ? (
+                    <div className="up-empty-state" style={{ marginBottom: '24px' }}>
+                        <MapPin style={{ opacity: 0.3 }} size={32} />
+                        <p style={{ fontSize: '0.9rem' }}>Añade el trabajo o la escuela para ver el tiempo de traslado al ver una casa.</p>
+                        <button className="up-btn flat" style={{ marginTop: '12px' }} onClick={() => setShowAddLocationModal(true)}>
+                            + Añadir Lugar
+                        </button>
+                    </div>
+                ) : (
+                    <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {savedLocations.map(loc => (
+                            <div key={loc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-secondary)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                    <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>{loc.label}</h4>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{loc.address}</p>
+                                </div>
+                                <button onClick={() => handleDeleteLocation(loc.id)} style={{ background: 'transparent', border: 'none', color: 'var(--zhomes-red)', cursor: 'pointer', padding: '8px' }}>
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        ))}
+                        <button className="up-btn outline" style={{width:'100%', padding:'16px', display:'flex', justifyContent:'center', gap:'8px'}} onClick={() => setShowAddLocationModal(true)}>
+                            + Añadir Otro Lugar
+                        </button>
+                    </div>
                 )}
 
                 <div className="up-section-title">
@@ -665,6 +754,51 @@ export default function UserProfileMobile() {
                             disabled={savingProfile}
                         >
                             {savingProfile ? 'Guardando...' : 'Guardar Cambios'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Add Location Modal */}
+            {showAddLocationModal && (
+                <div className="up-modal-overlay" onClick={() => setShowAddLocationModal(false)}>
+                    <div className="up-modal-content" onClick={e => e.stopPropagation()} style={{ overflow: 'visible' }}>
+                        <div className="up-modal-header">
+                            <h2><MapPin size={24} color="var(--zhomes-red)" /> Añadir Lugar</h2>
+                            <button className="up-modal-close" onClick={() => setShowAddLocationModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Nombre (ej. Trabajo, Gimnasio)</label>
+                                <input
+                                    type="text"
+                                    value={newLocationLabel}
+                                    onChange={e => setNewLocationLabel(e.target.value)}
+                                    placeholder="Casa de mis papás"
+                                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
+                                />
+                            </div>
+                            <div style={{ position: 'relative', zIndex: 10 }}>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Dirección Exacta</label>
+                                <AddressAutocomplete
+                                    value={newLocationAddress}
+                                    onSelect={val => setNewLocationAddress(val)}
+                                    onChange={val => setNewLocationAddress(val)}
+                                    placeholder="Escribe la dirección..."
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            className="up-btn flat"
+                            style={{ width: '100%', marginTop: '32px', background: 'var(--zhomes-red)', color: 'white', opacity: savingLocation ? 0.6 : 1 }}
+                            onClick={handleSaveLocation}
+                            disabled={savingLocation}
+                        >
+                            {savingLocation ? 'Guardando...' : 'Guardar Lugar'}
                         </button>
                     </div>
                 </div>

@@ -14,9 +14,13 @@ const aiMiddleware = () => ({
             const parsedBody = JSON.parse(body);
             const { action, data } = parsedBody;
             
-            const openai = new OpenAI({
-              apiKey: process.env.OPENAI_API_KEY || "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"
-            });
+            const openAIKey = process.env.OPENAI_API_KEY;
+            if (!openAIKey) {
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: 'OPENAI_API_KEY not set in environment. Add it to your .env file.' }));
+              return;
+            }
+            const openai = new OpenAI({ apiKey: openAIKey });
 
             let system_message = "";
             let prompt = "";
@@ -89,7 +93,10 @@ export default defineConfig(({ mode }) => {
               
               // Inyectar Headers de Autenticación
               // Key from Greater Louisville AOR - IDX Feed subscription
-              const sparkKey = env.VITE_SPARK_API_KEY || '6ojczz7todkepnsvryhw7m8ka';
+              const sparkKey = env.VITE_SPARK_API_KEY;
+              if (!sparkKey) {
+                console.error('[SPARK PROXY] VITE_SPARK_API_KEY not set in .env');
+              }
               console.log('[SPARK PROXY] Path:', proxyReq.path);
               proxyReq.setHeader('Authorization', `Bearer ${sparkKey}`);
               proxyReq.setHeader('X-SparkApi-User-Agent', 'ZhomesApp/1.0');

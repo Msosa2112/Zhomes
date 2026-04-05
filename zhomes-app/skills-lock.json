@@ -1,10 +1,50 @@
 {
   "version": 1,
   "skills": {
+    "building-components": {
+      "source": "vercel/components.build",
+      "sourceType": "github",
+      "computedHash": "20889af7cb9b3abca1e38824f7fffaa873eb0cc4d45187967b97bd85462cf934"
+    },
     "emil-design-eng": {
       "source": "emilkowalski/skill",
       "sourceType": "github",
       "computedHash": "ac3fc5b4e206488ffc408a2806f829bb2e5eaf518fded09be34790685c2b3a0d"
+    },
+    "frontend-design": {
+      "source": "victor604/frontend-design",
+      "sourceType": "github",
+      "computedHash": "cda0e897a6879d645dce763415bcce0e2ee063ff29901350dda62cdc3d9b7bd3"
+    },
+    "motion": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "computedHash": "0e58c4402e5836b5de724a27266c573d144ea9109671ad8563595c1ae0683b83"
+    },
+    "real-estate": {
+      "source": "barneyjm/camino-skills",
+      "sourceType": "github",
+      "computedHash": "1f05cd450836d82597560b6ca121f2875275aff17bb9746d935ba4dd7d57494a"
+    },
+    "real-estate-analyzer": {
+      "source": "travisjneuman/.claude",
+      "sourceType": "github",
+      "computedHash": "19a5857eafc6e22d25220fa769f4a169cd995742f8844a15328f556ba527c743"
+    },
+    "real-estate-expert": {
+      "source": "personamanagmentlayer/pcl",
+      "sourceType": "github",
+      "computedHash": "29198e49a0d1de48757f126e31e6c5c224b70caa2bc7960054a58381d066f898"
+    },
+    "shadcn-ui": {
+      "source": "existential-birds/beagle",
+      "sourceType": "github",
+      "computedHash": "d4c23e7c19773881cc5a9a39ff7ebf86b35653518127a5fc5a41ac6c06aa9a46"
+    },
+    "supabase-backend-platform": {
+      "source": "bobmatnyc/claude-mpm-skills",
+      "sourceType": "github",
+      "computedHash": "fa312e1347c72c02a88622944cdb05584b158a5344fde92c96fe5add48283c60"
     }
   }
 }

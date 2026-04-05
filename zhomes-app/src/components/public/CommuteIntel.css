@@ -1,0 +1,171 @@
+.commute-intel-card {
+    background: var(--bg-secondary, #fff);
+    border: 1px solid var(--border-color, #eaeaea);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.commute-intel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.commute-intel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary, #333);
+}
+
+.commute-calc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid #3B82F6;
+    color: #3B82F6;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.commute-calc-btn:active {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.commute-shimmer-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shimmer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--bg-tertiary, #f8f9fa);
+}
+
+.shimmer-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #e0e0e0;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.shimmer-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.shimmer-line {
+    height: 12px;
+    border-radius: 8px;
+    background: #e0e0e0;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.shimmer-line.s-long {
+    width: 60%;
+}
+
+.shimmer-line.s-short {
+    width: 80%;
+}
+
+@keyframes shimmer {
+    0% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.5; }
+}
+
+.commute-error {
+    color: var(--zhomes-red, #E31E24);
+    font-size: 0.9rem;
+    padding: 10px 0;
+}
+
+.commute-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.commute-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-tertiary, #f8f9fa);
+    padding: 12px 14px;
+    border-radius: 12px;
+}
+
+.commute-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.commute-info-wrap {
+    flex: 1;
+    overflow: hidden;
+}
+
+.commute-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary, #333);
+    margin: 0 0 2px 0;
+}
+
+.commute-addr {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #666);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.commute-addr.error {
+    color: var(--zhomes-red, #E31E24);
+}
+
+.commute-stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.commute-time {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #3B82F6; /* Azul brillante como ruta */
+}
+
+.commute-dist {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #666);
+    font-weight: 600;
+}
