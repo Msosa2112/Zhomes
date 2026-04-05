@@ -370,38 +370,46 @@ async function* sparkPagedQuery(filter, select) {
 
 /** Mapea un registro de Spark al schema de mls_properties en Supabase */
 function mapSparkToSupabase(s) {
-  // Normalizar lat/lng (Spark puede dar string o number)
   const lat = s.Latitude  != null ? parseFloat(s.Latitude)  : null;
   const lng = s.Longitude != null ? parseFloat(s.Longitude) : null;
 
-  // Sqft: Spark puede llamarlo LivingArea, BelowGradeFinishedArea, BuildingAreaTotal, etc.
   const sqft = s.LivingArea
     || s.BuildingAreaTotal
     || s.AboveGradeFinishedArea
     || null;
 
   return {
-    listing_key:       s.ListingKey                || null,
-    address:           s.UnparsedAddress           || s.StreetNumber + ' ' + s.StreetName || null,
-    city:              s.City                      || null,
-    status:            s.StandardStatus            || s.MlsStatus || 'Closed',
-    price:             s.ListPrice                 || null,
-    close_price:       s.ClosePrice                || null,
-    close_date:        s.CloseDate                 || null,
-    list_date:         s.ListingContractDate        || s.OnMarketDate || null,
-    sqft:              sqft                         ? Math.round(sqft) : null,
-    beds:              s.BedroomsTotal              || null,
-    baths:             s.BathroomsTotalInteger      || s.BathroomsFull || null,
-    year_built:        s.YearBuilt                 || null,
-    lat:               lat,
-    lng:               lng,
-    property_subtype:  s.PropertySubType           || s.PropertyType || null,
-    garage_yn:         s.GarageYN                  === true || s.GarageYN === 'true' || false,
-    list_agent_name:   s.ListAgentFullName         || null,
-    list_agent_key:    s.ListAgentKey              || null,
-    is_zhomes:         false,   // Las cerradas históricas no son exclusivas ZHomes
-    primary_photo:     null,    // No pedimos fotos en la carga histórica (ahorrar cuota)
-    updated_at:        new Date().toISOString(),
+    id:               s.ListingKey                          || null,
+    address:          s.UnparsedAddress                     || null,
+    city:             s.City                               || null,
+    state:            s.StateOrProvince                    || 'KY',
+    zip:              s.PostalCode                         || null,
+    county:           s.CountyOrParish                     || null,
+    status:           s.StandardStatus || s.MlsStatus      || 'Closed',
+    property_type:    s.PropertyType                       || null,
+    property_subtype: s.PropertySubType                    || null,
+    price:            s.ListPrice          ? Math.round(s.ListPrice)          : null,
+    close_price:      s.ClosePrice         ? Math.round(s.ClosePrice)         : null,
+    original_price:   s.OriginalListPrice  ? Math.round(s.OriginalListPrice)  : null,
+    close_date:       s.CloseDate                          || null,
+    list_date:        s.ListingContractDate                || null,
+    on_market_date:   s.OnMarketDate                       || null,
+    sqft:             sqft                  ? Math.round(sqft)                : null,
+    beds:             s.BedroomsTotal       ? Math.round(s.BedroomsTotal)     : null,
+    baths:            s.BathroomsTotalInteger || s.BathroomsFull              || null,
+    year_built:       s.YearBuilt           ? Math.round(s.YearBuilt)        : null,
+    lat:              lat,
+    lng:              lng,
+    garage_yn:        s.GarageYN === true || s.GarageYN === 'true'           || false,
+    fireplace_yn:     s.FireplaceYN === true || s.FireplaceYN === 'true'     || false,
+    hoa_yn:           s.AssociationYN                      || null,
+    list_agent_name:  s.ListAgentFullName                  || null,
+    list_agent_key:   s.ListAgentKey                       || null,
+    list_office_key:  s.ListOfficeKey                      || null,
+    subdivision:      s.SubdivisionName                    || null,
+    is_zhomes:        false,
+    spark_source:     'historical_closed',
+    sync_timestamp:   new Date().toISOString(),
   };
 }
 
@@ -438,7 +446,7 @@ export async function syncHistoricalClosedListings() {
   const start = Date.now();
   const cutoff = daysAgoISO(180);
 
-  const SPARK_KEY       = process.env.SPARK_API_KEY || process.env.VITE_SPARK_API_KEY;
+  const SPARK_KEY       = process.env.SPARK_IDX_TOKEN || process.env.SPARK_API_KEY || process.env.VITE_SPARK_API_KEY;
   const SUPABASE_SVC_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
