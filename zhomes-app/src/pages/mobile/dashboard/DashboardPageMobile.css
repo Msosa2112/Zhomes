@@ -213,7 +213,7 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 1500;
     display: flex;
     justify-content: center;
     align-items: flex-end;
@@ -265,7 +265,7 @@
 .mai-rules-body {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 24px 24px calc(env(safe-area-inset-bottom, 24px) + 24px) 24px;
 }
 
 .mai-rules-body p {

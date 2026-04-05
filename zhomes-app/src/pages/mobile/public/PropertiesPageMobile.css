@@ -59,7 +59,7 @@
     left: 20px;
     right: 20px;
     margin: 0 20px 24px 20px;
-    z-index: 1000;
+    z-index: 1500;
     
     display: flex;
     align-items: center;
@@ -367,7 +367,7 @@
     border-radius: 20px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     border: 1px solid var(--border-subtle);
-    z-index: 1000;
+    z-index: 1500;
     overflow: hidden;
     display: flex;
     flex-direction: column;

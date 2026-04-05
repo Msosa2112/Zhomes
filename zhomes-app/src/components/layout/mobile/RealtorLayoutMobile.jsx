@@ -79,7 +79,7 @@ export default function RealtorLayoutMobile() {
             </IonContent>
 
             {menuOpen && (
-                <div className="mobile-db-slide-menu animate-fadeInUp" style={{ position: 'absolute', bottom: '60px', left: 0, right: 0, background: 'var(--bg-secondary)', zIndex: 100, borderRadius: '24px 24px 0 0', padding: '24px', boxShadow: '0 -10px 40px rgba(0,0,0,0.1)' }}>
+                <div className="mobile-db-slide-menu animate-fadeInUp" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-secondary)', zIndex: 1500, borderRadius: '24px 24px 0 0', padding: '24px 24px calc(env(safe-area-inset-bottom, 24px) + 24px) 24px', boxShadow: '0 -10px 40px rgba(0,0,0,0.1)' }}>
                     <div className="mobile-sm-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                         <h3 style={{ fontSize: '18px', margin: 0 }}>Más Opciones</h3>
                         <button onClick={() => setMenuOpen(false)} style={{ background: 'var(--bg-tertiary)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}><X size={18} /></button>

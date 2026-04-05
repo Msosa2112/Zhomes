@@ -2,7 +2,7 @@
 .marvel-overlay {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 1500;
     transition: opacity 0.5s ease;
     font-family: var(--font-body);
     /* Fondo transparente para que se vea la pagina de fondo */
