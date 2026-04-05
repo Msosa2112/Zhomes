@@ -60,9 +60,15 @@ export default function PublicLayoutMobile() {
                                 {theme === 'light' ? <Moon size={18} color="white" /> : <Sun size={18} color="white" />}
                             </button>
                             <LanguageToggle />
-                            <Link to="/perfil" className="m-pub-login" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 'bold', color: 'white', background: 'var(--zhomes-red)', padding: '8px 14px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(227, 30, 36, 0.3)' }}>
-                                <User size={16} /> {t('nav.profile')}
-                            </Link>
+                            {(() => {
+                                const role = localStorage.getItem('zhomes_temp_role')
+                                const profilePath = role === 'broker' ? '/dashboard/perfil' : role === 'realtor' ? '/realtor/perfil' : '/login'
+                                return (
+                                    <Link to={profilePath} className="m-pub-login" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 'bold', color: 'white', background: 'var(--zhomes-red)', padding: '8px 14px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(227, 30, 36, 0.3)' }}>
+                                        <User size={16} /> {t('nav.profile')}
+                                    </Link>
+                                )
+                            })()}
                         </div>
                     </div>
                 </IonToolbar>

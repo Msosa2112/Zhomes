@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Star, MapPin, Phone, Mail, Award, Globe, Instagram, Facebook, Linkedin, Youtube, Edit3, Save, X, ExternalLink } from 'lucide-react'
 import { REALTORS, REALTOR_TRANSACTIONS } from '../../data/mockData'
+import { supabase } from '../../lib/supabaseClient'
 import './RealtorProfile.css'
 
 // TikTok icon (not in lucide)
@@ -20,9 +21,31 @@ const SOCIAL_NETWORKS = [
 ]
 
 export default function RealtorProfile() {
-    const [realtor, setRealtor] = useState(REALTORS[0])
+    // Detect the currently logged-in realtor by matching email
+    const getLoggedInRealtor = (email) => {
+        if (!email) return REALTORS[0]
+        const match = REALTORS.find(r => r.email?.toLowerCase() === email.toLowerCase())
+        return match || REALTORS[0]
+    }
+
+    // Try demo email first (for bypass login)
+    const demoEmail = localStorage.getItem('zhomes_temp_email') || ''
+    const initialRealtor = getLoggedInRealtor(demoEmail)
+
+    const [realtor, setRealtor] = useState(initialRealtor)
     const [editingProfile, setEditingProfile] = useState(false)
-    const [tempProfile, setTempProfile] = useState(REALTORS[0])
+    const [tempProfile, setTempProfile] = useState(initialRealtor)
+
+    // Also try real Supabase session
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user?.email) {
+                const matched = getLoggedInRealtor(session.user.email)
+                setRealtor(matched)
+                setTempProfile(matched)
+            }
+        })
+    }, [])
     const totalSales = REALTOR_TRANSACTIONS.filter(t => t.status === 'closed').length
     const totalVolume = REALTOR_TRANSACTIONS.filter(t => t.status === 'closed').reduce((s, t) => s + (t.price || 0), 0)
     const activeListings = REALTOR_TRANSACTIONS.filter(t => t.status !== 'closed').length
