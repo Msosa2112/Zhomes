@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import { GraduationCap, Utensils, Car, TreePine, ShoppingBag, Dumbbell, Coffee, Clock, MapPin, Layers } from 'lucide-react'
