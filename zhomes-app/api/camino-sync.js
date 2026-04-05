@@ -304,3 +304,280 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: err.message, log });
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  CARGA HISTÓRICA DE PROPIEDADES CERRADAS PARA EL MOTOR CMA
+//  Uso: node api/camino-sync.js --historical
+// ══════════════════════════════════════════════════════════════════════════════
+
+const SPARK_BASE  = 'https://replication.sparkapi.com/Version/3/Reso/OData';
+// NOTE: These are read lazily inside functions so they pick up .env.local values
+// when the script is run via CLI (see CLI ENTRY POINT below).
+
+const SPARK_PAGE_SIZE  = 100;   // Spark OData max por página
+const SUPABASE_BATCH   = 200;   // Registros por upsert a Supabase
+
+/** Calcula fecha ISO de hace N días */
+function daysAgoISO(n) {
+  const d = new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+  return d.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+}
+
+/** Llama Spark RESO OData con paginación automática vía @odata.nextLink */
+async function* sparkPagedQuery(filter, select) {
+  const SPARK_KEY = process.env.SPARK_API_KEY || process.env.VITE_SPARK_API_KEY;
+  if (!SPARK_KEY) throw new Error('SPARK_API_KEY no configurado en .env.local');
+
+  const params = new URLSearchParams({
+    '$filter': filter,
+    '$select': select,
+    '$top': String(SPARK_PAGE_SIZE),
+    '$orderby': 'CloseDate desc',
+  });
+
+  let url = `${SPARK_BASE}/Property?${params.toString()}`;
+  let page = 0;
+
+  while (url) {
+    page++;
+    console.log(`  📄 Descargando página ${page} desde Spark...`);
+
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${SPARK_KEY}`,
+        'Accept': 'application/json',
+      }
+    });
+
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '');
+      throw new Error(`Spark API Error ${res.status}: ${txt.slice(0, 300)}`);
+    }
+
+    const json = await res.json();
+    const records = json.value || [];
+
+    console.log(`     → ${records.length} registros en página ${page}`);
+    yield records;
+
+    // Seguir el nextLink si existe, o terminar
+    url = json['@odata.nextLink'] || null;
+
+    // Pequeña pausa para respetar rate limits de Spark
+    if (url) await sleep(200);
+  }
+}
+
+/** Mapea un registro de Spark al schema de mls_properties en Supabase */
+function mapSparkToSupabase(s) {
+  // Normalizar lat/lng (Spark puede dar string o number)
+  const lat = s.Latitude  != null ? parseFloat(s.Latitude)  : null;
+  const lng = s.Longitude != null ? parseFloat(s.Longitude) : null;
+
+  // Sqft: Spark puede llamarlo LivingArea, BelowGradeFinishedArea, BuildingAreaTotal, etc.
+  const sqft = s.LivingArea
+    || s.BuildingAreaTotal
+    || s.AboveGradeFinishedArea
+    || null;
+
+  return {
+    listing_key:       s.ListingKey                || null,
+    address:           s.UnparsedAddress           || s.StreetNumber + ' ' + s.StreetName || null,
+    city:              s.City                      || null,
+    status:            s.StandardStatus            || s.MlsStatus || 'Closed',
+    price:             s.ListPrice                 || null,
+    close_price:       s.ClosePrice                || null,
+    close_date:        s.CloseDate                 || null,
+    list_date:         s.ListingContractDate        || s.OnMarketDate || null,
+    sqft:              sqft                         ? Math.round(sqft) : null,
+    beds:              s.BedroomsTotal              || null,
+    baths:             s.BathroomsTotalInteger      || s.BathroomsFull || null,
+    year_built:        s.YearBuilt                 || null,
+    lat:               lat,
+    lng:               lng,
+    property_subtype:  s.PropertySubType           || s.PropertyType || null,
+    garage_yn:         s.GarageYN                  === true || s.GarageYN === 'true' || false,
+    list_agent_name:   s.ListAgentFullName         || null,
+    list_agent_key:    s.ListAgentKey              || null,
+    is_zhomes:         false,   // Las cerradas históricas no son exclusivas ZHomes
+    primary_photo:     null,    // No pedimos fotos en la carga histórica (ahorrar cuota)
+    updated_at:        new Date().toISOString(),
+  };
+}
+
+/** Batch upsert a Supabase usando la REST API directa */
+async function supabaseUpsertBatch(rows) {
+  const SUPABASE_SVC_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const res = await fetch(`${SUPABASE_SVC_URL}/rest/v1/mls_properties`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey':        SUPABASE_SVC_KEY,
+      'Authorization': `Bearer ${SUPABASE_SVC_KEY}`,
+      'Prefer':        'resolution=merge-duplicates,return=minimal',
+    },
+    body: JSON.stringify(rows),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`Supabase upsert error ${res.status}: ${txt.slice(0, 400)}`);
+  }
+}
+
+/**
+ * FUNCIÓN PRINCIPAL DE CARGA HISTÓRICA
+ *
+ * Descarga todas las propiedades residenciales cerradas en los últimos
+ * 180 días desde Spark MLS y las inserta en mls_properties en Supabase.
+ *
+ * Uso: node api/camino-sync.js --historical
+ */
+export async function syncHistoricalClosedListings() {
+  const start = Date.now();
+  const cutoff = daysAgoISO(180);
+
+  const SPARK_KEY       = process.env.SPARK_API_KEY || process.env.VITE_SPARK_API_KEY;
+  const SUPABASE_SVC_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+  console.log('');
+  console.log('══════════════════════════════════════════════════');
+  console.log('  🏠 CARGA HISTÓRICA CMA — ZHomes Real Estate');
+  console.log('══════════════════════════════════════════════════');
+  console.log(`  Fecha de corte: ${cutoff} (últimos 180 días)`);
+  console.log(`  Supabase URL:   ${SUPABASE_SVC_URL}`);
+  console.log(`  Spark key:      ${SPARK_KEY ? SPARK_KEY.slice(0, 8) + '...' : '❌ NO CONFIGURADA'}`);
+  console.log('');
+
+  if (!SUPABASE_SVC_URL || !SUPABASE_SVC_KEY) {
+    throw new Error('SUPABASE_URL / SUPABASE_SERVICE_KEY no están configurados. Verifica tu .env.local');
+  }
+
+  // OData filter: propiedades cerradas residenciales desde la fecha de corte
+  const filter = `StandardStatus eq 'Closed' and PropertyType eq 'Residential' and CloseDate ge ${cutoff}`;
+
+  // Solo traemos los campos que necesita el motor CMA (ahorrar memoria y cuota)
+  const select = [
+    'ListingKey',
+    'UnparsedAddress',
+    'City',
+    'StandardStatus',
+    'MlsStatus',
+    'ListPrice',
+    'ClosePrice',
+    'CloseDate',
+    'ListingContractDate',
+    'Latitude',
+    'Longitude',
+    'LivingArea',
+    'BuildingAreaTotal',
+    'BedroomsTotal',
+    'BathroomsTotalInteger',
+    'BathroomsFull',
+    'YearBuilt',
+    'PropertySubType',
+    'PropertyType',
+    'GarageYN',
+    'ListAgentFullName',
+    'ListAgentKey',
+  ].join(',');
+
+  let totalFetched = 0;
+  let totalInserted = 0;
+  let totalErrors = 0;
+  let pendingBatch = [];
+
+  const flushBatch = async () => {
+    if (pendingBatch.length === 0) return;
+    try {
+      await supabaseUpsertBatch(pendingBatch);
+      totalInserted += pendingBatch.length;
+      console.log(`  ✅ Insertados ${totalInserted} registros en Supabase...`);
+    } catch (err) {
+      console.error(`  ❌ Error en batch upsert: ${err.message}`);
+      totalErrors += pendingBatch.length;
+    }
+    pendingBatch = [];
+  };
+
+  // Iterar páginas de Spark
+  for await (const page of sparkPagedQuery(filter, select)) {
+    for (const record of page) {
+      totalFetched++;
+
+      // Solo insertar si tiene coordenadas GPS (esencial para el motor CMA)
+      const lat = record.Latitude  != null ? parseFloat(record.Latitude)  : null;
+      const lng = record.Longitude != null ? parseFloat(record.Longitude) : null;
+
+      if (!lat || !lng || !record.ClosePrice) {
+        continue; // Sin GPS o sin precio de cierre → no útil para CMA
+      }
+
+      pendingBatch.push(mapSparkToSupabase(record));
+
+      // Si completamos un batch de SUPABASE_BATCH, hacemos el upsert
+      if (pendingBatch.length >= SUPABASE_BATCH) {
+        await flushBatch();
+      }
+    }
+  }
+
+  // Flush del último batch (puede tener menos de SUPABASE_BATCH)
+  await flushBatch();
+
+  const elapsed = Math.round((Date.now() - start) / 1000);
+
+  console.log('');
+  console.log('══════════════════════════════════════════════════');
+  console.log(`  ✅ CARGA HISTÓRICA COMPLETADA en ${elapsed}s`);
+  console.log(`  📊 Descargados de Spark:   ${totalFetched}`);
+  console.log(`  💾 Insertados en Supabase: ${totalInserted}`);
+  console.log(`  ❌ Errores:                ${totalErrors}`);
+  console.log(`  ⚠️  Sin GPS/precio (skip):  ${totalFetched - totalInserted - totalErrors}`);
+  console.log('══════════════════════════════════════════════════');
+  console.log('');
+  console.log('  Ahora puedes usar el CMA con datos reales.');
+  console.log('  Ejecuta la app y prueba con cualquier propiedad de Louisville.');
+  console.log('');
+
+  return { totalFetched, totalInserted, totalErrors, elapsed };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  CLI ENTRY POINT
+//  node api/camino-sync.js --historical
+// ─────────────────────────────────────────────────────────────────────────────
+// Detección de ejecución directa compatible con ES Modules
+// (import.meta.url es el archivo actual; process.argv[1] es el archivo ejecutado)
+const isDirectRun = typeof process !== 'undefined'
+  && process.argv[1]
+  && process.argv[1].endsWith('camino-sync.js');
+
+if (isDirectRun && process.argv.includes('--historical')) {
+  // Cargar .env.local manualmente (dotenv no está disponible en todos los entornos)
+  try {
+    const { readFileSync } = await import('fs');
+    const { resolve } = await import('path');
+    const envPath = resolve(process.cwd(), '.env.local');
+    const envContent = readFileSync(envPath, 'utf-8');
+    for (const line of envContent.split('\n')) {
+      const [key, ...vals] = line.split('=');
+      if (key && vals.length) {
+        const val = vals.join('=').replace(/^["']|["']$/g, '').trim();
+        if (!process.env[key.trim()]) process.env[key.trim()] = val;
+      }
+    }
+    console.log('  📂 .env.local cargado');
+  } catch {
+    console.log('  ⚠️  No se encontró .env.local — usando variables de entorno del sistema');
+  }
+
+  syncHistoricalClosedListings()
+    .then(() => process.exit(0))
+    .catch(err => {
+      console.error('\n❌ Error fatal:', err.message);
+      process.exit(1);
+    });
+}
