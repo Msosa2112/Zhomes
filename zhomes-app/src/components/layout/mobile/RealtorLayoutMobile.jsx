@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, Users, PlusCircle, Briefcase, Sun, Moon } from 'lucide-react'
+import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, Users, PlusCircle, Briefcase, Sun, Moon, Calendar, ClipboardList, Video, LineChart } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
 import './DashboardLayoutMobile.css' // Reusing the identical layout styles
@@ -31,8 +31,13 @@ export default function RealtorLayoutMobile() {
     ]
 
     const extras = [
-
         { path: '/realtor/crear-propiedad', icon: PlusCircle, label: 'Nueva' },
+        { path: '/realtor/citas', icon: Calendar, label: 'Visitas' },
+        { path: '/realtor/leads', icon: Users, label: 'Leads' },
+        { path: '/realtor/transacciones', icon: Briefcase, label: 'Deals' },
+        { path: '/realtor/tareas', icon: ClipboardList, label: 'Tareas' },
+        { path: '/realtor/subir-vibe', icon: Video, label: 'Vibe' },
+        { path: '/cma', icon: LineChart, label: 'CMA' },
         { path: '/realtor/perfil', icon: User, label: 'Perfil' },
     ]
 

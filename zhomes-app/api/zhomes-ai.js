@@ -13,10 +13,25 @@ export default async function handler(req, res) {
 
     try {
         const apiKey = process.env.OPENAI_API_KEY;
+        
+        // --- INICIO MOCK PARA DEMO ---
+        // Si no hay llave, retornamos data realista de prueba para que la UI funcione excelente en la presentación
         if (!apiKey) {
+            const { action, data } = req.body;
+            if (action === "vibe_creator") {
+                return res.status(200).json({
+                    mlsDescription: "Impresionante propiedad moderna con acabados de primera calidad. Luz natural abundante, concepto abierto perfecto para el entretenimiento y una alberca de revista. Un oasis de lujo en Louisville listo para ti.",
+                    tiktokScript: "¡ALERTA DE PROPIEDAD! 🚨 Tienes que ver esta casa en Louisville. Acabados de lujo, una piscina BRUTAL y mucha paz. ¿Quieres el tour completo? Déjame un fueguito en los comentarios o envíame DM directo. 🔥"
+                });
+            } else if (action === "smart_followup") {
+                return res.status(200).json({
+                    message: `¡Hola ${data.clientData?.name?.split(' ')[0] || ''}! Noté que estabas viendo propiedades recientemente. Tengo justo un par de "pocket listings" off-market que encajan 100% con tu estilo. ¿Te late si te las mando por aquí o coordinamos una visita rápida esta semana? 😎`
+                });
+            }
             return res.status(500).json({ error: "OpenAI API Key not configured." });
         }
-        
+        // --- FIN MOCK PARA DEMO ---
+
         const openai = new OpenAI({
             apiKey: apiKey,
         });

@@ -8,7 +8,6 @@ import './CreatePropertyPage.css'
 const PROPERTY_CATEGORIES = [
     { value: 'Fix & Flip', label: '🔨 Fix & Flip', desc: 'Para inversionistas, necesita remodelación' },
     { value: 'Exclusiva ZHomes', label: '⭐ Exclusiva ZHomes', desc: 'Pocket listing exclusivo de ZHomes' },
-    { value: 'Exclusiva ZHomes', label: '⭐ Exclusiva ZHomes', desc: 'Pocket listing exclusivo de ZHomes' },
 ]
 
 const PROPERTY_TYPES = [
