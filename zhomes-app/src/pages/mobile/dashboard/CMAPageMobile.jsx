@@ -12,49 +12,53 @@ export default function CMAPageMobile() {
     const [comps, setComps] = useState([])
 
     const handleAnalyze = () => {
-        // En un entorno real, buscaría la propiedad en una API pública. Aquí la simulamos.
-        let subject = properties.find(p => p.address.toLowerCase().includes(searchAddress.toLowerCase()))
+        let subject = properties.find(p => p.address && p.address.toLowerCase().includes(searchAddress.toLowerCase()))
         if (!subject && properties.length > 0) subject = properties[0]; // Fallback
 
         if (subject) {
             setSubjectProperty({
-                address: subject.address,
-                city: subject.city,
+                address: subject.address || 'Dirección Desconocida',
+                city: subject.city || 'Louisville',
                 sqft: subject.sqft || 1500,
-                beds: subject.beds,
-                baths: subject.baths,
+                beds: subject.beds || 3,
+                baths: subject.baths || 2,
                 garage: 2,
                 yearBuilt: subject.yearBuilt || 2005,
                 lotSize: '0.25 acres'
             })
             // Buscar comparables (usamos otras propiedades del contexto para demo)
             const availableComps = properties.filter(p => p.id !== subject.id).slice(0, 5)
-            setComps(availableComps.map(p => ({
-                id: p.id,
-                address: p.address,
-                city: p.city,
-                price: p.price,
-                sqft: p.sqft || 1500,
-                beds: p.beds,
-                baths: p.baths,
-                garage: 2,
-                soldDate: 'Hace ' + Math.floor(Math.random() * 30 + 5) + ' días',
-                daysOnMarket: Math.floor(Math.random() * 20 + 5),
-                pricePerSqft: Math.round(p.price / (p.sqft || 1500)),
-                distanceMi: (Math.random() * 0.8 + 0.1).toFixed(1),
-                status: 'sold'
-            })))
+            setComps(availableComps.map(p => {
+                const sqft = p.sqft || 1500;
+                const price = typeof p.price === 'number' && !isNaN(p.price) ? p.price : 250000;
+                return {
+                    id: p.id,
+                    address: p.address || 'Dirección no disponible',
+                    city: p.city || 'Louisville',
+                    price: price,
+                    sqft: sqft,
+                    beds: p.beds || 3,
+                    baths: p.baths || 2,
+                    garage: 2,
+                    soldDate: 'Hace ' + Math.floor(Math.random() * 30 + 5) + ' días',
+                    daysOnMarket: Math.floor(Math.random() * 20 + 5),
+                    pricePerSqft: Math.round(price / sqft),
+                    distanceMi: (Math.random() * 0.8 + 0.1).toFixed(1),
+                    status: 'sold'
+                }
+            }))
             setShowReport(true)
         } else {
             alert("No se encontró la propiedad en el MLS de prueba. Intenta con otra.");
         }
     }
 
-    const avgPrice = comps.length > 0 ? comps.reduce((a, c) => a + c.price, 0) / comps.length : 0
-    const avgPriceSqft = comps.length > 0 ? comps.reduce((a, c) => a + c.pricePerSqft, 0) / comps.length : 0
+    const validComps = comps.filter(c => typeof c.price === 'number' && !isNaN(c.price));
+    const avgPrice = validComps.length > 0 ? validComps.reduce((a, c) => a + c.price, 0) / validComps.length : 0
+    const avgPriceSqft = validComps.length > 0 ? validComps.reduce((a, c) => a + c.pricePerSqft, 0) / validComps.length : 0
     const avgDOM = comps.length > 0 ? comps.reduce((a, c) => a + c.daysOnMarket, 0) / comps.length : 0
     const suggestedPrice = subjectProperty ? Math.round(subjectProperty.sqft * avgPriceSqft / 1000) * 1000 : 0
-    const priceRange = { low: suggestedPrice - 8000, high: suggestedPrice + 8000 }
+    const priceRange = { low: (suggestedPrice || 0) - 8000, high: (suggestedPrice || 0) + 8000 }
 
     return (
         <div className="cma-page">
