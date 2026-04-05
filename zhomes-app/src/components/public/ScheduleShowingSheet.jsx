@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Calendar as CalendarIcon, Clock, Send, Info } from 'lucide-react'
-import { supabase } from '../../../lib/supabaseClient'
+import { supabase } from '../../lib/supabaseClient'
 import './ScheduleShowingSheet.css'
 
 // Helper para generar los próximos 7 días
