@@ -1,0 +1,216 @@
+.sss-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.sss-sheet {
+    background: var(--bg-primary);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 24px 20px;
+    padding-bottom: env(safe-area-inset-bottom, 24px);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid var(--border-color);
+}
+
+.sss-handle {
+    width: 40px;
+    height: 5px;
+    background: var(--text-tertiary);
+    border-radius: 10px;
+    margin: 0 auto 20px auto;
+}
+
+.sss-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sss-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.sss-close {
+    background: var(--bg-secondary);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* Horizontal Scroll Days */
+.sss-section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.sss-days-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    scrollbar-width: none; /* Firefox */
+}
+.sss-days-row::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+.sss-day-chip {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sss-day-chip.active {
+    border-color: #E31E24;
+    background: rgba(227, 30, 36, 0.05);
+    color: #E31E24;
+}
+
+/* Time Grid */
+.sss-time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.sss-time-chip {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.sss-time-chip:hover {
+    background: var(--bg-primary);
+    border-color: #bbb;
+}
+
+.sss-time-chip.active {
+    background: #E31E24;
+    color: white;
+    border-color: #E31E24;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(227, 30, 36, 0.25);
+}
+
+/* Action Button */
+.sss-submit-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    background: #111;
+    color: white;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.sss-submit-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+html[data-theme='light'] .sss-submit-btn {
+    background: #E31E24;
+}
+
+.sss-submit-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* Success State (Pizza Tracker Base) */
+.sss-success-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 0 10px;
+}
+
+.sss-success-circle {
+    width: 60px;
+    height: 60px;
+    background: rgba(227, 30, 36, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #E31E24;
+    margin-bottom: 16px;
+    animation: sss-pulse 2s infinite;
+}
+
+.sss-tracker-status {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: 12px;
+    margin: 16px 0 24px;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.sss-tracker-status p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+@keyframes sss-pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(227, 30, 36, 0.4); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(227, 30, 36, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(227, 30, 36, 0); }
+}

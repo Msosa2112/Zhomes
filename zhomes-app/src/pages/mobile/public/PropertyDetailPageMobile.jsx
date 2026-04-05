@@ -16,7 +16,7 @@ import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
 import NeighborhoodMap from '../../../components/public/NeighborhoodMap'
 import CommuteIntel from '../../../components/public/CommuteIntel'
-import BookingWidget from '../../../components/public/BookingWidget'
+import ScheduleShowingSheet from '../../../components/public/ScheduleShowingSheet'
 import './PropertyDetailPageMobile.css'
 
 // Fix to clear map layout size 
@@ -407,13 +407,8 @@ export default function PropertyDetailPageMobile() {
             />
 
             {bookingOpen && (
-                <BookingWidget
-                    propertyAddress={property.address}
-                    realtorName={selectedRealtor?.name || 'ZHomes'}
-                    onBook={(data) => {
-                        alert('¡Cita solicitada exitosamente! El equipo comercial se pondrá en contacto pronto.');
-                        setBookingOpen(false);
-                    }}
+                <ScheduleShowingSheet 
+                    propertyId={property.id}
                     onClose={() => setBookingOpen(false)}
                 />
             )}
