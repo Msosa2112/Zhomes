@@ -14,6 +14,7 @@ import { MortgageService } from '../../../services/mortgageService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
 import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
+import NeighborhoodMap from '../../../components/public/NeighborhoodMap'
 import CommuteIntel from '../../../components/public/CommuteIntel'
 import BookingWidget from '../../../components/public/BookingWidget'
 import './PropertyDetailPageMobile.css'
@@ -371,35 +372,12 @@ export default function PropertyDetailPageMobile() {
                     </button>
                 </div>
 
-                <div className="mpd-map-wrap">
-                    <h2>Ubicación</h2>
-                    <div className="mpd-map-container">
-                        <MapContainer 
-                            center={[
-                                Number(property.lat) || (38.15 + (property.id * 0.012)), 
-                                Number(property.lng) || (-85.7 + (property.id * 0.015))
-                            ]} 
-                            zoom={13} 
-                            zoomControl={false}
-                            attributionControl={false}
-                            style={{ height: '100%', width: '100%', zIndex: 1 }}
-                        >
-                            <MapResizer />
-                            <TileLayer 
-                                url={theme === 'light' 
-                                    ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-                                    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                                } 
-                            />
-                            <Marker 
-                                position={[
-                                    Number(property.lat) || (38.15 + (property.id * 0.012)), 
-                                    Number(property.lng) || (-85.7 + (property.id * 0.015))
-                                ]}
-                                icon={property.exclusive ? zhomesLogoMarker : genericMarker}
-                            />
-                        </MapContainer>
-                    </div>
+                <div className="mpd-map-wrap" style={{ padding: '0 10px' }}>
+                    <NeighborhoodMap 
+                        lat={Number(property.lat) || (38.15 + (property.id * 0.012))} 
+                        lng={Number(property.lng) || (-85.7 + (property.id * 0.015))} 
+                        address={property.address}
+                    />
                 </div>
             </main>
 
