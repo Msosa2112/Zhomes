@@ -1,9 +1,10 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
     LayoutDashboard, FileText, Users,
     FolderOpen, MessageSquare, BarChart3, Bell, LogOut, Sun, Moon
 } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../../services/supabaseClient'
 import { useTheme } from '../../context/ThemeContext'
 import NotificationCenter from '../notifications/NotificationCenter'
 import Grainient from '../shared/Grainient'
@@ -11,8 +12,16 @@ import './DashboardLayout.css'
 
 export default function DashboardLayout() {
     const location = useLocation()
+    const navigate = useNavigate()
     const [notifOpen, setNotifOpen] = useState(false)
     const { theme, toggleTheme } = useTheme()
+
+    const handleLogout = async () => {
+        localStorage.removeItem('zhomes_demo_user')
+        localStorage.removeItem('zhomes_role')
+        await supabase.auth.signOut()
+        navigate('/')
+    }
 
     const navItems = [
         { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -87,7 +96,7 @@ export default function DashboardLayout() {
                             <Bell size={18} />
                             <span className="notification-dot"></span>
                         </button>
-                        <Link to="/" className="screen-icon-btn logout-btn"><LogOut size={16} /></Link>
+                        <button className="screen-icon-btn logout-btn" onClick={handleLogout}><LogOut size={16} /></button>
                         <div className="topbar-avatar">
                             <img src="/assets/agents/Gilbert Zaldivar-Broker.png" alt="Broker" />
                         </div>

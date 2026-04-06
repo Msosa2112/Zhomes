@@ -1,10 +1,11 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
     LayoutDashboard, FileText, User,
     MessageSquare, FolderOpen, PlusCircle,
     Bell, LogOut, Sun, Moon
 } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../../services/supabaseClient'
 import { useTheme } from '../../context/ThemeContext'
 import { REALTORS } from '../../data/mockData'
 import NotificationCenter from '../notifications/NotificationCenter'
@@ -14,9 +15,17 @@ import './RealtorLayout.css'
 
 export default function RealtorLayout() {
     const location = useLocation()
+    const navigate = useNavigate()
     const [notifOpen, setNotifOpen] = useState(false)
     const { theme, toggleTheme } = useTheme()
     const currentRealtor = REALTORS[0]
+
+    const handleLogout = async () => {
+        localStorage.removeItem('zhomes_demo_user')
+        localStorage.removeItem('zhomes_role')
+        await supabase.auth.signOut()
+        navigate('/')
+    }
 
     const navItems = [
         { path: '/realtor', label: 'Dashboard', icon: LayoutDashboard },
@@ -73,7 +82,7 @@ export default function RealtorLayout() {
                             <Bell size={18} />
                             <span className="notification-dot"></span>
                         </button>
-                        <Link to="/login" className="screen-icon-btn logout-btn"><LogOut size={16} /></Link>
+                        <button className="screen-icon-btn logout-btn" onClick={handleLogout}><LogOut size={16} /></button>
                         <div className="topbar-avatar">
                             <img src={currentRealtor.photo} alt={currentRealtor.name} />
                         </div>
