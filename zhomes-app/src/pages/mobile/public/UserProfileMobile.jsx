@@ -780,30 +780,7 @@ export default function UserProfileMobile() {
                 </div>
             )}
 
-            <RealtorSelectorModal 
-                isOpen={showAgentModal} 
-                onClose={() => setShowAgentModal(false)}
-                onSelect={async (agent) => {
-                    localStorage.setItem('zhomes_my_agent', agent.id);
-                    setMyAgentId(agent.id);
-                    setMyAgent({
-                        ...agent,
-                        name: agent.full_name,
-                        photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.full_name)}&background=E31E24&color=fff&size=200&bold=true`
-                    });
-                    setShowAgentModal(false);
-                    // Guardar en Supabase user_metadata
-                    if (user && !user.isDemo) {
-                        try {
-                            await supabase.auth.updateUser({
-                                data: { assigned_realtor_id: agent.id }
-                            });
-                        } catch (e) {
-                            console.error('Error saving agent', e);
-                        }
-                    }
-                }}
-            />
+
         </>
     )
 }
