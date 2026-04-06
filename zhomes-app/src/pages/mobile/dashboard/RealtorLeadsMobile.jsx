@@ -1,53 +1,108 @@
-import { useState } from 'react'
-import { Search, Plus, User, Phone, Mail, Clock, Filter, ChevronRight, MessageSquare, Briefcase, Calendar } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Search, Plus, User, Phone, Mail, Clock, Filter, ChevronRight, MessageSquare, Briefcase, Calendar, Loader2, X, Trash2 } from 'lucide-react'
+import { supabase } from '../../../lib/supabaseClient'
 import './RealtorLeadsMobile.css'
 
-const INITIAL_LEADS = [
-    { id: 1, name: 'Juan Pérez', email: 'juan@email.com', phone: '(502) 555-0101', status: 'new', type: 'buyer', source: 'Zillow', lastContact: 'Hoy', notes: 'Busca 3BR en St Matthews' },
-    { id: 2, name: 'María Gómez', email: 'maria@email.com', phone: '(502) 555-0102', status: 'contacted', type: 'seller', source: 'Referral', lastContact: 'Ayer', notes: 'Quiere vender su casa en Highlands' },
-    { id: 3, name: 'Carlos Ruiz', email: 'carlos@email.com', phone: '(502) 555-0103', status: 'showing', type: 'buyer', source: 'Open House', lastContact: 'Hace 3 días', notes: 'Visita programada para 4132 Craig Ave' },
-    { id: 4, name: 'Ana Silva', email: 'ana@email.com', phone: '(502) 555-0104', status: 'offer', type: 'buyer', source: 'Website', lastContact: 'Hoy', notes: 'Preparando oferta para 8708 Denise Dr' },
-    { id: 5, name: 'Roberto Díaz', email: 'roberto@email.com', phone: '(502) 555-0105', status: 'closed', type: 'both', source: 'Referral', lastContact: 'Hace 1 mes', notes: 'Cierre completado, enviar regalo' },
-]
-
 export default function RealtorLeadsMobile() {
-    const [leads, setLeads] = useState(INITIAL_LEADS)
+    const [leads, setLeads] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
-    const [activeFilter, setActiveFilter] = useState('all') // all, new, contacted, showing, offer
+    const [activeFilter, setActiveFilter] = useState('all')
     const [showAddModal, setShowAddModal] = useState(false)
     const [selectedLead, setSelectedLead] = useState(null)
-    const [newLead, setNewLead] = useState({ name: '', phone: '', email: '', type: 'buyer', source: 'Manual', notes: '' })
+    const [newLead, setNewLead] = useState({
+        name: '', phone: '', email: '', type: 'buyer', source: 'Manual', notes: ''
+    })
+    const [agentEmail, setAgentEmail] = useState(null)
 
     const statusConfig = {
-        new: { label: 'Nuevo', color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-        contacted: { label: 'Contactado', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-        showing: { label: 'Viendo Casas', color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-        offer: { label: 'En Oferta', color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
-        closed: { label: 'Cerrado', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+        new:       { label: 'Nuevo',         color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
+        contacted: { label: 'Contactado',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+        showing:   { label: 'Viendo Casas',   color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
+        offer:     { label: 'En Oferta',      color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
+        closed:    { label: 'Cerrado',        color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
     }
 
+    // ── Obtener email del agente autenticado ─────────────────
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user?.email) setAgentEmail(session.user.email)
+        })
+    }, [])
+
+    // ── Cargar leads del agente ──────────────────────────────
+    const fetchLeads = useCallback(async () => {
+        if (!agentEmail) return
+        setLoading(true)
+        const { data, error } = await supabase
+            .from('realtor_leads')
+            .select('*')
+            .eq('agent_email', agentEmail)
+            .order('created_at', { ascending: false })
+        if (!error) setLeads(data || [])
+        setLoading(false)
+    }, [agentEmail])
+
+    useEffect(() => { fetchLeads() }, [fetchLeads])
+
+    // ── Filtros ──────────────────────────────────────────────
     const filteredLeads = leads.filter(lead => {
-        const matchesSearch = lead.name.toLowerCase().includes(searchQuery.toLowerCase()) || lead.phone.includes(searchQuery)
+        const matchesSearch =
+            lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (lead.phone || '').includes(searchQuery) ||
+            (lead.email || '').toLowerCase().includes(searchQuery.toLowerCase())
         const matchesStatus = activeFilter === 'all' || lead.status === activeFilter
         return matchesSearch && matchesStatus
     })
 
-    const handleAddLead = () => {
-        if (!newLead.name || !newLead.phone) return
-        const lead = {
-            id: Date.now(),
-            ...newLead,
-            status: 'new',
-            lastContact: 'Justo ahora'
-        }
-        setLeads([lead, ...leads])
+    // ── CRUD ─────────────────────────────────────────────────
+    const handleAddLead = async () => {
+        if (!newLead.name || !newLead.phone || !agentEmail) return
+        setSaving(true)
+        const { data, error } = await supabase
+            .from('realtor_leads')
+            .insert([{
+                ...newLead,
+                agent_email: agentEmail,
+                status: 'new',
+                last_contact: 'Justo ahora',
+            }])
+            .select().single()
+        if (!error && data) setLeads(prev => [data, ...prev])
         setNewLead({ name: '', phone: '', email: '', type: 'buyer', source: 'Manual', notes: '' })
         setShowAddModal(false)
+        setSaving(false)
     }
 
-    const updateLeadStatus = (id, status) => {
-        setLeads(leads.map(l => l.id === id ? { ...l, status, lastContact: 'Justo ahora' } : l))
-        if (selectedLead?.id === id) setSelectedLead({ ...selectedLead, status })
+    const updateLeadStatus = async (id, status) => {
+        const { error } = await supabase
+            .from('realtor_leads')
+            .update({ status, last_contact: 'Justo ahora' })
+            .eq('id', id)
+        if (!error) {
+            setLeads(prev => prev.map(l => l.id === id ? { ...l, status, last_contact: 'Justo ahora' } : l))
+            if (selectedLead?.id === id) setSelectedLead(prev => ({ ...prev, status }))
+        }
+    }
+
+    const deleteLead = async (id) => {
+        const { error } = await supabase.from('realtor_leads').delete().eq('id', id)
+        if (!error) {
+            setLeads(prev => prev.filter(l => l.id !== id))
+            setSelectedLead(null)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="rt-leads-page">
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: 'var(--text-secondary)' }}>
+                    <Loader2 size={32} style={{ animation: 'spin 1s linear infinite' }} />
+                    <p>Cargando tus leads...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -64,50 +119,50 @@ export default function RealtorLeadsMobile() {
 
             <div className="rt-leads-search-bar">
                 <Search size={18} className="rt-search-icon" />
-                <input 
-                    type="text" 
-                    placeholder="Buscar por nombre o teléfono..." 
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre, teléfono o email..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                 />
             </div>
 
             <div className="rt-leads-filters">
-                <button className={`rt-filter-chip ${activeFilter === 'all' ? 'active' : ''}`} onClick={() => setActiveFilter('all')}>
-                    Todos
-                </button>
-                <button className={`rt-filter-chip new ${activeFilter === 'new' ? 'active' : ''}`} onClick={() => setActiveFilter('new')}>
-                    Nuevos
-                </button>
-                <button className={`rt-filter-chip contacted ${activeFilter === 'contacted' ? 'active' : ''}`} onClick={() => setActiveFilter('contacted')}>
-                    Contactados
-                </button>
-                <button className={`rt-filter-chip showing ${activeFilter === 'showing' ? 'active' : ''}`} onClick={() => setActiveFilter('showing')}>
-                    Viendo
-                </button>
-            </div>
-
-            <div className="rt-leads-list">
-                {filteredLeads.map(lead => (
-                    <div key={lead.id} className="rt-lead-card" onClick={() => setSelectedLead(lead)}>
-                        <div className="rt-lead-info">
-                            <div className="rt-lead-avatar">
-                                {lead.name.charAt(0)}
-                            </div>
-                            <div className="rt-lead-details">
-                                <h3>{lead.name}</h3>
-                                <p>{lead.type === 'buyer' ? 'Comprador' : lead.type === 'seller' ? 'Vendedor' : 'Comprador & Vendedor'} · {lead.source}</p>
-                            </div>
-                        </div>
-                        <div className="rt-lead-meta">
-                            <span className="rt-lead-status" style={{ background: statusConfig[lead.status].bg, color: statusConfig[lead.status].color }}>
-                                {statusConfig[lead.status].label}
-                            </span>
-                            <ChevronRight size={18} color="#999" />
-                        </div>
-                    </div>
+                {[['all', 'Todos'], ['new', 'Nuevos'], ['contacted', 'Contactados'], ['showing', 'Viendo'], ['offer', 'Oferta'], ['closed', 'Cerrados']].map(([key, label]) => (
+                    <button
+                        key={key}
+                        className={`rt-filter-chip ${key} ${activeFilter === key ? 'active' : ''}`}
+                        onClick={() => setActiveFilter(key)}
+                    >{label}</button>
                 ))}
             </div>
+
+            {filteredLeads.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)' }}>
+                    <User size={40} style={{ opacity: 0.3, marginBottom: 12 }} />
+                    <p>{leads.length === 0 ? 'Aún no tienes leads. ¡Agrega el primero!' : 'No hay leads con este filtro.'}</p>
+                </div>
+            ) : (
+                <div className="rt-leads-list">
+                    {filteredLeads.map(lead => (
+                        <div key={lead.id} className="rt-lead-card" onClick={() => setSelectedLead(lead)}>
+                            <div className="rt-lead-info">
+                                <div className="rt-lead-avatar">{lead.name.charAt(0)}</div>
+                                <div className="rt-lead-details">
+                                    <h3>{lead.name}</h3>
+                                    <p>{lead.type === 'buyer' ? 'Comprador' : lead.type === 'seller' ? 'Vendedor' : 'Comprador & Vendedor'} · {lead.source}</p>
+                                </div>
+                            </div>
+                            <div className="rt-lead-meta">
+                                <span className="rt-lead-status" style={{ background: statusConfig[lead.status]?.bg, color: statusConfig[lead.status]?.color }}>
+                                    {statusConfig[lead.status]?.label}
+                                </span>
+                                <ChevronRight size={18} color="#999" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Lead Detail Modal */}
             {selectedLead && (
@@ -116,63 +171,61 @@ export default function RealtorLeadsMobile() {
                         <div className="rt-modal-header">
                             <div>
                                 <h2>{selectedLead.name}</h2>
-                                <span className="rt-lead-status" style={{ display: 'inline-block', marginTop: '8px', background: statusConfig[selectedLead.status].bg, color: statusConfig[selectedLead.status].color }}>
-                                    {statusConfig[selectedLead.status].label}
+                                <span className="rt-lead-status" style={{ display: 'inline-block', marginTop: 8, background: statusConfig[selectedLead.status]?.bg, color: statusConfig[selectedLead.status]?.color }}>
+                                    {statusConfig[selectedLead.status]?.label}
                                 </span>
                             </div>
-                            <button onClick={() => setSelectedLead(null)}>Cerrar</button>
+                            <button onClick={() => setSelectedLead(null)}><X size={20} /></button>
                         </div>
-                        
                         <div className="rt-modal-actions">
-                            <a href={`tel:${selectedLead.phone}`} className="rt-quick-action"><Phone size={18} /> Llamar</a>
-                            <a href={`sms:${selectedLead.phone}`} className="rt-quick-action"><MessageSquare size={18} /> SMS</a>
-                            <a href={`mailto:${selectedLead.email}`} className="rt-quick-action"><Mail size={18} /> Email</a>
+                            {selectedLead.phone && <a href={`tel:${selectedLead.phone}`} className="rt-quick-action"><Phone size={18} /> Llamar</a>}
+                            {selectedLead.phone && <a href={`sms:${selectedLead.phone}`} className="rt-quick-action"><MessageSquare size={18} /> SMS</a>}
+                            {selectedLead.email && <a href={`mailto:${selectedLead.email}`} className="rt-quick-action"><Mail size={18} /> Email</a>}
                         </div>
-
                         <div className="rt-modal-body">
                             <div className="rt-detail-section">
                                 <h3>Detalles</h3>
+                                {selectedLead.phone && <div className="rt-detail-item"><Phone size={16} /> <a href={`tel:${selectedLead.phone}`}>{selectedLead.phone}</a></div>}
+                                {selectedLead.email && <div className="rt-detail-item"><Mail size={16} /> <a href={`mailto:${selectedLead.email}`}>{selectedLead.email}</a></div>}
                                 <div className="rt-detail-item">
-                                    <Phone size={16} /> <a href={`tel:${selectedLead.phone}`}>{selectedLead.phone}</a>
+                                    <Briefcase size={16} />
+                                    {selectedLead.type === 'buyer' ? 'Comprador' : selectedLead.type === 'seller' ? 'Vendedor' : 'Doble Punta'}
                                 </div>
-                                <div className="rt-detail-item">
-                                    <Mail size={16} /> <a href={`mailto:${selectedLead.email}`}>{selectedLead.email}</a>
-                                </div>
-                                <div className="rt-detail-item">
-                                    <Briefcase size={16} /> {selectedLead.type === 'buyer' ? 'Comprador' : selectedLead.type === 'seller' ? 'Vendedor' : 'Doble Punta'}
-                                </div>
-                                <div className="rt-detail-item">
-                                    <Filter size={16} /> Origen: {selectedLead.source}
-                                </div>
-                                <div className="rt-detail-item">
-                                    <Clock size={16} /> Último contacto: {selectedLead.lastContact}
-                                </div>
+                                <div className="rt-detail-item"><Filter size={16} /> Origen: {selectedLead.source}</div>
+                                <div className="rt-detail-item"><Clock size={16} /> Último contacto: {selectedLead.last_contact || '—'}</div>
                             </div>
 
-                            <div className="rt-detail-section">
-                                <h3>Notas</h3>
-                                <p className="rt-notes-text">{selectedLead.notes}</p>
-                            </div>
+                            {selectedLead.notes && (
+                                <div className="rt-detail-section">
+                                    <h3>Notas</h3>
+                                    <p className="rt-notes-text">{selectedLead.notes}</p>
+                                </div>
+                            )}
 
                             <div className="rt-detail-section">
                                 <h3>Actualizar Estado</h3>
                                 <div className="rt-status-updater">
                                     {Object.entries(statusConfig).map(([key, config]) => (
-                                        <button 
+                                        <button
                                             key={key}
                                             className={`rt-status-btn ${selectedLead.status === key ? 'active' : ''}`}
-                                            style={{ 
+                                            style={{
                                                 borderColor: selectedLead.status === key ? config.color : '#E5E5E5',
                                                 background: selectedLead.status === key ? config.bg : 'white',
                                                 color: selectedLead.status === key ? config.color : '#666'
                                             }}
                                             onClick={() => updateLeadStatus(selectedLead.id, key)}
-                                        >
-                                            {config.label}
-                                        </button>
+                                        >{config.label}</button>
                                     ))}
                                 </div>
                             </div>
+
+                            <button
+                                style={{ width: '100%', padding: '12px', marginTop: 8, background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 10, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                                onClick={() => { if (window.confirm('¿Eliminar este lead?')) deleteLead(selectedLead.id) }}
+                            >
+                                <Trash2 size={16} /> Eliminar Lead
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -184,31 +237,29 @@ export default function RealtorLeadsMobile() {
                     <div className="rt-modal" onClick={e => e.stopPropagation()}>
                         <div className="rt-modal-header">
                             <h2>Nuevo Lead</h2>
-                            <button onClick={() => setShowAddModal(false)}>Cerrar</button>
+                            <button onClick={() => setShowAddModal(false)}><X size={20} /></button>
                         </div>
                         <div className="rt-modal-body form">
-                            <input type="text" placeholder="Nombre completo *" value={newLead.name} onChange={e => setNewLead({...newLead, name: e.target.value})} />
-                            <input type="tel" placeholder="Teléfono *" value={newLead.phone} onChange={e => setNewLead({...newLead, phone: e.target.value})} />
-                            <input type="email" placeholder="Email" value={newLead.email} onChange={e => setNewLead({...newLead, email: e.target.value})} />
-                            
-                            <select value={newLead.type} onChange={e => setNewLead({...newLead, type: e.target.value})}>
+                            <input type="text" placeholder="Nombre completo *" value={newLead.name} onChange={e => setNewLead({ ...newLead, name: e.target.value })} />
+                            <input type="tel" placeholder="Teléfono *" value={newLead.phone} onChange={e => setNewLead({ ...newLead, phone: e.target.value })} />
+                            <input type="email" placeholder="Email" value={newLead.email} onChange={e => setNewLead({ ...newLead, email: e.target.value })} />
+                            <select value={newLead.type} onChange={e => setNewLead({ ...newLead, type: e.target.value })}>
                                 <option value="buyer">Comprador</option>
                                 <option value="seller">Vendedor</option>
                                 <option value="both">Ambos</option>
                             </select>
-
-                            <select value={newLead.source} onChange={e => setNewLead({...newLead, source: e.target.value})}>
+                            <select value={newLead.source} onChange={e => setNewLead({ ...newLead, source: e.target.value })}>
                                 <option value="Manual">Carga Manual</option>
                                 <option value="Open House">Open House</option>
                                 <option value="Referral">Referido</option>
                                 <option value="Zillow">Zillow / Realtor.com</option>
                                 <option value="Social Media">Redes Sociales</option>
+                                <option value="CRM Transfer">Transferido por Broker</option>
                             </select>
-
-                            <textarea placeholder="Notas, presupuesto, zonas de interés..." rows={3} value={newLead.notes} onChange={e => setNewLead({...newLead, notes: e.target.value})} />
-
-                            <button className="rt-btn-primary" onClick={handleAddLead} disabled={!newLead.name || !newLead.phone}>
-                                Guardar Lead
+                            <textarea placeholder="Notas, presupuesto, zonas de interés..." rows={3} value={newLead.notes} onChange={e => setNewLead({ ...newLead, notes: e.target.value })} />
+                            <button className="rt-btn-primary" onClick={handleAddLead} disabled={!newLead.name || !newLead.phone || saving}>
+                                {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : null}
+                                {saving ? 'Guardando...' : 'Guardar Lead'}
                             </button>
                         </div>
                     </div>
