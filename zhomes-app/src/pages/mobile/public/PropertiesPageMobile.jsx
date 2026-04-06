@@ -75,18 +75,11 @@ export default function PropertiesPageMobile() {
 
     useEffect(() => {
         const checkUserAndFavs = async () => {
-            let activeUser = null;
-            const demoUser = localStorage.getItem('zhomes_demo_user');
-            if (demoUser) {
-                activeUser = JSON.parse(demoUser);
-            } else {
-                const { data: { session } } = await supabase.auth.getSession();
-                activeUser = session?.user || null;
-            }
+            const { data: { session } } = await supabase.auth.getSession();
+            const activeUser = session?.user || null;
             if (activeUser) {
                 setUser(activeUser)
-                // Only fetch favorites for real Supabase users (not demo)
-                if (!activeUser.isDemo && activeUser.id && activeUser.id !== 'demo-client-001') {
+                if (activeUser.id) {
                     const { data: favs, error } = await supabase
                         .from('user_favorites')
                         .select('property_id')
@@ -112,11 +105,7 @@ export default function PropertiesPageMobile() {
             return
         }
 
-        // Demo users can't save favorites
-        if (user.isDemo || user.id === 'demo-client-001') {
-            showToast('Regístrate con email para guardar favoritos', true)
-            return
-        }
+
 
         const pid = String(propertyId)
         const isFav = favorites.includes(pid)

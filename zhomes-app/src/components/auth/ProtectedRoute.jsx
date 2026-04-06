@@ -7,14 +7,6 @@ export default function ProtectedRoute() {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-        // Check demo user (localStorage bypass)
-        const demoUser = localStorage.getItem('zhomes_demo_user')
-        if (demoUser) {
-            setUser(JSON.parse(demoUser))
-            setLoading(false)
-            return
-        }
-
         // Check real Supabase session
         const checkUser = async () => {
             try {
@@ -31,11 +23,8 @@ export default function ProtectedRoute() {
 
         const { data: authListener } = supabase.auth.onAuthStateChange(
             (event, session) => {
-                // Don't override demo user
-                if (!localStorage.getItem('zhomes_demo_user')) {
-                    setUser(session?.user || null)
-                    setLoading(false)
-                }
+                setUser(session?.user || null)
+                setLoading(false)
             }
         )
 

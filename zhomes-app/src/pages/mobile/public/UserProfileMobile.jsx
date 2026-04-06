@@ -100,28 +100,17 @@ export default function UserProfileMobile() {
 
     useEffect(() => {
         const fetchUserAndFavorites = async () => {
-            // Check demo user bypass first (localStorage)
-            const demoRaw = localStorage.getItem('zhomes_demo_user')
-            const demoUser = demoRaw ? JSON.parse(demoRaw) : null
-
             const { data: { session } } = await supabase.auth.getSession()
 
-            if (!session && !demoUser) {
+            if (!session) {
                 navigate('/login')
                 return
             }
 
-            // Use real session user or build a demo user object
-            const currentUser = session?.user || {
-                id: 'demo-client-001',
-                email: demoUser?.email || 'cliente@zhomes.com',
-                user_metadata: { full_name: demoUser?.name || 'Carlos Rivera (Demo)' },
-                isDemo: true,
-            }
+            const currentUser = session.user
             setUser(currentUser)
 
-            // Fetch favorites from DB (skip for demo users to avoid UUID constraint errors)
-            if (!currentUser.isDemo) {
+            if (currentUser) {
                 const { data: favsData, error: favsError } = await supabase
                     .from('user_favorites')
                     .select('property_id, property_data')
@@ -156,7 +145,7 @@ export default function UserProfileMobile() {
             setLoadingFavs(false)
 
             // Load saved pre-qual estimate for card
-            if (!currentUser.isDemo) {
+            if (currentUser) {
                 const { data: prequalData } = await supabase
                     .from('prequal_estimates')
                     .select('result, updated_at, credit_tier_label')
@@ -179,7 +168,6 @@ export default function UserProfileMobile() {
     }, [navigate, globalProperties])
 
     const handleLogout = async () => {
-        localStorage.removeItem('zhomes_demo_user')
         localStorage.removeItem('zhomes_role')
         await supabase.auth.signOut()
         navigate('/')

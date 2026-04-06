@@ -19,14 +19,8 @@ export default function SwipeModePageMobile() {
 
     useEffect(() => {
         const initSwipe = async () => {
-            let activeUser = null;
-            const demoUser = localStorage.getItem('zhomes_demo_user');
-            if (demoUser) {
-                activeUser = JSON.parse(demoUser);
-            } else {
-                const { data: { session } } = await supabase.auth.getSession();
-                activeUser = session?.user || null;
-            }
+            const { data: { session } } = await supabase.auth.getSession();
+            const activeUser = session?.user || null;
 
             if (!activeUser) {
                 navigate('/login');

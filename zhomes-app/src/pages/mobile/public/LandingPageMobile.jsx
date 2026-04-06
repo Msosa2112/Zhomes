@@ -63,12 +63,7 @@ export default function LandingPageMobile() {
 
     const { properties: globalProperties, loading: ctxLoading } = useProperties()
 
-    useEffect(() => {
-        const stored = localStorage.getItem('zhomes_demo_user')
-        if (stored) {
-            try { setDemoUser(JSON.parse(stored)) } catch {}
-        }
-    }, [])
+
 
     const properties = globalProperties || []
 
