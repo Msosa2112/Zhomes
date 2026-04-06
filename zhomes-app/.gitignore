@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Apple Auth — claves privadas (NO subir a git)
+*.p8
+apple-secret.txt
+generate-apple-secret.mjs
