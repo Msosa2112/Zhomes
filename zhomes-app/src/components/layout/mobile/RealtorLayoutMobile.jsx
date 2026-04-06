@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, Users, PlusCircle, Briefcase, Sun, Moon, Calendar, ClipboardList, Video, LineChart } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
+import { supabase } from '../../../lib/supabaseClient'
 import './DashboardLayoutMobile.css' // Reusing the identical layout styles
 
 export default function RealtorLayoutMobile() {
@@ -22,6 +23,14 @@ export default function RealtorLayoutMobile() {
         }
         lastScrollY.current = currentScrollY;
     }
+
+    const handleLogout = async () => {
+        localStorage.removeItem('zhomes_demo_user')
+        localStorage.removeItem('zhomes_role')
+        await supabase.auth.signOut()
+        navigate('/')
+    }
+
 
     const navs = [
         { path: '/realtor', icon: Home, label: 'Inicio' },
@@ -57,7 +66,7 @@ export default function RealtorLayoutMobile() {
                     <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: '60px' }}>
                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                             {(loc.pathname === '/realtor' || loc.pathname === '/realtor/perfil') && (
-                                <button className="m-theme-toggle" onClick={() => navigate('/')} style={{ background: 'rgba(228, 31, 37, 0.1)', backdropFilter: 'blur(10px)', borderRadius: '50%', border: '1px solid rgba(228, 31, 37, 0.2)', color: 'var(--zhomes-red)', display: 'flex', padding: '8px' }}>
+                                <button className="m-theme-toggle" onClick={handleLogout} style={{ background: 'rgba(228, 31, 37, 0.1)', backdropFilter: 'blur(10px)', borderRadius: '50%', border: '1px solid rgba(228, 31, 37, 0.2)', color: 'var(--zhomes-red)', display: 'flex', padding: '8px' }}>
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                 </button>
                             )}
