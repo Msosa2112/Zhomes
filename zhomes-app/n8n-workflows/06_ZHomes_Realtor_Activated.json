@@ -1,0 +1,42 @@
+{
+  "name": "ZHomes - Realtor Activated",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "realtor-activated",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Realtor Activated",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [ 160, 300 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"¡Felicidades! Tu cuenta de ZHomes ha sido ACTIVADA 🎉\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>¡Hola <b>{{$json.body.record.full_name}}</b>!</p><p>Te informamos que tu perfil de Realtor ha sido <b>APROBADO Y ACTIVADO</b> exitosamente por tu Master Broker.</p><p>A partir de este momento tienes acceso oficial a la aplicación de ZHomes. Puedes iniciar sesión y comenzar a recibir prospectos.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong><br/>10400 Shelbyville Rd, Louisville, KY 40223, USA</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Realtor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [ 460, 300 ]
+    }
+  ],
+  "connections": {
+    "Webhook Realtor Activated": {
+      "main": [
+        [
+          { "node": "Email Realtor", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  }
+}

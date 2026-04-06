@@ -1,0 +1,52 @@
+{
+  "name": "ZHomes - Realtor Approval",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "realtor-approval",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Realtor Registration",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"zhomesreapp@gmail.com\"],\n  \"subject\": \"⚠️ APROBACIÓN REQUERIDA: Nuevo Realtor Registrado\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #E31E24; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">NUEVO REALTOR</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Un nuevo agente se ha registrado en la plataforma de ZHomes y su cuenta requiere aprobación manual antes de poder acceder al sistema.</p><p><b>Nombre:</b> {{$json.body.realtor_name}}<br/><b>Email:</b> {{$json.body.realtor_email}}<br/><b>Teléfono:</b> {{$json.body.realtor_phone}}</p><p>Para darle acceso al agente, debes entrar al panel de Supabase o al Portal Broker, localizar su registro en la tabla <b>zhomes_agents</b> y cambiar su columna <b>status</b> a <b>Active</b>.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">Notificación del Sistema de Acceso</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Broker Admin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Realtor Registration": {
+      "main": [
+        [
+          {
+            "node": "Email Broker Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

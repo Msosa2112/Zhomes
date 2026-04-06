@@ -1,0 +1,152 @@
+{
+  "name": "ZHomes - Documents Journey",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zhomes-documents-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Documents",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.record.uploader_role}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "client",
+              "output": 0
+            },
+            {
+              "value2": "realtor",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "name": "Switch Uploader Role",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.realtor.phone}}",
+        "message": "=📄 NUEVO DOCUMENTO (CLIENTE): \nEl cliente {{$json.body.context.client_meta.name}} acaba de subir un documento tipo '{{$json.body.record.document_type}}' a su expediente.\nPor favor, entra al panel de ZHomes para revisarlo."
+      },
+      "name": "SMS Cliente sube -> Realtor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.realtor.email}}\"],\n  \"subject\": \"📄 Nuevo Documento del Cliente: {{$json.body.context.client_meta.name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>El cliente <b>{{$json.body.context.client_meta.name}}</b> acaba de subir un documento tipo '{{$json.body.record.document_type}}' a su expediente.</p><p>Por favor, entra al panel de ZHomes Broker para revisarlo.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Cliente sube -> Realtor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "+15555555555",
+        "message": "=📑 DOCUMENTO DE CIERRE (REALTOR):\nEl agente {{$json.body.context.realtor.first_name}} acaba de subir documentación tipo '{{$json.body.record.document_type}}' y requiere revisión de Brokerage.\nRevisa el portal."
+      },
+      "name": "SMS Realtor sube -> Broker",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"broker@zhomes.com\"],\n  \"subject\": \"📑 Documento de Cierre: {{$json.body.context.realtor.first_name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>El agente <b>{{$json.body.context.realtor.first_name}} {{$json.body.context.realtor.last_name}}</b> acaba de subir documentación tipo '{{$json.body.record.document_type}}' y requiere revisión de Brokerage.</p><p>Revisa el Portal de ZHomes Broker para aprobar.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Realtor sube -> Broker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        620
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Documents": {
+      "main": [
+        [
+          {
+            "node": "Switch Uploader Role",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Uploader Role": {
+      "main": [
+        [
+          {
+            "node": "SMS Cliente sube -> Realtor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Cliente sube -> Realtor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Realtor sube -> Broker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Realtor sube -> Broker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

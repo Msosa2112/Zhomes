@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { IonApp } from '@ionic/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { PropertiesProvider } from './context/PropertyContext'
+import { AgentProvider } from './context/AgentContext'
 import AppRoutes from './AppRoutes'
 import './App.css'
 /* Spotlight-enabled selectors — single document listener for perf */
@@ -31,9 +32,11 @@ function App() {
   return (
     <IonApp>
       <PropertiesProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
+        <AgentProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </AgentProvider>
       </PropertiesProvider>
     </IonApp>
   )

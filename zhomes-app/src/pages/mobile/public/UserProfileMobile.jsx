@@ -5,8 +5,8 @@ import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
-import RealtorSelectorModal from '../../../components/public/RealtorSelectorModal'
 import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
+import { useAgent } from '../../../context/AgentContext'
 import './UserProfileMobile.css'
 
 export default function UserProfileMobile() {
@@ -73,10 +73,8 @@ export default function UserProfileMobile() {
         setShowEditProfile(true)
     }
 
-    // Agent Selection State
-    const [myAgentId, setMyAgentId] = useState(() => localStorage.getItem('zhomes_my_agent'))
-    const [showAgentModal, setShowAgentModal] = useState(false)
-    const [myAgent, setMyAgent] = useState(null)
+    // Agent Context State
+    const { activeAgent, openAgentModal, isGlobalLoading } = useAgent()
 
     const handleSaveProfile = async () => {
         setSavingProfile(true)
@@ -121,13 +119,6 @@ export default function UserProfileMobile() {
                 isDemo: true,
             }
             setUser(currentUser)
-
-            // Sync assigned agent from metadata
-            const assignedAgentId = currentUser.user_metadata?.assigned_realtor_id || localStorage.getItem('zhomes_my_agent');
-            if (assignedAgentId) {
-                setMyAgentId(assignedAgentId);
-                localStorage.setItem('zhomes_my_agent', assignedAgentId);
-            }
 
             // Fetch favorites from DB (skip for demo users to avoid UUID constraint errors)
             if (!currentUser.isDemo) {
@@ -185,24 +176,7 @@ export default function UserProfileMobile() {
         }
 
         fetchUserAndFavorites()
-    }, [navigate])
-
-    // Load the full agent object from Supabase whenever myAgentId changes
-    useEffect(() => {
-        if (!myAgentId) { setMyAgent(null); return; }
-        supabase
-            .from('zhomes_agents')
-            .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
-            .eq('id', myAgentId)
-            .maybeSingle()
-            .then(({ data }) => {
-                if (data) setMyAgent({
-                    ...data,
-                    name: data.full_name,
-                    photo: data.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
-                });
-            });
-    }, [myAgentId]);
+    }, [navigate, globalProperties])
 
     const handleLogout = async () => {
         localStorage.removeItem('zhomes_demo_user')
@@ -417,7 +391,13 @@ export default function UserProfileMobile() {
                 <div
                     className="up-ai-card"
                     style={{ marginTop: '16px', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}
-                    onClick={() => setShowPrequalModal(true)}
+                    onClick={() => {
+                        if (!activeAgent) {
+                            openAgentModal();
+                            return;
+                        }
+                        setShowPrequalModal(true);
+                    }}
                 >
                     <div className="up-ai-icon" style={{ background: 'rgba(255,255,255,0.15)' }}>
                         <BarChart3 size={26} color="#ffffff" />
@@ -438,7 +418,14 @@ export default function UserProfileMobile() {
                 </div>
 
                 {/* Co-Shopping Card */}
-                <Link to="/pareja" className="up-ai-card" style={{marginTop: '16px', background: 'linear-gradient(135deg,rgb(170, 20, 26) 0%, rgb(170, 20, 25) 100%)', marginBottom: '24px'}}>
+                <div className="up-ai-card" style={{marginTop: '16px', background: 'linear-gradient(135deg,rgb(170, 20, 26) 0%, rgb(170, 20, 25) 100%)', marginBottom: '24px', cursor: 'pointer'}}
+                     onClick={() => {
+                        if (!activeAgent) {
+                            openAgentModal();
+                            return;
+                        }
+                        navigate('/pareja');
+                     }}>
                     <div className="up-ai-icon" style={{background: 'rgba(255,255,255,0.2)'}}>
                         <Users size={26} color="#ffffff" />
                     </div>
@@ -449,7 +436,7 @@ export default function UserProfileMobile() {
                     <div className="up-ai-arrow">
                         <ArrowRight size={20} color="white" />
                     </div>
-                </Link>
+                </div>
 
                 {/* Mi Agente Inmobiliario */}
                 <div className="up-section-title" style={{marginTop: '24px'}}>
@@ -458,17 +445,17 @@ export default function UserProfileMobile() {
                         <h3>Mi Agente Inmobiliario</h3>
                     </div>
                 </div>
-                {myAgent ? (
+                {activeAgent ? (
                     <div className="up-agent-card" style={{display:'flex', gap:'12px', padding:'16px', background:'var(--bg-secondary)', borderRadius:'16px', border:'1px solid var(--border-color)', alignItems:'center', marginBottom: '24px'}}>
-                        <img src={myAgent.image || myAgent.avatar || `https://ui-avatars.com/api/?name=${myAgent.name}`} style={{width:'50px', height:'50px', borderRadius:'25px', objectFit:'cover'}} />
+                        <img src={activeAgent.photo} style={{width:'50px', height:'50px', borderRadius:'25px', objectFit:'cover'}} />
                         <div style={{flex: 1}}>
-                            <h4 style={{margin:0, fontSize:'1rem', color:'var(--text-primary)'}}>{myAgent.name}</h4>
+                            <h4 style={{margin:0, fontSize:'1rem', color:'var(--text-primary)'}}>{activeAgent.name}</h4>
                             <span style={{fontSize:'0.85rem', color:'var(--zhomes-red)', fontWeight:600}}>Tu Asesor Elegido</span>
                         </div>
-                        <button onClick={() => setShowAgentModal(true)} style={{background:'transparent', border:'none', color:'var(--text-secondary)'}}><Settings size={20}/></button>
+                        <button onClick={openAgentModal} style={{background:'transparent', border:'none', color:'var(--text-secondary)'}}><Settings size={20}/></button>
                     </div>
                 ) : (
-                    <button className="up-btn outline" style={{width:'100%', padding:'16px', display:'flex', justifyContent:'center', gap:'8px', marginBottom: '24px'}} onClick={() => setShowAgentModal(true)}>
+                    <button className="up-btn outline" style={{width:'100%', padding:'16px', display:'flex', justifyContent:'center', gap:'8px', marginBottom: '24px'}} onClick={openAgentModal}>
                         <UserPlus size={20} /> Seleccionar Agente
                     </button>
                 )}

@@ -70,6 +70,19 @@ export default function LoginPageMobile() {
             // Si es exitoso, ruteamos según el rol guardado en los metadatos
             const role = data.user?.user_metadata?.role || 'client'
             
+            if (role === 'realtor') {
+                const { data: agentData } = await supabase
+                    .from('zhomes_agents')
+                    .select('status')
+                    .eq('id', data.user.id)
+                    .single()
+                
+                if (!agentData || agentData.status !== 'Active') {
+                    await supabase.auth.signOut()
+                    throw new Error('Cuenta sujeta a aprobación. Te notificaremos cuando el Broker te autorice.')
+                }
+            }
+            
             const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
             if (redirectUrl) {
                 localStorage.removeItem('zhomes_redirect_after_login');

@@ -70,7 +70,24 @@ export default function RegisterPageMobile() {
                     email: formData.email,
                     phone: formData.phone,
                     status: 'pending_approval' // Ideal para revisar antes de darles acceso a publicar
-                }]).select()
+                }]);
+
+                // Notificar al administrador en N8N para la aprobación
+                try {
+                    const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL_REALTOR_APPROVAL || 'https://n8n-production-cfe9c.up.railway.app/webhook/realtor-approval';
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            realtor_name: formData.name,
+                            realtor_email: formData.email,
+                            realtor_phone: formData.phone,
+                            timestamp: new Date().toISOString()
+                        })
+                    }).catch(e => console.warn('[N8N] Admin approval hook failed:', e));
+                } catch (e) {
+                    console.error('Error firing approval hook', e);
+                }
             }
 
         } catch (error) {

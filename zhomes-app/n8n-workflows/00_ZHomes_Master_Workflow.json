@@ -1,0 +1,692 @@
+{
+  "name": "ZHomes - Master Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "realtor-match",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "ZHomes Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.client_phone}}",
+        "message": "=¡Hola {{$json.body.client_name || 'futuro propietario'}}! Acabas de conectar con {{$json.body.realtor_name}} en la App de ZHomes. Su teléfono es: {{$json.body.realtor_phone}}."
+      },
+      "name": "SMS al Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.client_email}}\"],\n  \"subject\": \"Tu Realtor Asignado: {{$json.body.realtor_name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>¡Hola <b>{{$json.body.client_name}}</b>!</p><p>Acabas de conectar exitosamente con <b>{{$json.body.realtor_name}}</b> en la App de ZHomes.</p><p>Pronto se comunicará contigo, pero si deseas hablar antes su número es: {{$json.body.realtor_phone}}.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email al Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.realtor_phone}}",
+        "message": "=🚨 ¡NUEVO MATCH EN ZHOMES!\nEl cliente {{$json.body.client_name}} te acaba de elegir. Email: {{$json.body.client_email}} Telf: {{$json.body.client_phone}}"
+      },
+      "name": "SMS al Realtor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        460,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.realtor_email}}\"],\n  \"subject\": \"🚨 ¡NUEVO MATCH EN ZHOMES!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Un nuevo cliente acaba de elegirte como su asesor Inmobiliario exclusivo desde la App.</p><p><b>Cliente:</b> {{$json.body.client_name}}<br/><b>Email:</b> {{$json.body.client_email}}<br/><b>Tel:</b> {{$json.body.client_phone}}</p><p>¡Comunícate cuanto antes!</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email al Realtor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zhomes-bookings-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Bookings",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.record.status}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "pending",
+              "output": 0
+            },
+            {
+              "value2": "confirmed",
+              "output": 1
+            },
+            {
+              "value2": "completed",
+              "output": 2
+            }
+          ]
+        }
+      },
+      "name": "Switch Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        360,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.realtor.phone}}",
+        "message": "=📅 REQUERIMIENTO VISITA: \nTienes una solicitud del cliente {{$json.body.context.client_meta.name || $json.body.record.client_name}} para ver la casa con ID {{$json.body.record.property_id}} el {{$json.body.record.booking_date}}.\nConfírmalo en el App."
+      },
+      "name": "SMS Pending Realtor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.realtor.email}}\"],\n  \"subject\": \"📅 Requerimiento de Visita: {{$json.body.context.client_meta.name || $json.body.record.client_name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Tienes una solicitud de <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b> para ver la casa con ID {{$json.body.record.property_id}} el {{$json.body.record.booking_date}}.</p><p>Confírmalo en la App ZHomes.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Pending Realtor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.client_meta.phone}}",
+        "message": "=¡Excelente {{$json.body.context.client_meta.name || $json.body.record.client_name}}! Cita confirmada para ver la propiedad el {{$json.body.record.booking_date}}. Tu realtor te contactará con detalles.\n- ZHomes"
+      },
+      "name": "SMS Confirmed Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.client_meta.email}}\"],\n  \"subject\": \"¡Cita Confirmada!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Hola <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b>,</p><p>Excelente noticia, tu cita ha sido confirmada para ver la propiedad el <b>{{$json.body.record.booking_date}}</b>.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Confirmed Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        1620
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.client_meta.phone}}",
+        "message": "=¡Hola {{$json.body.context.client_meta.name || $json.body.record.client_name}}! ¿Te encantó la casa? Si es de tu agrado, entra al app ZHomes y califícate en minutos para meter una Oferta Formal.\nTu equipo ZHomes."
+      },
+      "name": "SMS Completed Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        1800
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.client_meta.email}}\"],\n  \"subject\": \"¿Qué te pareció el recorrido?\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Hola <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b>, ¡Esperamos que te haya encantado la visita!</p><p>Si es de tu agrado, entra a la app ZHomes para que nos movamos con una Oferta Formal lo antes posible.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Completed Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        1960
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zhomes-crm-leads-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook CRM Leads",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        2880
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.record.stage}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "preapproved",
+              "output": 0
+            },
+            {
+              "value2": "offer",
+              "output": 1
+            },
+            {
+              "value2": "closing",
+              "output": 2
+            }
+          ]
+        }
+      },
+      "name": "Switch Stage",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        360,
+        2880
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.client_meta.phone}}",
+        "message": "=¡Enhorabuena {{$json.body.record.name}}! Te has Pre-Aprobado exitosamente. Tu presupuesto hipotecario es Oficial. Entra a ZHomes para que veas todas las casas que puedes comprar hoy.\n-Equipo ZHomes"
+      },
+      "name": "SMS Preapproved Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        2560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"¡Estas Oficialmente Pre-Aprobado!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>¡Enhorabuena <b>{{$json.body.record.name}}</b>!</p><p>Te has Pre-Aprobado exitosamente para tu préstamo hipotecario. Tu presupuesto es Oficial.</p><p>Entra a ZHomes para que veas todas las casas que puedes comprar hoy.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Preapproved Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.client_meta.phone}}",
+        "message": "=¡A cruzar los dedos {{$json.body.record.name}}! Tu oferta formal ha sido sometida exitosamente al vendedor a través de ZHomes.\nTe notificaremos por aquí la respuesta tan rápido como llegue."
+      },
+      "name": "SMS Offer Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        2900
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"¡Tu Oferta Formal de Compra ha sido Emitida!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>¡A cruzar los dedos <b>{{$json.body.record.name}}</b>!</p><p>Tu oferta formal de compra ha sido sometida exitosamente al vendedor a través de ZHomes.</p><p>Te notificaremos por aquí la respuesta tan rápido como llegue.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Offer Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        3060
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.client_meta.phone}}",
+        "message": "=🥂 ¡OFICIALMENTE BAJO CONTRATO (CLOSING)!\nFelicidades {{$json.body.record.name}}, tu oferta ha sido aceptada y empezamos el cierre.\nPor favor, contacta a tu Realtor para los últimos pasos.\n-ZHomes"
+      },
+      "name": "SMS Closing Cliente",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        3240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"🥂 ¡OFICIALMENTE BAJO CONTRATO!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>¡Felicidades <b>{{$json.body.record.name}}</b>!</p><p>Tu oferta ha sido aceptada y empezamos el proceso de cierre (Under Contract).</p><p>Por favor, contacta a tu Realtor para los últimos pasos de Título y Escrow.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Closing Cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        3400
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zhomes-documents-events",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Documents",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        4200
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json.body.record.uploader_role}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "client",
+              "output": 0
+            },
+            {
+              "value2": "realtor",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "name": "Switch Uploader Role",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        360,
+        4200
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "={{$json.body.context.realtor.phone}}",
+        "message": "=📄 NUEVO DOCUMENTO (CLIENTE): \nEl cliente {{$json.body.context.client_meta.name}} acaba de subir un documento tipo '{{$json.body.record.document_type}}' a su expediente.\nPor favor, entra al panel de ZHomes para revisarlo."
+      },
+      "name": "SMS Cliente sube -> Realtor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        4000
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.realtor.email}}\"],\n  \"subject\": \"📄 Nuevo Documento del Cliente: {{$json.body.context.client_meta.name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>El cliente <b>{{$json.body.context.client_meta.name}}</b> acaba de subir un documento tipo '{{$json.body.record.document_type}}' a su expediente.</p><p>Por favor, entra al panel de ZHomes Broker para revisarlo.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Cliente sube -> Realtor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        4160
+      ]
+    },
+    {
+      "parameters": {
+        "from": "",
+        "to": "+15555555555",
+        "message": "=📑 DOCUMENTO DE CIERRE (REALTOR):\nEl agente {{$json.body.context.realtor.first_name}} acaba de subir documentación tipo '{{$json.body.record.document_type}}' y requiere revisión de Brokerage.\nRevisa el portal."
+      },
+      "name": "SMS Realtor sube -> Broker",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        680,
+        4360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"broker@zhomes.com\"],\n  \"subject\": \"📑 Documento de Cierre: {{$json.body.context.realtor.first_name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>El agente <b>{{$json.body.context.realtor.first_name}} {{$json.body.context.realtor.last_name}}</b> acaba de subir documentación tipo '{{$json.body.record.document_type}}' y requiere revisión de Brokerage.</p><p>Revisa el Portal de ZHomes Broker para aprobar.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Realtor sube -> Broker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        4520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "realtor-approval",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Realtor Registration",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        5120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"zhomesreapp@gmail.com\"],\n  \"subject\": \"⚠️ APROBACIÓN REQUERIDA: Nuevo Realtor Registrado\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #E31E24; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">NUEVO REALTOR</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Un nuevo agente se ha registrado en la plataforma de ZHomes y su cuenta requiere aprobación manual antes de poder acceder al sistema.</p><p><b>Nombre:</b> {{$json.body.realtor_name}}<br/><b>Email:</b> {{$json.body.realtor_email}}<br/><b>Teléfono:</b> {{$json.body.realtor_phone}}</p><p>Para darle acceso al agente, debes entrar al panel de Supabase o al Portal Broker, localizar su registro en la tabla <b>zhomes_agents</b> y cambiar su columna <b>status</b> a <b>Active</b>.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">Notificación del Sistema de Acceso</p></div></div>\"\n}",
+        "options": {}
+      },
+      "name": "Email Broker Admin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        5120
+      ]
+    }
+  ],
+  "connections": {
+    "ZHomes Webhook": {
+      "main": [
+        [
+          {
+            "node": "SMS al Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email al Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS al Realtor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email al Realtor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Bookings": {
+      "main": [
+        [
+          {
+            "node": "Switch Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Status": {
+      "main": [
+        [
+          {
+            "node": "SMS Pending Realtor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Pending Realtor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Confirmed Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Confirmed Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Completed Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Completed Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook CRM Leads": {
+      "main": [
+        [
+          {
+            "node": "Switch Stage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Stage": {
+      "main": [
+        [
+          {
+            "node": "SMS Preapproved Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Preapproved Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Offer Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Offer Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Closing Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Closing Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Documents": {
+      "main": [
+        [
+          {
+            "node": "Switch Uploader Role",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Uploader Role": {
+      "main": [
+        [
+          {
+            "node": "SMS Cliente sube -> Realtor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Cliente sube -> Realtor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Realtor sube -> Broker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Realtor sube -> Broker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Realtor Registration": {
+      "main": [
+        [
+          {
+            "node": "Email Broker Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

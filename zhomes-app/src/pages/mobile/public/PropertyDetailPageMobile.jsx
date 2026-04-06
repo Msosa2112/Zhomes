@@ -9,6 +9,7 @@ import { useTheme } from '../../../context/ThemeContext'
 import { SparkService } from '../../../services/sparkService'
 import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
+import { useAgent } from '../../../context/AgentContext'
 import { HomeScoreService } from '../../../services/homeScoreService'
 import { MortgageService } from '../../../services/mortgageService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
@@ -34,13 +35,11 @@ export default function PropertyDetailPageMobile() {
     const navigate = useNavigate()
     const [property, setProperty] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [realtorSelectorOpen, setRealtorSelectorOpen] = useState(false)
-    const [viewerOpen, setViewerOpen] = useState(false)
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
-    const [selectedRealtor, setSelectedRealtor] = useState(null)
     const [bookingOpen, setBookingOpen] = useState(false)
     const { theme } = useTheme()
     const { properties: ctxProperties } = useProperties()
+    const { activeAgent, openAgentModal } = useAgent()
 
     const [isFavorite, setIsFavorite] = useState(false)
     const [togglingFav, setTogglingFav] = useState(false)
@@ -122,25 +121,6 @@ export default function PropertyDetailPageMobile() {
         const checkFavoriteStatus = async () => {
             if (!property?.id) return
             const { data: { session } } = await supabase.auth.getSession()
-            
-            // Sync agent from metadata/localStorage using Supabase
-            const agentId = session?.user?.user_metadata?.assigned_realtor_id || localStorage.getItem('zhomes_my_agent');
-            if (agentId) {
-                localStorage.setItem('zhomes_my_agent', agentId);
-                supabase
-                    .from('zhomes_agents')
-                    .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
-                    .eq('id', agentId)
-                    .maybeSingle()
-                    .then(({ data }) => {
-                        if (data) setSelectedRealtor({
-                            ...data,
-                            name: data.full_name,
-                            photo: data.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.full_name)}&background=E31E24&color=fff&size=200&bold=true`
-                        });
-                    });
-            }
-
             if (!session) return
 
             const { data } = await supabase
@@ -162,6 +142,11 @@ export default function PropertyDetailPageMobile() {
         if (!session) {
             navigate('/login')
             return
+        }
+
+        if (!activeAgent) {
+            openAgentModal();
+            return;
         }
 
         try {
@@ -191,15 +176,6 @@ export default function PropertyDetailPageMobile() {
 
     if (loading) return <div style={{padding:'4rem 2rem', textAlign:'center', color:'#888'}}>Cargando detalles...</div>;
     if (!property) return null
-
-    const activeRealtor = selectedRealtor
-    const activeRealtorIndex = selectedRealtor ? REALTORS.findIndex(r => r.id === selectedRealtor.id) : -1
-
-    const handleRealtorSelected = (realtor) => {
-        setRealtorSelectorOpen(false)
-        setSelectedRealtor(realtor)
-        setViewerOpen(true) // Automatically show the video profile once selected!
-    }
 
     const formatPriceK = (price) => {
         if (!price) return '$0'
@@ -255,16 +231,19 @@ export default function PropertyDetailPageMobile() {
                     <div className="mpd-city"><MapPin size={14} /> {property.city}</div>
                 </div>
 
-                {activeRealtor ? (
-                    <div className="mpd-agent-card" onClick={() => setViewerOpen(true)}>
-                        <img src={activeRealtor.photo} alt={activeRealtor.name} style={{ border: '1px solid var(--zhomes-red)' }} />
+                {activeAgent ? (
+                    <div className="mpd-agent-card" onClick={() => {
+                        // Attempt to find index if REALTORS array was loaded globally, but for now we just open it normally
+                        openAgentModal({ openDirectly: true, initialIndex: 0 }) 
+                    }}>
+                        <img src={activeAgent.photo} alt={activeAgent.name} style={{ border: '1px solid var(--zhomes-red)' }} />
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <strong style={{ fontSize: '1.1rem' }}>{activeRealtor.name}</strong>
+                            <strong style={{ fontSize: '1.1rem' }}>{activeAgent.name}</strong>
                             <span style={{ color: 'var(--zhomes-red)', fontWeight: 600 }}>★ Tu Asesor Elegido</span>
                         </div>
                     </div>
                 ) : (
-                    <div className="mpd-agent-card" onClick={() => setRealtorSelectorOpen(true)}>
+                    <div className="mpd-agent-card" onClick={() => openAgentModal()}>
                         <img src="/assets/logo/fav.png" alt="Zhomes" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <strong style={{ fontSize: '1.1rem' }}>Zhomes Real Estate</strong>
@@ -367,7 +346,13 @@ export default function PropertyDetailPageMobile() {
 
                 {/* Booking / Schedule Visit Button */}
                 <div className="mpd-booking-section">
-                    <button className="mpd-booking-btn" onClick={() => setBookingOpen(true)}>
+                    <button className="mpd-booking-btn" onClick={() => {
+                        if (!activeAgent) {
+                            openAgentModal();
+                            return;
+                        }
+                        setBookingOpen(true);
+                    }}>
                         <CalendarPlus size={18} /> Agendar Visita
                     </button>
                 </div>
@@ -384,21 +369,7 @@ export default function PropertyDetailPageMobile() {
 
             <div style={{ height: '90px' }} />
 
-            <AnimatePresence>
-                {(realtorSelectorOpen || viewerOpen) && (
-                    <RealtorRevealModal
-                        isOpen={true}
-                        onClose={() => {
-                            setRealtorSelectorOpen(false);
-                            setViewerOpen(false);
-                        }}
-                        onSelect={handleRealtorSelected}
-                        contextProperty={property}
-                        openDirectly={viewerOpen}
-                        initialIndex={viewerOpen && activeRealtorIndex >= 0 ? activeRealtorIndex : undefined}
-                    />
-                )}
-            </AnimatePresence>
+            <div style={{ height: '90px' }} />
 
             <PhotoViewerMobile
                 photos={property.photos || [property.image]}
