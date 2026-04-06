@@ -67,7 +67,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.realtor.email}}\"],\n  \"subject\": \"📅 Requerimiento de Visita: {{$json.body.context.client_meta.name || $json.body.record.client_name}}\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Tienes una solicitud de <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b> para ver la casa con ID {{$json.body.record.property_id}} el {{$json.body.record.booking_date}}.</p><p>Confírmalo en la App ZHomes.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
         "options": {}
       },
       "name": "Email Pending Realtor",
@@ -100,7 +100,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.client_meta.email}}\"],\n  \"subject\": \"¡Cita Confirmada!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Hola <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b>,</p><p>Excelente noticia, tu cita ha sido confirmada para ver la propiedad el <b>{{$json.body.record.booking_date}}</b>.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
         "options": {}
       },
       "name": "Email Confirmed Cliente",
@@ -133,7 +133,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <gilbert@gzhomes.com>\",\n  \"to\": [\"{{$json.body.context.client_meta.email}}\"],\n  \"subject\": \"¿Qué te pareció el recorrido?\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;\\\"><div style=\\\"background-color: #000000; padding: 20px; text-align: center;\\\"><h1 style=\\\"color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;\\\">ZHOMES</h1></div><div style=\\\"padding: 30px; color: #333333; line-height: 1.6; font-size: 16px;\\\"><p>Hola <b>{{$json.body.context.client_meta.name || $json.body.record.client_name}}</b>, ¡Esperamos que te haya encantado la visita!</p><p>Si es de tu agrado, entra a la app ZHomes para que nos movamos con una Oferta Formal lo antes posible.</p></div><div style=\\\"background-color: #f7f7f7; padding: 20px; text-align: center; color: #777777; font-size: 12px; border-top: 1px solid #e0e0e0;\\\"><p style=\\\"margin: 0;\\\"><strong>ZHomes Real Estate</strong></p><p style=\\\"margin: 5px 0;\\\">7520 Preston Highway, Louisville, KY 40219</p><p style=\\\"margin: 5px 0;\\\">502-641-6623 | gilbert@gzhomes.com</p></div></div>\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
         "options": {}
       },
       "name": "Email Completed Cliente",

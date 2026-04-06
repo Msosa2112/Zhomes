@@ -16,7 +16,7 @@ files.forEach(file => {
     data.nodes = data.nodes.map(node => {
         if (node.type === 'n8n-nodes-base.resend' || node.name.includes("Email")) {
             // Unpack everything
-            const from = node.parameters?.from || "ZHomes Real Estate <gilbert@gzhomes.com>";
+            const from = node.parameters?.from || "ZHomes Real Estate <info@zhomesapp.com>";
             // For To, we need it inside an array since Resend API requires an array
             const toStr = node.parameters?.to || "";
             // Keep expressions verbatim
