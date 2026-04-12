@@ -172,8 +172,8 @@
    ══════════════════════════════════════════════════════════════ */
 .map-mode-controls {
   position: absolute;
-  /* encima del panel colapsado (282px) + margen (16px) y safe area */
-  bottom: calc(298px + env(safe-area-inset-bottom, 0px));
+  /* encima del panel colapsado (305px) + margen (16px) y safe area */
+  bottom: calc(321px + env(safe-area-inset-bottom, 0px));
   right: 16px;
   z-index: 2000;          /* siempre por encima de todo */
   display: flex;
@@ -204,7 +204,7 @@
 .map-mode-label {
   position: absolute;
   /* Mismo nivel que los botones, pero a la izquierda */
-  bottom: calc(304px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(327px + env(safe-area-inset-bottom, 0px));
   left: 16px;
   z-index: 2000;
   background: rgba(20,20,20,0.88);
@@ -300,8 +300,8 @@
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  /* 182px content + 100px nav clear room + responsividad a indicador iOS/Android */
-  height: calc(282px + env(safe-area-inset-bottom, 0px));
+  /* Levantamos el panel para empujar las tarjetas usando alineacion top de flexbox */
+  height: calc(305px + env(safe-area-inset-bottom, 0px));
   transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
   animation: slideUpPanel 0.4s cubic-bezier(0.4,0,0.2,1) both;
   overflow: hidden;
@@ -348,7 +348,7 @@
   flex: 1;
   display: flex;
   gap: 12px;
-  padding: 4px 16px calc(100px + env(safe-area-inset-bottom, 0px));  /* Responsive clear above physical nav */
+  padding: 4px 16px calc(125px + env(safe-area-inset-bottom, 0px));  /* Clearance to guarantee visibility above nav */
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -444,7 +444,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 16px calc(100px + env(safe-area-inset-bottom, 0px));   /* Responsive clear above physical nav */
+  padding: 0 16px calc(125px + env(safe-area-inset-bottom, 0px));   /* Clearance to guarantee visibility above nav */
 }
 .map-list-item {
   display: flex; align-items: center; gap: 12px;
