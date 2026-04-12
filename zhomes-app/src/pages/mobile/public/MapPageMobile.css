@@ -289,7 +289,7 @@
    ══════════════════════════════════════════════════════════════ */
 .map-bottom-panel {
   position: absolute;
-  bottom: 0;              /* fondo llega hasta el borde de la pantalla */
+  bottom: 77px;           /* 74px nav + 3px gap = siempre visible */
   left: 0; right: 0;
   z-index: 1080;
   border-radius: 20px 20px 0 0;
@@ -300,8 +300,8 @@
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  /* altura colapsada: header + cards + padding que evita nav bar */
-  height: calc(220px + 77px);   /* 77px = nav bar 74px + 3px gap */
+  /* Card = 90px img + 36px body + 8px gaps + header ~48px = 182px total */
+  height: 182px;
   transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
   animation: slideUpPanel 0.4s cubic-bezier(0.4,0,0.2,1) both;
   overflow: hidden;
@@ -311,8 +311,8 @@
   border-top: 1px solid rgba(0,0,0,0.07);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
 }
-/* Expandido: llena pantalla sin tocar los filtros */
-.map-bottom-panel.expanded { height: calc(100vh - 148px); }  /* 148 = filter area height */
+/* Expandido */
+.map-bottom-panel.expanded { height: calc(100vh - 145px); }
 
 @keyframes slideUpPanel {
   from { transform: translateY(100%); opacity: 0; }
@@ -379,7 +379,7 @@
   box-shadow: 0 0 0 2px rgba(227,30,36,0.25), 0 10px 28px rgba(227,30,36,0.2);
 }
 
-.map-bottom-card-img-wrap { position: relative; height: 110px; overflow: hidden; }
+.map-bottom-card-img-wrap { position: relative; height: 90px; overflow: hidden; }
 .map-bottom-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
 .map-bottom-card:active .map-bottom-card-img-wrap img { transform: scale(1.04); }
 
@@ -398,14 +398,46 @@
   animation: fadeInDown 0.2s ease;
 }
 
-.map-bottom-card-body { padding: 10px 12px; }
-.map-bottom-card-price { font-size: 15px; font-weight: 800; color: #fff; margin: 0 0 2px; }
-.map-bottom-panel.light .map-bottom-card-price { color: #1a1a1a; }
-.map-bottom-card-address { font-size: 11px; color: rgba(255,255,255,0.55); margin: 0 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.map-bottom-panel.light .map-bottom-card-address { color: rgba(0,0,0,0.5); }
-.map-bottom-card-meta { display: flex; gap: 8px; color: rgba(255,255,255,0.4); font-size: 10px; align-items: center; }
-.map-bottom-panel.light .map-bottom-card-meta { color: rgba(0,0,0,0.4); }
-.map-bottom-card-meta span { display: flex; align-items: center; gap: 3px; }
+.map-bottom-card-body { padding: 7px 10px 8px; }
+
+/* Línea inline: precio | bd | ba | sqft */
+.map-card-inline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.map-card-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.mobile-map-page.light .map-card-price { color: #1a1a1a; }
+.map-card-vsep {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,0.2);
+  margin: 0 7px;
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+.mobile-map-page.light .map-card-vsep { background: rgba(0,0,0,0.15); }
+.map-card-stat {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  flex-shrink: 0;
+}
+.mobile-map-page.light .map-card-stat { color: rgba(0,0,0,0.7); }
+.map-card-unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+}
+.mobile-map-page.light .map-card-unit { color: rgba(0,0,0,0.4); }
 
 /* Lista expandida: scroll vertical con -webkit para iOS */
 .map-bottom-list {

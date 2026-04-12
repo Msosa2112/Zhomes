@@ -85,13 +85,16 @@ function PropCard({ prop, isActive, onClick, onView }) {
           </button>
         )}
       </div>
+      {/* Una sola línea: precio | camas | baños | sqft */}
       <div className="map-bottom-card-body">
-        <p className="map-bottom-card-price">{fmtPrice(prop.price)}</p>
-        <p className="map-bottom-card-address">{prop.address}</p>
-        <div className="map-bottom-card-meta">
-          <span><Bed size={10} /> {prop.beds}</span>
-          <span><Bath size={10} /> {prop.baths}</span>
-          <span><Expand size={10} /> {prop.sqft?.toLocaleString()}</span>
+        <div className="map-card-inline">
+          <span className="map-card-price">{fmtPrice(prop.price)}</span>
+          <span className="map-card-vsep" />
+          <span className="map-card-stat">{prop.beds} <span className="map-card-unit">bd</span></span>
+          <span className="map-card-vsep" />
+          <span className="map-card-stat">{prop.baths} <span className="map-card-unit">ba</span></span>
+          <span className="map-card-vsep" />
+          <span className="map-card-stat">{prop.sqft?.toLocaleString()} <span className="map-card-unit">ft²</span></span>
         </div>
       </div>
     </div>
