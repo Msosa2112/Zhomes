@@ -3,11 +3,11 @@
   "ignoreCommand": "exit 1",
   "crons": [
     {
-      "path": "/api/sync",
+      "path": "/api/qstash-trigger",
       "schedule": "0 10 * * *"
     },
     {
-      "path": "/api/sync",
+      "path": "/api/qstash-trigger",
       "schedule": "0 22 * * *"
     },
     {
@@ -16,10 +16,6 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
