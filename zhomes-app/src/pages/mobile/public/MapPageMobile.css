@@ -203,10 +203,10 @@
 
 .map-mode-label {
   position: absolute;
-  bottom: 230px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1050;
+  /* Mismo nivel que los botones, pero a la izquierda */
+  bottom: calc(38vh + 74px + 20px);
+  left: 16px;
+  z-index: 2000;
   background: rgba(20,20,20,0.88);
   color: #fff;
   padding: 6px 14px;
@@ -216,6 +216,7 @@
   backdrop-filter: blur(8px);
   white-space: nowrap;
   animation: fadeInDown 0.25s ease;
+  pointer-events: none;
 }
 .mobile-map-page.light .map-mode-label {
   background: rgba(255,255,255,0.93);
@@ -288,7 +289,7 @@
    ══════════════════════════════════════════════════════════════ */
 .map-bottom-panel {
   position: absolute;
-  bottom: 0;              /* toca el nav bar de abajo */
+  bottom: 74px;           /* sobre el nav bar */
   left: 0; right: 0;
   z-index: 1080;
   border-radius: 20px 20px 0 0;
@@ -297,25 +298,31 @@
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
-  max-height: calc(38vh + 74px);  /* compensa el espacio del nav */
-  overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  /* Flex column: header sticky + content scrollable */
+  display: flex;
+  flex-direction: column;
+  /* Colapsado: altura cómoda para ver 1 fila de cards */
+  height: 220px;
+  transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
   animation: slideUpPanel 0.4s cubic-bezier(0.4,0,0.2,1) both;
+  overflow: hidden;
 }
 .map-bottom-panel.light {
   background: rgba(255,255,255,0.97);
   border-top: 1px solid rgba(0,0,0,0.07);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
 }
-/* Expandido: llena pantalla hasta los filtros, sin taparlos */
-.map-bottom-panel.expanded { max-height: calc(100vh - 188px); overflow: hidden; }
+/* Expandido: llena pantalla sin tocar los filtros */
+.map-bottom-panel.expanded { height: calc(100vh - 220px); }
 
 @keyframes slideUpPanel {
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
 
+/* Header: altura fija, nunca se mueve */
 .map-bottom-header {
+  flex-shrink: 0;
   padding: 10px 16px 8px;
   cursor: pointer;
   user-select: none;
@@ -337,11 +344,14 @@
 .map-bottom-count { font-size: 13px; font-weight: 700; }
 .map-bottom-header-row svg { opacity: 0.5; }
 
-/* Cards scroll */
+/* Cards scroll: ocupa el espacio restante del panel colapsado */
 .map-bottom-cards-scroll {
-  display: flex; gap: 12px;
-  padding: 4px 16px 90px;   /* 90px para que no tape el nav */
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  padding: 4px 16px 12px;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
@@ -398,8 +408,14 @@
 .map-bottom-panel.light .map-bottom-card-meta { color: rgba(0,0,0,0.4); }
 .map-bottom-card-meta span { display: flex; align-items: center; gap: 3px; }
 
-/* Expanded list — padding-bottom para que el contenido no quede detrás del nav */
-.map-bottom-list { overflow-y: auto; max-height: calc(100vh - 340px); padding: 0 16px 90px; }
+/* Lista expandida: scroll vertical con -webkit para iOS */
+.map-bottom-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px 16px;
+  /* height en lugar de max-height para scroll táctil correcto */
+}
 .map-list-item {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
