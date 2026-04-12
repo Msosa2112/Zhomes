@@ -131,6 +131,7 @@ export default function MapPageMobile() {
   const [aiLoading, setAiLoading]     = useState(false);
   const [aiFilters, setAiFilters]     = useState({});
   const [showSearch, setShowSearch]   = useState(false);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
   // ── Load properties ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -391,22 +392,58 @@ export default function MapPageMobile() {
         </button>
       </div>
 
-      {/* ── Type filter row ────────────────────────────────────────────── */}
-      <div className="map-filter-row types no-scrollbar">
-        {[
-          { key: 'all',          label: 'Todos' },
-          { key: 'Single Family',label: '🏡 Casas' },
-          { key: 'Condominium',  label: '🏢 Apto' },
-          { key: 'Townhouse',    label: '🏘️ Town' },
-          { key: 'Multifamily',  label: '🏗️ Multi' },
-          { key: 'Lots/Land',    label: '🌿 Lotes' },
-        ].map(({ key, label }) => (
+      {/* ── Type filter row: Todos / Casas / Apt / Lotes + ··· ────────────── */}
+      <div style={{ position: 'relative' }}>
+        <div className="map-filter-row types">
+          {[
+            { key: 'all',          label: 'Todos' },
+            { key: 'Single Family',label: '🏡 Casas' },
+            { key: 'Condominium',  label: '🏢 Apt' },
+            { key: 'Lots/Land',    label: '🌿 Lotes' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => { setTypeFilter(key); setShowTypeDropdown(false); }}
+              className={`map-pill sm ${
+                typeFilter === key ? 'active-type' :
+                (typeFilter === 'Townhouse' || typeFilter === 'Multifamily') && key === 'all' && typeFilter !== 'all' ? '' : ''
+              }`}
+            >{label}</button>
+          ))}
+
+          {/* Botón más ··· */}
           <button
-            key={key}
-            onClick={() => setTypeFilter(key)}
-            className={`map-pill sm ${typeFilter === key ? 'active-type' : ''}`}
-          >{label}</button>
-        ))}
+            onClick={() => setShowTypeDropdown(v => !v)}
+            className={`map-pill sm ${
+              (typeFilter === 'Townhouse' || typeFilter === 'Multifamily') ? 'active-type' : ''
+            }`}
+          >
+            {typeFilter === 'Townhouse' ? '🏘️ Town' : typeFilter === 'Multifamily' ? '🏗️ Multi' : '···'}
+          </button>
+        </div>
+
+        {/* Dropdown */}
+        {showTypeDropdown && (
+          <>
+            {/* Overlay para cerrar al tocar fuera */}
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 1199 }}
+              onClick={() => setShowTypeDropdown(false)}
+            />
+            <div className="map-type-dropdown">
+              {[
+                { key: 'Townhouse',  label: '🏘️ Townhouse' },
+                { key: 'Multifamily',label: '🏗️ Multifamiliar' },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => { setTypeFilter(key); setShowTypeDropdown(false); }}
+                  className={`map-type-dropdown-item ${typeFilter === key ? 'active' : ''}`}
+                >{label}</button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── Map (DeckGL + MapLibre) ────────────────────────────────────── */}
