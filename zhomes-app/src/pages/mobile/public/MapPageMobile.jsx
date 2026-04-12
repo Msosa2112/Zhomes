@@ -1,415 +1,563 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import DeckGL from 'deck.gl'
+import { WebMercatorViewport } from 'deck.gl'
+import { HeatmapLayer, HexagonLayer } from 'deck.gl'
+import Map, { Marker } from 'react-map-gl/maplibre'
+import maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import Supercluster from 'supercluster'
 import { useTheme } from '../../../context/ThemeContext'
 import { supabase } from '../../../lib/supabaseClient'
-import { Bed, Bath, Expand } from 'lucide-react'
-import MarkerClusterGroup from 'react-leaflet-cluster'
+import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader } from 'lucide-react'
 import './MapPageMobile.css'
 
-// Clean price pill marker — ZHomes active vs off-market differentiated
-const createPriceMarker = (price, status, exclusive) => {
-    const isOffMarket = status && status !== 'Active' && status !== 'Pending' && status !== 'Active Under Contract';
-    let priceText = `$${price?.toLocaleString() || '0'}`;
-    if (price >= 1000000) {
-        priceText = `$${(price / 1000000).toFixed(2).replace(/\.00$/, '').replace(/0$/, '')}M`;
-    } else if (price >= 1000) {
-        priceText = `$${Math.round(price / 1000)}K`;
-    }
-
-    if (exclusive) {
-        const bgColor = isOffMarket ? '#555' : '#1a1a1a';
-        const borderColor = isOffMarket ? '#999' : '#FFD700';
-        const dot = isOffMarket 
-            ? '' 
-            : `<span style="width:6px;height:6px;border-radius:50%;background:#4CAF50;flex-shrink:0;"></span>`;
-        const logoHtml = `<img src='/assets/logo/fav.png' style='width:15px;height:15px;border-radius:50%;flex-shrink:0;' />`;
-        
-        return L.divIcon({
-            html: `<div style="
-                background: ${bgColor}; color: #fff;
-                padding: 4px 8px 4px 4px; border-radius: 20px;
-                font-weight: 700; font-size: 11px; font-family: system-ui, sans-serif;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                border: 2px solid ${borderColor};
-                white-space: nowrap; line-height: 1;
-                display: inline-flex; align-items: center; gap: 4px;
-                opacity: ${isOffMarket ? '0.75' : '1'};
-            ">${logoHtml}${priceText}${dot}</div>`,
-            className: '',
-            iconSize: [0, 0],
-            iconAnchor: [0, 0],
-            popupAnchor: [0, -10],
-        });
-    }
-
-    // Non-ZHomes markers
-    const bgColor = isOffMarket ? '#718096' : '#222';
-    return L.divIcon({
-        html: `<div style="
-            background: ${bgColor}; color: #fff;
-            padding: 4px 8px; border-radius: 20px;
-            font-weight: 700; font-size: 11px; font-family: system-ui, sans-serif;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-            white-space: nowrap; text-align: center;
-            line-height: 1;
-            display: inline-flex; align-items: center; gap: 4px;
-            opacity: ${isOffMarket ? '0.7' : '1'};
-        ">${priceText}</div>`,
-        className: '',
-        iconSize: [0, 0],
-        iconAnchor: [0, 0],
-        popupAnchor: [0, -10],
-    });
-};
-
-function MapResizer() {
-    const map = useMap();
-    useEffect(() => {
-        const t = setTimeout(() => { map.invalidateSize(); }, 300);
-        return () => clearTimeout(t);
-    }, [map]);
-    return null;
+// ── Formatea precio ────────────────────────────────────────────────────────────
+function fmtPrice(p) {
+  if (!p) return '$0';
+  if (p >= 1000000) return `$${(p / 1000000).toFixed(1)}M`;
+  if (p >= 1000)    return `$${Math.round(p / 1000)}K`;
+  return `$${p.toLocaleString()}`;
 }
 
-export default function MapPageMobile() {
-    const navigate = useNavigate();
-    const { theme } = useTheme();
+// ── Estilos de mapa (CartoCDN via MapLibre raster) ────────────────────────────
+const getMapStyle = (dark) => ({
+  version: 8,
+  sources: {
+    carto: {
+      type: 'raster',
+      tiles: [dark
+        ? 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
+        : 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'],
+      tileSize: 256,
+      attribution: '© CartoDB © OpenStreetMap',
+    },
+  },
+  layers: [{ id: 'carto-tiles', type: 'raster', source: 'carto' }],
+});
 
-    const centerPosition = [38.2180, -85.6580];
+// ── Price Pill component (inline HTML marker) ─────────────────────────────────
+function PricePill({ prop, isSelected, onClick }) {
+  const isOffMarket = prop.status && !['Active', 'Pending', 'Active Under Contract'].includes(prop.status);
+  const bg      = isSelected ? '#E31E24' : (prop.exclusive ? '#1a1a1a' : (isOffMarket ? '#718096' : '#222'));
+  const border  = isSelected ? '#fff'    : (prop.exclusive ? '#FFD700' : 'transparent');
+  const opacity = isOffMarket ? 0.7 : 1;
 
-    const [filteredProps, setFilteredProps] = useState([]);
-    const [allMapProps, setAllMapProps] = useState({ active: [], exclusivas: [] });
-    const [statusFilter, setStatusFilter] = useState('All');
-    const [zhomesOnly, setZhomesOnly] = useState(false);
-    const [activeFilter, setActiveFilter] = useState('all');
+  return (
+    <div
+      onClick={onClick}
+      className={`map-price-pill ${isSelected ? 'active' : ''} ${prop.exclusive ? 'exclusive' : ''}`}
+      style={{ background: bg, borderColor: border, opacity }}
+    >
+      {prop.exclusive && <img src="/assets/logo/fav.png" alt="" className="map-pill-logo" />}
+      {fmtPrice(prop.price)}
+      {prop.exclusive && !isOffMarket && <span className="map-pill-dot" />}
+    </div>
+  );
+}
 
-    const [mapLoading, setMapLoading] = useState(true);
+// ── Cluster bubble ─────────────────────────────────────────────────────────────
+function ClusterBubble({ count, isZhomes, onClick }) {
+  const size = count >= 100 ? 50 : count >= 50 ? 44 : count >= 10 ? 38 : 32;
+  return (
+    <div onClick={onClick} className={`map-cluster-bubble ${isZhomes ? 'zhomes' : ''}`} style={{ width: size, height: size }}>
+      {isZhomes && <img src="/assets/logo/fav.png" alt="" style={{ width: 14, height: 14, borderRadius: '50%' }} />}
+      {count}
+    </div>
+  );
+}
 
-    // ── Load map properties: ZHomes always first ──
-    useEffect(() => {
-        async function loadMapProps() {
-            setMapLoading(true);
-            const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,photos,close_price,list_date';
-            const baseFilters = (q) => q
-                .not('lat', 'is', null)
-                .not('lng', 'is', null)
-                .neq('lat', 0)
-                .neq('lng', 0);
-
-            // Active: ZHomes first (no limit), then fill non-ZHomes
-            const [zhActive, nonActive, zhClosed, nonClosed] = await Promise.all([
-                baseFilters(supabase.from('mls_properties').select(cols))
-                    .eq('is_zhomes', true)
-                    .in('status', ['Active', 'Active Under Contract', 'Pending'])
-                    .order('list_date', { ascending: false })
-                    .order('price', { ascending: false }),
-
-                baseFilters(supabase.from('mls_properties').select(cols))
-                    .eq('is_zhomes', false)
-                    .in('status', ['Active', 'Active Under Contract', 'Pending'])
-                    .order('list_date', { ascending: false })
-                    .order('price', { ascending: false }),
-
-                baseFilters(supabase.from('mls_properties').select(cols))
-                    .eq('is_zhomes', true)
-                    .in('status', ['Exclusiva'])
-                    .order('list_date', { ascending: false })
-                    .order('price', { ascending: false }),
-            ]);
-
-            const fmt = p => ({
-                id: p.id,
-                address: p.address || '',
-                lat: p.lat, lng: p.lng,
-                price: p.price || p.close_price || 0,
-                closePrice: p.close_price || 0,
-                beds: p.beds || 0,
-                baths: Math.round(p.baths || 0),
-                sqft: p.sqft || 0,
-                type: p.property_type || '',
-                status: p.status || 'Active',
-                exclusive: p.is_zhomes || false,
-                exclusiva: p.status === 'Exclusiva', 
-                image: p.primary_photo || null,
-                images: p.photos || [p.primary_photo].filter(Boolean),
-            });
-
-            // ZHomes first in each group
-            const activeRows = [
-                ...(zhActive.data || []).map(fmt),
-                ...(nonActive.data || []).map(fmt),
-            ];
-            const exclusivasRows = [
-                ...(zhClosed.data || []).map(fmt)
-            ];
-
-            console.log(`🗺️  Map loaded: ${activeRows.length} active (${(zhActive.data || []).length} ZHomes), ${exclusivasRows.length} exclusivas`);
-            setAllMapProps({ active: activeRows, exclusivas: exclusivasRows });
-            setMapLoading(false);
-        }
-        loadMapProps();
-    }, []); // load once on mount
-
-    // ── Apply filters on top of loaded data ──
-    useEffect(() => {
-        const active = allMapProps.active;
-        const exclusivas = allMapProps.exclusivas;
-
-        // ZHomes are already first within each group — just pick the right pool
-        let combined = statusFilter === 'Active'
-            ? [...active]
-            : statusFilter === 'Exclusivas'
-                ? [...exclusivas]
-                : [...active, ...exclusivas];  // ZHomes active → non-ZHomes active → Exclusivas
-
-        if (zhomesOnly) {
-            combined = combined.filter(p => p.exclusive === true);
-        }
-
-        if (activeFilter !== 'all') {
-            combined = combined.filter(p => p.type === activeFilter);
-        }
-
-        console.log(`🔍 Map filter: ${combined.length} props (${combined.filter(p => p.exclusive).length} ZHomes)`);
-        setFilteredProps(combined);
-    }, [statusFilter, zhomesOnly, activeFilter, allMapProps]);
-
-
-    const tileUrl = theme === 'light' 
-        ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
-    return (
-        <div className={`mobile-map-page animate-fadeInUp ${theme}`} style={{ position: 'relative' }}>
-            {/* ── Filter pills — at top, clearly above the map ── */}
-            <div style={{
-                position: 'absolute', top: 60, left: 0, right: 0,
-                zIndex: 1001, display: 'flex', gap: 8, padding: '0 16px',
-                pointerEvents: 'none'
-            }}>
-                <div style={{ display: 'flex', gap: 6, pointerEvents: 'all' }}>
-                    {[
-                        { key: 'All',       label: '🏠 Todas' },
-                        { key: 'Active',    label: '🟢 En Venta' },
-                        { key: 'Exclusivas',label: '⭐ Exclusivas' },
-                    ].map(({ key, label }) => (
-                        <button
-                            key={key}
-                            onClick={() => setStatusFilter(key)}
-                            style={{
-                                padding: '8px 14px',
-                                borderRadius: 20,
-                                border: 'none',
-                                fontSize: 12,
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                                transition: 'all 0.2s',
-                                background: statusFilter === key
-                                    ? (key === 'Active' ? '#10B981' : key === 'Exclusivas' ? '#FFD700' : (theme === 'dark' ? '#fff' : '#1a1a1a'))
-                                    : (theme === 'dark' ? 'rgba(30,30,30,0.92)' : 'rgba(255,255,255,0.92)'),
-                                color: statusFilter === key
-                                    ? (key === 'Exclusivas' ? '#1a1a1a' : '#fff')
-                                    : (theme === 'dark' ? '#ccc' : '#444'),
-                                backdropFilter: 'blur(8px)',
-                            }}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* ZHomes toggle */}
-                <button
-                    onClick={() => setZhomesOnly(!zhomesOnly)}
-                    style={{
-                        marginLeft: 'auto',
-                        width: 38, height: 38, borderRadius: '50%',
-                        border: zhomesOnly ? '2.5px solid #FFD700' : '2px solid transparent',
-                        background: zhomesOnly ? '#1a1a1a' : (theme === 'dark' ? 'rgba(30,30,30,0.92)' : 'rgba(255,255,255,0.92)'),
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                        cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        padding: 0, overflow: 'hidden',
-                        backdropFilter: 'blur(8px)',
-                        transition: 'all 0.2s',
-                        pointerEvents: 'all',
-                        flexShrink: 0,
-                    }}
-                    title={zhomesOnly ? 'Mostrar todas' : 'Solo ZHomes'}
-                >
-                    <img
-                        src="/assets/logo/fav.png"
-                        alt="ZHomes"
-                        style={{ width: '22px', height: '22px', objectFit: 'contain' }}
-                    />
-                </button>
-            </div>
-
-            {/* Type Filter Row */}
-            <div style={{
-                position: 'absolute', top: 108, left: 0, right: 0,
-                zIndex: 1001, display: 'flex', gap: 6, padding: '0 16px',
-                overflowX: 'auto', pointerEvents: 'all',
-                scrollbarWidth: 'none', msOverflowStyle: 'none'
-            }} className="no-scrollbar">
-                {[
-                    { key: 'all', label: 'Todos los Tipos' },
-                    { key: 'Single Family', label: 'Casas' },
-                    { key: 'Condominium', label: 'Apartamentos' },
-                    { key: 'Townhouse', label: 'Townhouses' },
-                    { key: 'Multifamily', label: 'Multifamiliar' },
-                    { key: 'Lots/Land', label: 'Lotes / Terrenos' },
-                ].map(({ key, label }) => (
-                    <button
-                        key={key}
-                        onClick={() => setActiveFilter(key)}
-                        style={{
-                            padding: '6px 12px',
-                            borderRadius: '16px',
-                            border: '1px solid',
-                            borderColor: activeFilter === key ? '#E31E24' : (theme === 'dark' ? '#444' : '#ddd'),
-                            background: activeFilter === key ? '#E31E24' : (theme === 'dark' ? 'rgba(30,30,30,0.92)' : 'rgba(255,255,255,0.92)'),
-                            color: activeFilter === key ? '#fff' : (theme === 'dark' ? '#ccc' : '#444'),
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                            backdropFilter: 'blur(8px)',
-                            transition: 'all 0.2s',
-                            flexShrink: 0
-                        }}
-                    >
-                        {label}
-                    </button>
-                ))}
-            </div>
-
-
-            {/* Property count badge */}
-            <div style={{
-                position: 'absolute', top: '150px', left: '16px', zIndex: 1000,
-                background: theme === 'dark' ? 'rgba(34,34,34,0.95)' : 'rgba(255,255,255,0.95)',
-                color: theme === 'dark' ? '#fff' : '#222',
-                padding: '7px 14px',
-                borderRadius: '20px', fontSize: '12px', fontWeight: 700,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                backdropFilter: 'blur(8px)',
-                display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-                {mapLoading ? (
-                    <span style={{ opacity: 0.6 }}>Cargando...</span>
-                ) : (
-                    <>
-                        <span>{filteredProps.length} propiedades</span>
-                        {filteredProps.filter(p => p.exclusive).length > 0 && (
-                            <span style={{
-                                background: '#FFD700', color: '#1a1a1a',
-                                borderRadius: 10, padding: '2px 7px', fontSize: 11,
-                            }}>
-                                ⭐ {filteredProps.filter(p => p.exclusive).length} ZH
-                            </span>
-                        )}
-                    </>
-                )}
-            </div>
-
-            <MapContainer 
-                center={centerPosition} 
-                zoom={11} 
-                scrollWheelZoom={true} 
-                className="zhomes-map"
-                zoomControl={false}
-                attributionControl={false}
-            >
-                <MapResizer />
-                <TileLayer url={tileUrl} />
-                
-                <MarkerClusterGroup
-                    key={`${statusFilter}-${zhomesOnly}`}
-                    chunkedLoading
-                    maxClusterRadius={50}
-                    showCoverageOnHover={false}
-                    spiderfyOnMaxZoom={true}
-                    disableClusteringAtZoom={15}
-                    iconCreateFunction={(cluster) => {
-                        const count = cluster.getChildCount();
-                        let size = 36;
-                        let fontSize = 12;
-                        if (count >= 100) { size = 52; fontSize = 14; }
-                        else if (count >= 50) { size = 46; fontSize = 13; }
-                        else if (count >= 10) { size = 40; fontSize = 12; }
-
-                        if (zhomesOnly) {
-                            return L.divIcon({
-                                html: `<div style="
-                                    width: ${size + 8}px; height: ${size + 8}px;
-                                    border-radius: 50%;
-                                    background: #1a1a1a;
-                                    color: #fff;
-                                    display: flex; align-items: center; justify-content: center;
-                                    gap: 3px;
-                                    font-weight: 800; font-size: ${fontSize}px;
-                                    font-family: system-ui, -apple-system, sans-serif;
-                                    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-                                    border: 3px solid #FFD700;
-                                "><img src='/assets/logo/fav.png' style='width:16px;height:16px;border-radius:50%;'/>${count}</div>`,
-                                className: '',
-                                iconSize: [size + 8, size + 8],
-                                iconAnchor: [(size + 8) / 2, (size + 8) / 2],
-                            });
-                        }
-
-                        return L.divIcon({
-                            html: `<div style="
-                                width: ${size}px; height: ${size}px;
-                                border-radius: 50%;
-                                background: var(--zhomes-red, #E31E24);
-                                color: #fff;
-                                display: flex; align-items: center; justify-content: center;
-                                font-weight: 800; font-size: ${fontSize}px;
-                                font-family: system-ui, -apple-system, sans-serif;
-                                box-shadow: 0 3px 10px rgba(227, 30, 36, 0.4);
-                                border: 3px solid rgba(255,255,255,0.9);
-                            ">${count}</div>`,
-                            className: '',
-                            iconSize: [size, size],
-                            iconAnchor: [size / 2, size / 2],
-                        });
-                    }}
-                >
-                    {filteredProps.map(p => (
-                        <Marker 
-                            key={p.id} 
-                            position={[p.lat, p.lng]} 
-                            icon={createPriceMarker(p.price, p.status, p.exclusive)}
-                        >
-                            <Popup className="zhomes-map-popup" closeButton={false}>
-                                <div className="map-prop-content">
-                                    <img src={p.image || p.images?.[0]} alt={p.address} className="map-prop-img" />
-                                    <div className="map-prop-info">
-                                        <h3>{p.address}</h3>
-                                        <p className="map-price">${p.price?.toLocaleString()}</p>
-                                        <div className="map-meta">
-                                            <span><Bed size={14} /> {p.beds}</span>
-                                            <span><Bath size={14} /> {p.baths}</span>
-                                            <span><Expand size={14} /> {p.sqft} sqft</span>
-                                        </div>
-                                        <button className="map-btn" onClick={() => navigate(`/propiedades/${p.id}`)}>
-                                            Ver Detalles
-                                        </button>
-                                    </div>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
-                </MarkerClusterGroup>
-            </MapContainer>
+// ── PropCard del panel inferior ────────────────────────────────────────────────
+function PropCard({ prop, isActive, onClick, onView }) {
+  const fallback = '/assets/logo/fav.png';
+  return (
+    <div className={`map-bottom-card ${isActive ? 'active' : ''}`} onClick={onClick}>
+      <div className="map-bottom-card-img-wrap">
+        <img
+          src={prop.image || prop.images?.[0] || fallback}
+          alt={prop.address}
+          onError={e => { e.target.src = fallback; }}
+        />
+        {prop.exclusive && <span className="map-bottom-card-badge">⭐ ZH</span>}
+        {isActive && (
+          <button className="map-bottom-card-view" onClick={e => { e.stopPropagation(); onView(); }}>
+            Ver →
+          </button>
+        )}
+      </div>
+      <div className="map-bottom-card-body">
+        <p className="map-bottom-card-price">{fmtPrice(prop.price)}</p>
+        <p className="map-bottom-card-address">{prop.address}</p>
+        <div className="map-bottom-card-meta">
+          <span><Bed size={10} /> {prop.beds}</span>
+          <span><Bath size={10} /> {prop.baths}</span>
+          <span><Expand size={10} /> {prop.sqft?.toLocaleString()}</span>
         </div>
-    )
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+export default function MapPageMobile() {
+  const navigate   = useNavigate();
+  const { theme }  = useTheme();
+  const scrollRef  = useRef(null);
+
+  // ── ViewState (DeckGL controla el viewport) ──────────────────────────────
+  const [viewState, setViewState] = useState({
+    latitude: 38.2180, longitude: -85.6580,
+    zoom: 11, pitch: 0, bearing: 0,
+    transitionDuration: 300,
+  });
+
+  // ── Data & filters ────────────────────────────────────────────────────────
+  const [allMapProps, setAllMapProps]     = useState({ active: [], exclusivas: [] });
+  const [filteredProps, setFilteredProps] = useState([]);
+  const [statusFilter, setStatusFilter]   = useState('All');
+  const [zhomesOnly, setZhomesOnly]       = useState(false);
+  const [typeFilter, setTypeFilter]       = useState('all');
+  const [mapLoading, setMapLoading]       = useState(true);
+
+  // ── Map mode: standard | heat | hex ──────────────────────────────────────
+  const [mapMode, setMapMode] = useState('standard');
+
+  // ── Selection & panel ─────────────────────────────────────────────────────
+  const [selectedId, setSelectedId]       = useState(null);
+  const [panelExpanded, setPanelExpanded] = useState(false);
+
+  // ── AI Search ─────────────────────────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState('');
+  const [aiLoading, setAiLoading]     = useState(false);
+  const [aiFilters, setAiFilters]     = useState({});
+  const [showSearch, setShowSearch]   = useState(false);
+
+  // ── Load properties ───────────────────────────────────────────────────────
+  useEffect(() => {
+    async function load() {
+      setMapLoading(true);
+      const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,photos,close_price,list_date';
+      const base = (q) => q.not('lat','is',null).not('lng','is',null).neq('lat',0).neq('lng',0);
+
+      const [zhA, nonA, zhC] = await Promise.all([
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}),
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}),
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}),
+      ]);
+
+      const fmt = p => ({
+        id: p.id, address: p.address || '',
+        lat: p.lat, lng: p.lng,
+        price: p.price || p.close_price || 0,
+        beds: p.beds || 0, baths: Math.round(p.baths || 0),
+        sqft: p.sqft || 0, type: p.property_type || '',
+        status: p.status || 'Active',
+        exclusive: p.is_zhomes || false,
+        image: p.primary_photo || null,
+        images: p.photos || [p.primary_photo].filter(Boolean),
+      });
+
+      setAllMapProps({
+        active:    [...(zhA.data||[]).map(fmt), ...(nonA.data||[]).map(fmt)],
+        exclusivas:[...(zhC.data||[]).map(fmt)],
+      });
+      setMapLoading(false);
+    }
+    load();
+  }, []);
+
+  // ── Apply category + AI filters ───────────────────────────────────────────
+  useEffect(() => {
+    const { active, exclusivas } = allMapProps;
+    let combined =
+      statusFilter === 'Active'     ? [...active]     :
+      statusFilter === 'Exclusivas' ? [...exclusivas]  :
+      [...active, ...exclusivas];
+
+    if (zhomesOnly)          combined = combined.filter(p => p.exclusive);
+    if (typeFilter !== 'all') combined = combined.filter(p => p.type === typeFilter);
+
+    // AI filters
+    if (aiFilters.priceMax) combined = combined.filter(p => p.price <= aiFilters.priceMax);
+    if (aiFilters.priceMin) combined = combined.filter(p => p.price >= aiFilters.priceMin);
+    if (aiFilters.beds)     combined = combined.filter(p => p.beds >= aiFilters.beds);
+    if (aiFilters.baths)    combined = combined.filter(p => p.baths >= aiFilters.baths);
+    if (aiFilters.type)     combined = combined.filter(p => p.type === aiFilters.type);
+
+    setFilteredProps(combined);
+    setSelectedId(null);
+  }, [statusFilter, zhomesOnly, typeFilter, allMapProps, aiFilters]);
+
+  // ── Supercluster index ────────────────────────────────────────────────────
+  const clusterIndex = useMemo(() => {
+    if (!filteredProps.length) return null;
+    const idx = new Supercluster({ radius: 60, maxZoom: 15 });
+    idx.load(filteredProps.map(p => ({
+      type: 'Feature',
+      properties: { ...p },
+      geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
+    })));
+    return idx;
+  }, [filteredProps]);
+
+  // ── Compute clusters for current viewport ─────────────────────────────────
+  const clusters = useMemo(() => {
+    if (!clusterIndex || mapMode !== 'standard') return [];
+    try {
+      const vp   = new WebMercatorViewport(viewState);
+      const bnds = vp.getBounds();
+      const zoom = Math.max(0, Math.min(20, Math.round(viewState.zoom)));
+      return clusterIndex.getClusters(bnds, zoom);
+    } catch { return []; }
+  }, [clusterIndex, viewState, mapMode]);
+
+  // ── Props visible in viewport (for bottom panel) ──────────────────────────
+  const visibleProps = useMemo(() => {
+    try {
+      const vp = new WebMercatorViewport(viewState);
+      const [w, s, e, n] = vp.getBounds();
+      const visible = filteredProps.filter(p =>
+        p.lat >= s && p.lat <= n && p.lng >= w && p.lng <= e
+      );
+      visible.sort((a,b) => (b.exclusive?1:0)-(a.exclusive?1:0) || b.price-a.price);
+      return visible.slice(0, 40);
+    } catch { return filteredProps.slice(0, 20); }
+  }, [filteredProps, viewState]);
+
+  // ── deck.gl layers ────────────────────────────────────────────────────────
+  const deckLayers = useMemo(() => {
+    const dark = theme === 'dark';
+    if (mapMode === 'heat') {
+      return [new HeatmapLayer({
+        id: 'heatmap',
+        data: filteredProps,
+        getPosition:  d => [d.lng, d.lat],
+        getWeight:    d => Math.min(d.price / 1000, 500),
+        radiusPixels: 70,
+        intensity:    1.2,
+        threshold:    0.03,
+        colorRange: [
+          [0,   0,   255, 0  ],
+          [0,   128, 255, 100],
+          [0,   255, 128, 150],
+          [255, 255, 0,   200],
+          [255, 128, 0,   230],
+          [255, 0,   0,   255],
+        ],
+      })];
+    }
+    if (mapMode === 'hex') {
+      return [new HexagonLayer({
+        id: 'hexagon',
+        data: filteredProps,
+        getPosition:         d => [d.lng, d.lat],
+        getElevationWeight:  d => d.price / 1000,
+        getColorWeight:      d => d.price,
+        elevationScale:      8,
+        extruded:            true,
+        radius:              400,
+        coverage:            0.85,
+        upperPercentile:     100,
+        colorRange: [
+          [26,  117, 255],
+          [0,   200, 150],
+          [80,  220, 60 ],
+          [255, 230, 0  ],
+          [255, 140, 0  ],
+          [220, 30,  30 ],
+        ],
+        pickable:   true,
+        opacity:    0.85,
+        material:   { ambient: 0.64, diffuse: 0.6, shininess: 100 },
+      })];
+    }
+    return [];
+  }, [mapMode, filteredProps, theme]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleModeChange = useCallback((mode) => {
+    setMapMode(mode);
+    setSelectedId(null);
+    // 3D tilt for hex mode
+    setViewState(v => ({ ...v, pitch: mode === 'hex' ? 45 : 0, transitionDuration: 600 }));
+  }, []);
+
+  const handleSelectProp = useCallback((prop) => {
+    setSelectedId(prev => prev === prop.id ? null : prop.id);
+    if (prop.lat && prop.lng) {
+      setViewState(v => ({
+        ...v,
+        latitude: prop.lat, longitude: prop.lng,
+        zoom: Math.max(v.zoom, 14),
+        transitionDuration: 500,
+      }));
+    }
+    // Scroll card into view
+    setTimeout(() => {
+      const el = document.getElementById(`map-card-${prop.id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }, 100);
+  }, []);
+
+  const handleClusterClick = useCallback((cluster) => {
+    if (!clusterIndex) return;
+    const expansionZoom = Math.min(clusterIndex.getClusterExpansionZoom(cluster.id), 15);
+    const [lng, lat] = cluster.geometry.coordinates;
+    setViewState(v => ({ ...v, latitude: lat, longitude: lng, zoom: expansionZoom, transitionDuration: 400 }));
+  }, [clusterIndex]);
+
+  // ── AI Search ─────────────────────────────────────────────────────────────
+  const handleAiSearch = useCallback(async () => {
+    if (!searchQuery.trim()) { setAiFilters({}); return; }
+    setAiLoading(true);
+    try {
+      const res  = await fetch('/api/map-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+      const data = await res.json();
+      setAiFilters(data.filters || {});
+    } catch { setAiFilters({}); }
+    setAiLoading(false);
+  }, [searchQuery]);
+
+  const clearAiSearch = useCallback(() => {
+    setSearchQuery('');
+    setAiFilters({});
+    setShowSearch(false);
+  }, []);
+
+  // ── Map style ─────────────────────────────────────────────────────────────
+  const mapStyle = useMemo(() => getMapStyle(theme === 'dark'), [theme]);
+
+  const hasAiFilters = Object.keys(aiFilters).length > 0;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  return (
+    <div className={`mobile-map-page ${theme}`}>
+
+      {/* ── AI Search Bar ──────────────────────────────────────────────── */}
+      {showSearch ? (
+        <div className="map-ai-bar">
+          <Search size={16} className="map-ai-icon" />
+          <input
+            autoFocus
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAiSearch()}
+            placeholder="Ej: casa tranquila con 3 cuartos, menos de $280k..."
+            className="map-ai-input"
+          />
+          {aiLoading
+            ? <Loader size={16} className="map-ai-spin" />
+            : searchQuery
+              ? <button onClick={clearAiSearch} className="map-ai-clear"><X size={16} /></button>
+              : <button onClick={() => setShowSearch(false)} className="map-ai-clear"><X size={16} /></button>
+          }
+          {!aiLoading && searchQuery && (
+            <button onClick={handleAiSearch} className="map-ai-go">Buscar</button>
+          )}
+        </div>
+      ) : (
+        <button
+          className={`map-ai-trigger ${hasAiFilters ? 'active' : ''}`}
+          onClick={() => setShowSearch(true)}
+        >
+          <Search size={14} />
+          {hasAiFilters ? `"${searchQuery}"` : 'Describe tu hogar ideal...'}
+          {hasAiFilters && <span className="map-ai-active-dot" />}
+        </button>
+      )}
+
+      {/* ── Status filter pills ────────────────────────────────────────── */}
+      <div className="map-filter-row top">
+        {[
+          { key: 'All',        label: '🏠 Todas' },
+          { key: 'Active',     label: '🟢 En Venta' },
+          { key: 'Exclusivas', label: '⭐ Exclusivas' },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setStatusFilter(key)}
+            className={`map-pill ${statusFilter === key ? `active-${key.toLowerCase()}` : ''}`}
+          >{label}</button>
+        ))}
+        <button
+          onClick={() => setZhomesOnly(!zhomesOnly)}
+          className={`map-pill-icon ${zhomesOnly ? 'active-zhomes' : ''}`}
+        >
+          <img src="/assets/logo/fav.png" alt="ZHomes" style={{ width: 20, height: 20, objectFit: 'contain' }} />
+        </button>
+      </div>
+
+      {/* ── Type filter row ────────────────────────────────────────────── */}
+      <div className="map-filter-row types no-scrollbar">
+        {[
+          { key: 'all',          label: 'Todos' },
+          { key: 'Single Family',label: '🏡 Casas' },
+          { key: 'Condominium',  label: '🏢 Apto' },
+          { key: 'Townhouse',    label: '🏘️ Town' },
+          { key: 'Multifamily',  label: '🏗️ Multi' },
+          { key: 'Lots/Land',    label: '🌿 Lotes' },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setTypeFilter(key)}
+            className={`map-pill sm ${typeFilter === key ? 'active-type' : ''}`}
+          >{label}</button>
+        ))}
+      </div>
+
+      {/* ── Map (DeckGL + MapLibre) ────────────────────────────────────── */}
+      <DeckGL
+        viewState={viewState}
+        controller={{ touchRotate: false, dragRotate: false }}
+        layers={deckLayers}
+        onViewStateChange={({ viewState: vs }) => setViewState({ ...vs })}
+        className="zhomes-map"
+        getCursor={() => 'grab'}
+      >
+        <Map mapStyle={mapStyle} mapLib={maplibregl} reuseMaps>
+
+          {/* Clusters + Price Pills (standard mode) */}
+          {mapMode === 'standard' && clusters.map((c, i) => {
+            const [lng, lat] = c.geometry.coordinates;
+            const isCluster  = !!c.properties.cluster;
+            const key        = isCluster ? `cl-${c.id}` : `pp-${c.properties.id}`;
+
+            if (isCluster) {
+              const hasZH = clusterIndex?.getLeaves(c.id, 1)?.[0]?.properties?.exclusive;
+              return (
+                <Marker key={key} latitude={lat} longitude={lng} anchor="center">
+                  <ClusterBubble
+                    count={c.properties.point_count}
+                    isZhomes={hasZH}
+                    onClick={() => handleClusterClick(c)}
+                  />
+                </Marker>
+              );
+            }
+
+            const prop = c.properties;
+            return (
+              <Marker key={key} latitude={lat} longitude={lng} anchor="center">
+                <PricePill
+                  prop={prop}
+                  isSelected={selectedId === prop.id}
+                  onClick={() => handleSelectProp(prop)}
+                />
+              </Marker>
+            );
+          })}
+
+        </Map>
+      </DeckGL>
+
+      {/* ── Mode toggle (mapa / calor / 3D) ───────────────────────────── */}
+      <div className="map-mode-controls">
+        <button onClick={() => handleModeChange('standard')} className={`map-mode-btn ${mapMode === 'standard' ? 'active' : ''}`} title="Vista normal">
+          <MapIcon size={16} />
+        </button>
+        <button onClick={() => handleModeChange('heat')} className={`map-mode-btn ${mapMode === 'heat' ? 'active' : ''}`} title="Mapa de calor de precios">
+          <Flame size={16} />
+        </button>
+        <button onClick={() => handleModeChange('hex')} className={`map-mode-btn ${mapMode === 'hex' ? 'active' : ''}`} title="Vista 3D de precios por zona">
+          <Hexagon size={16} />
+        </button>
+      </div>
+
+      {/* ── Mode indicator label ───────────────────────────────────────── */}
+      {mapMode !== 'standard' && (
+        <div className="map-mode-label">
+          {mapMode === 'heat' ? '🌡️ Densidad de precios' : '🐝 Precios 3D por zona'}
+        </div>
+      )}
+
+      {/* ── Prop count badge ───────────────────────────────────────────── */}
+      <div className="map-count-badge">
+        {mapLoading ? 'Cargando...' : (
+          <>
+            <span>{mapMode === 'standard' ? visibleProps.length : filteredProps.length} prop{(visibleProps.length !== 1) ? 's' : ''}</span>
+            {hasAiFilters && <span className="map-count-ai">🤖 IA</span>}
+            {filteredProps.filter(p => p.exclusive).length > 0 && !zhomesOnly && (
+              <span className="map-count-zh">⭐ {filteredProps.filter(p => p.exclusive).length}</span>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ══ BOTTOM AIRBNB PANEL ═══════════════════════════════════════════ */}
+      <div className={`map-bottom-panel ${panelExpanded ? 'expanded' : ''} ${theme}`}>
+
+        {/* Handle */}
+        <div className="map-bottom-header" onClick={() => setPanelExpanded(p => !p)}>
+          <div className="map-bottom-handle" />
+          <div className="map-bottom-header-row">
+            <span className="map-bottom-count">
+              {mapLoading ? 'Cargando...' : (
+                panelExpanded
+                  ? `${visibleProps.length} propiedades en esta área`
+                  : `Ver ${visibleProps.length} propiedades →`
+              )}
+            </span>
+            {panelExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </div>
+        </div>
+
+        {/* Horizontal card scroll (collapsed) */}
+        {!panelExpanded && (
+          <div className="map-bottom-cards-scroll no-scrollbar" ref={scrollRef}>
+            {visibleProps.length === 0 && !mapLoading ? (
+              <div className="map-bottom-empty-inline">Mueve el mapa para ver propiedades</div>
+            ) : visibleProps.map(p => (
+              <div key={p.id} id={`map-card-${p.id}`}>
+                <PropCard
+                  prop={p}
+                  isActive={selectedId === p.id}
+                  onClick={() => handleSelectProp(p)}
+                  onView={() => navigate(`/propiedades/${p.id}`)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Expanded list */}
+        {panelExpanded && (
+          <div className="map-bottom-list no-scrollbar">
+            {visibleProps.length === 0 ? (
+              <div className="map-bottom-empty">
+                <p>No hay propiedades en esta área.</p>
+                <p style={{ opacity: 0.5, fontSize: 13 }}>Aleja el mapa para ver más</p>
+              </div>
+            ) : visibleProps.map(p => (
+              <div
+                key={p.id}
+                className={`map-list-item ${selectedId === p.id ? 'active' : ''}`}
+                onClick={() => { handleSelectProp(p); setPanelExpanded(false); }}
+              >
+                <img
+                  src={p.image || p.images?.[0] || '/assets/logo/fav.png'}
+                  alt={p.address}
+                  className="map-list-img"
+                  onError={e => { e.target.src = '/assets/logo/fav.png'; }}
+                />
+                <div className="map-list-info">
+                  <p className="map-list-price">{fmtPrice(p.price)} {p.exclusive && '⭐'}</p>
+                  <p className="map-list-address">{p.address}</p>
+                  <p className="map-list-meta">{p.beds} rec · {p.baths} baños · {p.sqft?.toLocaleString()} ft²</p>
+                </div>
+                <button
+                  className="map-list-btn"
+                  onClick={e => { e.stopPropagation(); navigate(`/propiedades/${p.id}`); }}
+                >Ver</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
 }

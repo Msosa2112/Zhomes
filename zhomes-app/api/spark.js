@@ -1,6 +1,14 @@
 // api/spark.js
 // Vercel Serverless Function Proxy for Spark API (Flexmls)
 
+import { Redis } from '@upstash/redis';
+
+// Inicialidad de forma segura con fallback para evitar crasheos si faltan vars
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
+});
+
 export default async function handler(req, res) {
   // Solo permitimos peticiones GET para evitar payloads indeseados si no es necesario
   if (req.method !== 'GET') {
@@ -24,18 +32,29 @@ export default async function handler(req, res) {
 
   // Reso Web API v3 Endpoint provisto
   const sparkBaseUrl = 'https://replication.sparkapi.com/Version/3/Reso/OData';
+  const searchParams = new URLSearchParams(queryParams).toString();
   
   try {
-    // Aquí iría el flujo de autenticación si Spark requiere un accessToken 
-    // previo via OAuth2 (Client Credentials flow). 
-    // Para simplificar, asumimos que estamos usando un API Token directo 
-    // o enviando Key/Secret por headers según la doc de Spark.
-    // 
-    // NOTA: Si Spark usa OAuth2, se debe hacer un POST a /oauth2/token primero
-    // y almacenar el token en memoria (ej. variable global o redis) con expiración.
-    
-    // El endpoint normalmente será algo como 'Property' para listados
-    const response = await fetch(`${sparkBaseUrl}/${endpoint}?` + new URLSearchParams(queryParams), {
+    // ── UPSTASH CACHE CHECK ──────────────────────────────────────────────────
+    // Generar llave única basada en el endpoint y los parámetros exactos
+    const cacheKey = `spark_cache:${endpoint}?${searchParams}`;
+
+    // Validar si tenemos las credenciales de Upstash cargadas
+    if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+        // En Upstash REST, GET ya parsea el JSON por nosotros.
+        const cachedData = await redis.get(cacheKey);
+        
+        if (cachedData) {
+            console.log(`[Upstash] Cache HIT - Expidiendo instantáneo: ${cacheKey}`); 
+            // Ponemos headers de control para saber que viene de Upstash
+            res.setHeader('X-Cache', 'HIT');
+            return res.status(200).json(cachedData); 
+        }
+        console.log(`[Upstash] Cache MISS - Consultando Spark: ${cacheKey}`);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const response = await fetch(`${sparkBaseUrl}/${endpoint}?` + searchParams, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${SPARK_API_KEY}`,
@@ -51,6 +70,15 @@ export default async function handler(req, res) {
         details: data
       });
     }
+
+    // ── UPSTASH CACHE SAVE ───────────────────────────────────────────────────
+    if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN && data) {
+        // Guardar en Redis y expirar en 1 HORA (3600 segundos)
+        await redis.set(cacheKey, data, { ex: 3600 });
+        console.log(`[Upstash] Cache SAVED - Llave expira en 1H: ${cacheKey}`);
+    }
+    res.setHeader('X-Cache', 'MISS');
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Retorna la data limpia al frontend
     res.status(200).json(data);

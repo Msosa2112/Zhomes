@@ -57,7 +57,8 @@
       "position": [
         680,
         -20
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -67,7 +68,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"Pre-aprobación completada\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;\\\">    <div style=\\\"background-color: #000; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\\\">        <img src=\\\"https://zhomesapp.com/assets/logo/LOGO%20HRZNTL%201.png\\\" alt=\\\"ZHomes Real Estate\\\" style=\\\"max-height: 60px;\\\">    </div>    <div style=\\\"padding: 30px; background-color: #f9f9f9; border-left: 1px solid #ddd; border-right: 1px solid #ddd;\\\">                <h2 style=\\\"color: #111;\\\">¡Paso Completado: Pre-Aprobado!</h2>        <p>Hola,</p>        <p>Queremos felicitarte porque has sido pre-aprobado exitosamente en nuestro sistema bancario/crediticio.</p>        <p>El siguiente paso es avanzar con una Oferta Formal sobre la propiedad que deseas adquirir. Tu Realtor está a tu disposición para guiarte en este importante paso.</p>    </div>    <div style=\\\"padding: 20px 30px; background-color: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; font-size: 11px; color: #555;\\\">        <p style=\\\"margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: #000;\\\">            Gilbert Zaldivar | Principal Broker<br>            Kentucky, Indiana & Florida        </p>        <p style=\\\"margin: 0 0 10px 0;\\\">            Direct-(502)641-6623<br>            Office-(502)909-5990<br>            Fax-(606)649-0006<br>            <a href=\\\"mailto:gilbert@zhomesre.com\\\" style=\\\"color: #0066cc;\\\">gilbert@zhomesre.com</a><br>            <a href=\\\"http://www.zhomesre.com\\\" style=\\\"color: #0066cc;\\\">www.zhomesre.com</a><br>            7520 Preston Hwy<br>            Louisville, KY 40219        </p>        <p style=\\\"margin: 0; color: #888; text-align: justify; font-size: 10px;\\\">            <strong style=\\\"color: #cc0000;\\\">Disclaimer:</strong> Periodically, our buyers, sellers, potential buyers, potential sellers, customers, and-or potential customers ask us for names and contact information about lenders, handymen, home inspectors, appraisers and such. It is strongly suggested that the recipient of such information use the information in conjunction with their own research about the suggested contact instead of relying solely upon us. The names provided have done a satisfactory job for us in the past, but by no means it's a blanket endorsement of the person/company. It is also important for the reader to know that we, ZHomes Real Estate or the sender of this e-mail, are not a mortgage lender; therefore, you should contact a lender to understand mortgage products and your eligibility for such products.        </p>    </div></div>\"\n}",
         "options": {}
       },
       "name": "Email Preapproved Cliente",
@@ -76,7 +77,13 @@
       "position": [
         680,
         140
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w2zdinv0bNrZyUSN",
+          "name": "Header Auth account 2"
+        }
+      }
     },
     {
       "parameters": {
@@ -90,7 +97,8 @@
       "position": [
         680,
         320
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -100,7 +108,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"Oferta Formal Sometida\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;\\\">    <div style=\\\"background-color: #000; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\\\">        <img src=\\\"https://zhomesapp.com/assets/logo/LOGO%20HRZNTL%201.png\\\" alt=\\\"ZHomes Real Estate\\\" style=\\\"max-height: 60px;\\\">    </div>    <div style=\\\"padding: 30px; background-color: #f9f9f9; border-left: 1px solid #ddd; border-right: 1px solid #ddd;\\\">                <h2 style=\\\"color: #111;\\\">Tu oferta está en revisión</h2>        <p>Hola,</p>        <p>Confirmamos que tu oferta formal ha sido registrada y enviada con éxito.</p>        <p>Estudiaremos todos los documentos y te mantendremos informado sobre la evolución y posibles contraofertas.</p>    </div>    <div style=\\\"padding: 20px 30px; background-color: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; font-size: 11px; color: #555;\\\">        <p style=\\\"margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: #000;\\\">            Gilbert Zaldivar | Principal Broker<br>            Kentucky, Indiana & Florida        </p>        <p style=\\\"margin: 0 0 10px 0;\\\">            Direct-(502)641-6623<br>            Office-(502)909-5990<br>            Fax-(606)649-0006<br>            <a href=\\\"mailto:gilbert@zhomesre.com\\\" style=\\\"color: #0066cc;\\\">gilbert@zhomesre.com</a><br>            <a href=\\\"http://www.zhomesre.com\\\" style=\\\"color: #0066cc;\\\">www.zhomesre.com</a><br>            7520 Preston Hwy<br>            Louisville, KY 40219        </p>        <p style=\\\"margin: 0; color: #888; text-align: justify; font-size: 10px;\\\">            <strong style=\\\"color: #cc0000;\\\">Disclaimer:</strong> Periodically, our buyers, sellers, potential buyers, potential sellers, customers, and-or potential customers ask us for names and contact information about lenders, handymen, home inspectors, appraisers and such. It is strongly suggested that the recipient of such information use the information in conjunction with their own research about the suggested contact instead of relying solely upon us. The names provided have done a satisfactory job for us in the past, but by no means it's a blanket endorsement of the person/company. It is also important for the reader to know that we, ZHomes Real Estate or the sender of this e-mail, are not a mortgage lender; therefore, you should contact a lender to understand mortgage products and your eligibility for such products.        </p>    </div></div>\"\n}",
         "options": {}
       },
       "name": "Email Offer Cliente",
@@ -109,7 +117,13 @@
       "position": [
         680,
         480
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w2zdinv0bNrZyUSN",
+          "name": "Header Auth account 2"
+        }
+      }
     },
     {
       "parameters": {
@@ -123,7 +137,8 @@
       "position": [
         680,
         660
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -133,7 +148,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"\"],\n  \"subject\": \"\",\n  \"html\": \"\"\n}",
+        "jsonBody": "={\n  \"from\": \"ZHomes Real Estate <info@zhomesapp.com>\",\n  \"to\": [\"{{$json.body.record.email}}\"],\n  \"subject\": \"¡Felicidades, preparate para el cierre!\",\n  \"html\": \"<div style=\\\"font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;\\\">    <div style=\\\"background-color: #000; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\\\">        <img src=\\\"https://zhomesapp.com/assets/logo/LOGO%20HRZNTL%201.png\\\" alt=\\\"ZHomes Real Estate\\\" style=\\\"max-height: 60px;\\\">    </div>    <div style=\\\"padding: 30px; background-color: #f9f9f9; border-left: 1px solid #ddd; border-right: 1px solid #ddd;\\\">                <h2 style=\\\"color: #111;\\\">¡Felicidades, llegaste al Cierre!</h2>        <p>Hola,</p>        <p>Es un enorme placer informarte que tu trámite ha avanzado a la etapa Final de Cierre.</p>        <p>Agradecemos tu confianza en ZHomes Real Estate. Si tienes alguna duda sobre la firma final, contacta a tu Realtor inmediatamente.</p>    </div>    <div style=\\\"padding: 20px 30px; background-color: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px; font-size: 11px; color: #555;\\\">        <p style=\\\"margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: #000;\\\">            Gilbert Zaldivar | Principal Broker<br>            Kentucky, Indiana & Florida        </p>        <p style=\\\"margin: 0 0 10px 0;\\\">            Direct-(502)641-6623<br>            Office-(502)909-5990<br>            Fax-(606)649-0006<br>            <a href=\\\"mailto:gilbert@zhomesre.com\\\" style=\\\"color: #0066cc;\\\">gilbert@zhomesre.com</a><br>            <a href=\\\"http://www.zhomesre.com\\\" style=\\\"color: #0066cc;\\\">www.zhomesre.com</a><br>            7520 Preston Hwy<br>            Louisville, KY 40219        </p>        <p style=\\\"margin: 0; color: #888; text-align: justify; font-size: 10px;\\\">            <strong style=\\\"color: #cc0000;\\\">Disclaimer:</strong> Periodically, our buyers, sellers, potential buyers, potential sellers, customers, and-or potential customers ask us for names and contact information about lenders, handymen, home inspectors, appraisers and such. It is strongly suggested that the recipient of such information use the information in conjunction with their own research about the suggested contact instead of relying solely upon us. The names provided have done a satisfactory job for us in the past, but by no means it's a blanket endorsement of the person/company. It is also important for the reader to know that we, ZHomes Real Estate or the sender of this e-mail, are not a mortgage lender; therefore, you should contact a lender to understand mortgage products and your eligibility for such products.        </p>    </div></div>\"\n}",
         "options": {}
       },
       "name": "Email Closing Cliente",
@@ -142,7 +157,13 @@
       "position": [
         680,
         820
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w2zdinv0bNrZyUSN",
+          "name": "Header Auth account 2"
+        }
+      }
     }
   ],
   "connections": {

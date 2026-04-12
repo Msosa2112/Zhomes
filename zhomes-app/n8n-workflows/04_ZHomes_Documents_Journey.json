@@ -53,7 +53,8 @@
       "position": [
         680,
         100
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -72,7 +73,13 @@
       "position": [
         680,
         260
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w2zdinv0bNrZyUSN",
+          "name": "Header Auth account 2"
+        }
+      }
     },
     {
       "parameters": {
@@ -86,7 +93,8 @@
       "position": [
         680,
         460
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -105,7 +113,13 @@
       "position": [
         680,
         620
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "w2zdinv0bNrZyUSN",
+          "name": "Header Auth account 2"
+        }
+      }
     }
   ],
   "connections": {
