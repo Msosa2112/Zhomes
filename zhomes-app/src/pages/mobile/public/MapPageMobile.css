@@ -31,7 +31,7 @@
   top: 58px;
   left: 16px;
   right: 16px;
-  z-index: 1100;
+  z-index: 1250;   /* siempre visible encima de todo */
   display: flex;
   align-items: center;
   gap: 8px;
@@ -68,7 +68,7 @@
 .map-ai-bar {
   position: absolute;
   top: 58px; left: 16px; right: 16px;
-  z-index: 1100;
+  z-index: 1250;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -123,7 +123,7 @@
    ══════════════════════════════════════════════════════════════ */
 .map-filter-row {
   position: absolute;
-  z-index: 1050;
+  z-index: 1200;   /* siempre encima del panel expandido */
   display: flex;
   gap: 6px;
   left: 0; right: 0;
@@ -287,7 +287,7 @@
    ══════════════════════════════════════════════════════════════ */
 .map-bottom-panel {
   position: absolute;
-  bottom: 74px; /* over nav bar */
+  bottom: 0;              /* toca el nav bar de abajo */
   left: 0; right: 0;
   z-index: 1080;
   border-radius: 20px 20px 0 0;
@@ -296,7 +296,7 @@
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
-  max-height: 38vh;
+  max-height: calc(38vh + 74px);  /* compensa el espacio del nav */
   overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
   animation: slideUpPanel 0.4s cubic-bezier(0.4,0,0.2,1) both;
@@ -306,7 +306,8 @@
   border-top: 1px solid rgba(0,0,0,0.07);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
 }
-.map-bottom-panel.expanded { max-height: 68vh; overflow: hidden; }
+/* Expandido: llena pantalla hasta los filtros, sin taparlos */
+.map-bottom-panel.expanded { max-height: calc(100vh - 188px); overflow: hidden; }
 
 @keyframes slideUpPanel {
   from { transform: translateY(100%); opacity: 0; }
@@ -338,7 +339,7 @@
 /* Cards scroll */
 .map-bottom-cards-scroll {
   display: flex; gap: 12px;
-  padding: 4px 16px 16px;
+  padding: 4px 16px 90px;   /* 90px para que no tape el nav */
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -396,8 +397,8 @@
 .map-bottom-panel.light .map-bottom-card-meta { color: rgba(0,0,0,0.4); }
 .map-bottom-card-meta span { display: flex; align-items: center; gap: 3px; }
 
-/* Expanded list */
-.map-bottom-list { overflow-y: auto; max-height: calc(68vh - 80px); padding: 0 16px 80px; }
+/* Expanded list — padding-bottom para que el contenido no quede detrás del nav */
+.map-bottom-list { overflow-y: auto; max-height: calc(100vh - 340px); padding: 0 16px 90px; }
 .map-list-item {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
