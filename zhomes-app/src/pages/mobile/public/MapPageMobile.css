@@ -289,7 +289,7 @@
    ══════════════════════════════════════════════════════════════ */
 .map-bottom-panel {
   position: absolute;
-  bottom: 74px;           /* sobre el nav bar */
+  bottom: 0;              /* fondo llega hasta el borde de la pantalla */
   left: 0; right: 0;
   z-index: 1080;
   border-radius: 20px 20px 0 0;
@@ -298,11 +298,10 @@
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255,255,255,0.08);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
-  /* Flex column: header sticky + content scrollable */
   display: flex;
   flex-direction: column;
-  /* Colapsado: altura cómoda para ver 1 fila de cards */
-  height: 220px;
+  /* altura colapsada: header + cards + padding que evita nav bar */
+  height: calc(220px + 77px);   /* 77px = nav bar 74px + 3px gap */
   transition: height 0.38s cubic-bezier(0.4,0,0.2,1);
   animation: slideUpPanel 0.4s cubic-bezier(0.4,0,0.2,1) both;
   overflow: hidden;
@@ -313,7 +312,7 @@
   box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
 }
 /* Expandido: llena pantalla sin tocar los filtros */
-.map-bottom-panel.expanded { height: calc(100vh - 220px); }
+.map-bottom-panel.expanded { height: calc(100vh - 148px); }  /* 148 = filter area height */
 
 @keyframes slideUpPanel {
   from { transform: translateY(100%); opacity: 0; }
@@ -344,12 +343,12 @@
 .map-bottom-count { font-size: 13px; font-weight: 700; }
 .map-bottom-header-row svg { opacity: 0.5; }
 
-/* Cards scroll: ocupa el espacio restante del panel colapsado */
+/* Cards scroll: flex:1 + padding-bottom para que las cards queden 3px sobre el nav */
 .map-bottom-cards-scroll {
   flex: 1;
   display: flex;
   gap: 12px;
-  padding: 4px 16px 12px;
+  padding: 4px 16px 77px;  /* 74px nav + 3px gap = 77px */
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -413,8 +412,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 16px 16px;
-  /* height en lugar de max-height para scroll táctil correcto */
+  padding: 0 16px 77px;   /* 74px nav + 3px gap = 77px */
 }
 .map-list-item {
   display: flex; align-items: center; gap: 12px;
