@@ -155,11 +155,10 @@
 }
 .mobile-map-page.light .map-pill { background: rgba(255,255,255,0.92); color: #444; }
 .map-pill.sm { padding: 6px 11px; font-size: 11px; }
-.map-pill.active-all       { background: #1a1a1a; color: #fff; }
-.map-pill.active-active    { background: #10B981; color: #fff; }
-.map-pill.active-exclusivas{ background: #FFD700; color: #1a1a1a; }
-.map-pill.active-type      { background: #E31E24; color: #fff; }
-.mobile-map-page.light .map-pill.active-all { background: #1a1a1a; color: #fff; }
+.map-pill.active-all, .mobile-map-page.light .map-pill.active-all { background: #1a1a1a; color: #fff; }
+.map-pill.active-active, .mobile-map-page.light .map-pill.active-active { background: #10B981; color: #fff; }
+.map-pill.active-exclusivas, .mobile-map-page.light .map-pill.active-exclusivas { background: #FFD700; color: #1a1a1a; }
+.map-pill.active-type, .mobile-map-page.light .map-pill.active-type { background: #E31E24; color: #fff; }
 
 .map-pill-icon {
   width: 36px; height: 36px; border-radius: 50%; border: 2px solid transparent;
@@ -170,7 +169,7 @@
   margin-left: auto;
 }
 .mobile-map-page.light .map-pill-icon { background: rgba(255,255,255,0.92); }
-.map-pill-icon.active-zhomes { border-color: #FFD700; background: #1a1a1a; }
+.map-pill-icon.active-zhomes, .mobile-map-page.light .map-pill-icon.active-zhomes { border-color: #FFD700; background: #1a1a1a; }
 
 /* ══════════════════════════════════════════════════════════════
    MODE CONTROLS
