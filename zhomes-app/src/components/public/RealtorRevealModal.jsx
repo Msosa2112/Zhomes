@@ -359,6 +359,26 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                             <div className="marvel-watermark-text">CHOOSE AGENT</div>
                         </div>
 
+                        {/* Global back arrow to close the modal */}
+                        <button 
+                            onClick={handleFullClose}
+                            style={{
+                                position: 'absolute',
+                                top: '24px',
+                                left: '20px',
+                                zIndex: 100,
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'white',
+                                display: viewMode === 'detail' ? 'none' : 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '8px'
+                            }}
+                        >
+                            <ChevronLeft size={36} />
+                        </button>
+
                         {/* Eliminated the bottom text and arrows based on user request */}
 
                         <div
