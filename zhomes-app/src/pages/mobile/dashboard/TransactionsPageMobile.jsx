@@ -1,68 +1,283 @@
-import { FileText, Search, Filter, Eye, ChevronRight, MapPin } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { FileText, Search, Filter, MapPin, Loader2, AlertCircle,
+         RefreshCw, Plus, ChevronRight, Calendar, AlertTriangle } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../../lib/supabaseClient'
+import { TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
 import './TransactionsPageMobile.css'
 
-const TRANSACTIONS = [
-    { id: 1, address: '8708 Denise Dr', city: 'Louisville, KY', price: '$425,000', status: 'listed', statusLabel: 'Listada', realtor: 'Jessica H.', avatar: '/assets/agents/Jessica Hernandez.png', docs: '3/7', date: '2025-01-15' },
-    { id: 2, address: '4411 Lambert Rd', city: 'Louisville, KY', price: '$289,000', status: 'listed', statusLabel: 'Listada', realtor: 'Judith G.', avatar: '/assets/agents/Judith Gonzalez.png', docs: '2/7', date: '2025-01-20' },
-    { id: 3, address: '2215 Tremont Dr', city: 'Louisville, KY', price: '$567,000', status: 'under_contract', statusLabel: 'Bajo Contrato', realtor: 'Miriam C.', avatar: '/assets/agents/Miriam Castano.png', docs: '5/7', date: '2024-12-18' },
-    { id: 4, address: '9320 Galene Dr', city: 'Louisville, KY', price: '$199,000', status: 'inspection', statusLabel: 'Inspección', realtor: 'Yusleidy P.', avatar: '/assets/agents/Yusleidy Perez.png', docs: '4/7', date: '2024-12-10' },
-    { id: 5, address: '1850 Lakewood Hills', city: 'Prospect, KY', price: '$715,000', status: 'pre_close', statusLabel: 'Pre-Cierre', realtor: 'Jessica H.', avatar: '/assets/agents/Jessica Hernandez.png', docs: '6/7', date: '2024-11-22' },
+const ALL_STATUSES = [
+  { value: '',              label: 'Todas' },
+  { value: 'under_contract', label: 'Bajo Contrato' },
+  { value: 'inspection',    label: 'Inspección' },
+  { value: 'appraisal',     label: 'Tasación' },
+  { value: 'pre_close',     label: 'Pre-Cierre' },
+  { value: 'closed',        label: 'Cerradas' },
+  { value: 'cancelled',     label: 'Canceladas' },
 ]
 
-const statusColors = {
-    listed: '#3B82F6',
-    under_contract: '#8B5CF6',
-    inspection: '#F59E0B',
-    pre_close: '#10B981',
+const formatPrice = (p) => {
+  if (!p) return 'N/A'
+  return `$${Number(p).toLocaleString()}`
+}
+
+const formatDate = (d) => {
+  if (!d) return '—'
+  return new Date(d).toLocaleDateString('es-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+const daysUntil = (d) => {
+  if (!d) return null
+  return Math.ceil((new Date(d) - new Date()) / 86400000)
 }
 
 export default function TransactionsPageMobile() {
+  const navigate = useNavigate()
+
+  const [transactions, setTransactions] = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState(null)
+  const [search, setSearch]             = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [showFilters, setShowFilters]   = useState(false)
+
+  const loadTransactions = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) throw new Error('No autenticado')
+
+      const params = new URLSearchParams({ limit: 100 })
+      if (filterStatus) params.append('status', filterStatus)
+
+      const res = await fetch(`/api/tc-transactions?${params}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) throw new Error(`Error ${res.status}`)
+      const json = await res.json()
+      setTransactions(json.transactions || [])
+    } catch (err) {
+      console.error('[TransactionsPage] Error:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [filterStatus])
+
+  useEffect(() => { loadTransactions() }, [loadTransactions])
+
+  // Filtrado por búsqueda local
+  const filtered = transactions.filter((t) => {
+    if (!search) return true
+    const q = search.toLowerCase()
     return (
-        <div className="mobile-tx-page">
-            <div className="mobile-tx-header">
-                <h1>Transacciones</h1>
-                <p>Gestiona todas las activas y cerradas.</p>
-
-                <div className="mobile-tx-actions">
-                    <div className="mobile-search-mock">
-                        <Search size={18} />
-                        <input type="text" placeholder="Buscar dirección..." />
-                    </div>
-                    <button className="mobile-filter-btn"><Filter size={18} /></button>
-                </div>
-            </div>
-
-            <div className="mobile-tx-list">
-                {TRANSACTIONS.map((t, i) => (
-                    <Link to="/dashboard/deal" key={t.id} className="mobile-tx-card animate-fadeInUp" style={{ animationDelay: `${0.05 * i}s` }}>
-                        <div className="tx-card-top">
-                            <div>
-                                <h3>{t.address}</h3>
-                                <span className="tx-city"><MapPin size={12} /> {t.city}</span>
-                            </div>
-                            <span className="tx-price">{t.price}</span>
-                        </div>
-
-                        <div className="tx-card-mid">
-                            <span className="tx-status" style={{ background: `${statusColors[t.status]}20`, color: statusColors[t.status] }}>
-                                {t.statusLabel}
-                            </span>
-                            <div className="tx-docs">Docs: <strong>{t.docs}</strong></div>
-                        </div>
-
-                        <div className="tx-card-bottom">
-                            <div className="tx-realtor">
-                                <img src={t.avatar} alt="" />
-                                <span>{t.realtor}</span>
-                            </div>
-                            <span className="tx-date">{t.date}</span>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-            {/* Espaciador nativo */}
-            <div style={{ height: '90px' }} />
-        </div>
+      t.address?.toLowerCase().includes(q) ||
+      t.client_name?.toLowerCase().includes(q) ||
+      t.city?.toLowerCase().includes(q)
     )
+  })
+
+  // Agrupar por status para mostrar sección "Alertas"
+  const urgentDeals = filtered.filter((t) => {
+    const days = daysUntil(t.closing_date)
+    return days !== null && days <= 7 && days >= 0 && t.status !== 'closed'
+  })
+
+  return (
+    <div className="mobile-tx-page">
+      <div className="mobile-tx-header">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h1>Transacciones</h1>
+            <p>
+              {loading ? 'Cargando...' : `${filtered.length} transacción${filtered.length !== 1 ? 'es' : ''} · ${transactions.filter(t => t.status !== 'closed' && t.status !== 'cancelled').length} activas`}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={loadTransactions}
+              style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '8px', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            >
+              <RefreshCw size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div className="mobile-tx-actions">
+          <div className="mobile-search-mock">
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Buscar dirección, cliente..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <button
+            className="mobile-filter-btn"
+            onClick={() => setShowFilters((v) => !v)}
+            style={{ background: filterStatus ? 'var(--accent-primary)' : undefined, color: filterStatus ? '#fff' : undefined }}
+          >
+            <Filter size={18} />
+          </button>
+        </div>
+
+        {/* Panel de filtros */}
+        {showFilters && (
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border-subtle)' }}>
+            {ALL_STATUSES.map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => { setFilterStatus(value); setShowFilters(false) }}
+                style={{
+                  fontSize: '12px', padding: '5px 12px', borderRadius: '20px', cursor: 'pointer',
+                  border: `1px solid ${filterStatus === value ? 'var(--accent-primary)' : 'var(--border-subtle)'}`,
+                  background: filterStatus === value ? 'var(--accent-primary)' : 'var(--bg-card)',
+                  color: filterStatus === value ? '#fff' : 'var(--text-secondary)',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Estado: cargando */}
+      {loading && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 20px', gap: '12px' }}>
+          <Loader2 size={32} style={{ color: 'var(--accent-primary)', animation: 'spin 1s linear infinite' }} />
+          <p style={{ fontSize: '14px', color: 'var(--text-tertiary)', margin: 0 }}>Cargando transacciones...</p>
+        </div>
+      )}
+
+      {/* Estado: error */}
+      {error && !loading && (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <AlertCircle size={32} color="#ef4444" />
+          <p style={{ color: '#ef4444', fontSize: '14px', marginTop: '8px' }}>{error}</p>
+          <button onClick={loadTransactions} style={{ marginTop: '12px', padding: '8px 20px', borderRadius: '8px', background: 'var(--accent-primary)', color: '#fff', border: 'none', fontSize: '14px', cursor: 'pointer' }}>
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="mobile-tx-list">
+
+          {/* Alertas de cierre inminente */}
+          {urgentDeals.length > 0 && (
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 4px 8px', color: '#f59e0b' }}>
+                <AlertTriangle size={14} />
+                <span style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Cierres en los próximos 7 días
+                </span>
+              </div>
+              {urgentDeals.map((t, i) => (
+                <TxCard key={t.id} tx={t} index={i} urgent onClick={() => navigate('/dashboard/deal')} />
+              ))}
+              <div style={{ height: '12px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '20px' }} />
+            </div>
+          )}
+
+          {filtered.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <FileText size={40} color="var(--text-tertiary)" style={{ marginBottom: '12px' }} />
+              <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
+                {search ? 'Sin resultados para tu búsqueda.' : 'No hay transacciones aún.'}
+              </p>
+            </div>
+          )}
+
+          {filtered
+            .filter((t) => !urgentDeals.includes(t))
+            .map((t, i) => (
+              <TxCard key={t.id} tx={t} index={i} onClick={() => navigate('/dashboard/deal')} />
+            ))}
+        </div>
+      )}
+
+      <div style={{ height: '90px' }} />
+    </div>
+  )
+}
+
+// ── Sub-componente TxCard ───────────────────────────────────────────────────
+function TxCard({ tx, index, onClick, urgent = false }) {
+  const txStatus    = TRANSACTION_STATUSES[tx.status]
+  const statusColor = txStatus?.color || '#6b7280'
+  const metrics     = tx._metrics || {}
+  const daysLeft    = daysUntil(tx.closing_date)
+
+  return (
+    <button
+      className={`mobile-tx-card animate-fadeInUp`}
+      style={{
+        animationDelay: `${0.04 * index}s`,
+        border: `1px solid ${urgent ? '#f59e0b40' : 'var(--border-subtle)'}`,
+        background: urgent ? 'rgba(245,158,11,0.04)' : 'var(--bg-card)',
+        width: '100%', textAlign: 'left', cursor: 'pointer',
+      }}
+      onClick={onClick}
+    >
+      <div className="tx-card-top">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h3 style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {tx.address}
+          </h3>
+          <span className="tx-city"><MapPin size={12} /> {tx.city}</span>
+        </div>
+        <span className="tx-price">{formatPrice(tx.price)}</span>
+      </div>
+
+      <div className="tx-card-mid">
+        <span className="tx-status" style={{ background: `${statusColor}20`, color: statusColor }}>
+          {txStatus?.label || tx.status}
+        </span>
+        <div className="tx-docs">
+          Docs: <strong>{metrics.docs_completed || 0}/{metrics.docs_total || 0}</strong>
+        </div>
+        {metrics.alerts_count > 0 && (
+          <span style={{ fontSize: '11px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', padding: '2px 8px', borderRadius: '20px' }}>
+            {metrics.alerts_count} alerta{metrics.alerts_count !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
+      <div className="tx-card-bottom">
+        <div className="tx-realtor">
+          <span>
+            {tx.client_name ? `Cliente: ${tx.client_name}` : '—'}
+          </span>
+        </div>
+        <span className="tx-date" style={{ color: daysLeft !== null && daysLeft <= 7 ? '#f59e0b' : undefined }}>
+          {tx.closing_date ? (
+            <>
+              <Calendar size={11} style={{ marginRight: '3px', verticalAlign: 'middle' }} />
+              {daysLeft !== null && daysLeft >= 0
+                ? `${daysLeft}d para cierre`
+                : formatDate(tx.closing_date)}
+            </>
+          ) : '—'}
+        </span>
+      </div>
+
+      {/* Barra de progreso de docs */}
+      {metrics.docs_total > 0 && (
+        <div style={{ marginTop: '10px' }}>
+          <div style={{ height: '3px', background: 'var(--border-subtle)', borderRadius: '2px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: '2px',
+              width: `${metrics.docs_progress || 0}%`,
+              background: (metrics.docs_progress || 0) >= 100 ? '#10b981' : statusColor,
+              transition: 'width 0.4s ease',
+            }} />
+          </div>
+        </div>
+      )}
+    </button>
+  )
 }
