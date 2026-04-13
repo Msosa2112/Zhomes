@@ -35,15 +35,15 @@ const containerStyle = `
   border: 1px solid #222; border-radius: 12px; overflow: hidden;
 `
 const headerStyle = `
-  background: linear-gradient(135deg, #c0392b 0%, #8b0000 100%);
+  background: #18191a;
   padding: 32px 32px 24px; text-align: center;
 `
 const bodyStyle = `
   padding: 32px;
 `
 const footerStyle = `
-  background: #0a0a0a; padding: 20px 32px; 
-  text-align: center; color: #555; font-size: 12px;
+  background: #0a0a0a; padding: 24px 32px; 
+  text-align: center; color: #666; font-size: 12px;
   border-top: 1px solid #222;
 `
 const badgeStyle = (color) => `
@@ -64,16 +64,20 @@ const btnStyle = (color='#c0392b') => `
 
 function logo() {
   return `<div style="text-align:center;">
-    <img src="https://zhomesapp.com/assets/logo/zhomes-horizontal.png" alt="ZHomes" style="height:36px; display:inline-block; vertical-align:middle; margin-bottom:8px;" />
+    <img src="https://zhomesapp.com/assets/logo/zhomes-logo-main.png" alt="ZHomes" style="height:44px; display:inline-block; vertical-align:middle; margin-bottom:8px;" />
     <div style="color:#ff6b6b;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Transaction Coordinator</div>
   </div>`
 }
 
 function footer() {
   return `<div style="${footerStyle}">
-    <p>ZHomes Real Estate · Louisville, KY</p>
-    <p>Este es un correo automático del sistema TC. No responder directamente.</p>
-    <p style="color:#333;font-size:10px;">© 2025 ZHomes. Todos los derechos reservados.</p>
+    <div style="margin-bottom: 12px; color: #888;">
+      <strong style="color:#aaa;">ZHomes Real Estate</strong><br>
+      Louisville, Kentucky<br>
+      <a href="https://zhomesapp.com" style="color:#ff6b6b;text-decoration:none;">zhomesapp.com</a> • <a href="mailto:tc@zhomesapp.com" style="color:#ff6b6b;text-decoration:none;">tc@zhomesapp.com</a>
+    </div>
+    <p style="margin: 4px 0;">Este es un mensaje automatizado. Por favor, no respondas a esta dirección.</p>
+    <p style="color:#444;font-size:11px;margin-top:16px;">© ${new Date().getFullYear()} ZHomes. Todos los derechos reservados.</p>
   </div>`
 }
 
