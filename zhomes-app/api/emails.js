@@ -21,7 +21,7 @@
  */
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL     = 'ZHomes TC <tc@zhomesapp.com>'
+const FROM_EMAIL     = 'ZHomes TC <info@zhomesapp.com>'
 const BROKER_EMAIL   = 'zhomesreapp@gmail.com'
 
 // ── Templates HTML ────────────────────────────────────────────────────────────
@@ -71,12 +71,23 @@ function logo() {
 
 function footer() {
   return `<div style="${footerStyle}">
-    <div style="margin-bottom: 12px; color: #888;">
-      <strong style="color:#aaa;">ZHomes Real Estate</strong><br>
-      Louisville, Kentucky<br>
-      <a href="https://zhomesapp.com" style="color:#ff6b6b;text-decoration:none;">zhomesapp.com</a> • <a href="mailto:tc@zhomesapp.com" style="color:#ff6b6b;text-decoration:none;">tc@zhomesapp.com</a>
+    <div style="font-size:12px; margin-bottom:16px;">
+      <strong style="color:#ddd;">Gilbert Zaldivar | Principal Broker</strong><br/>
+      Kentucky, Indiana & Florida
     </div>
-    <p style="margin: 4px 0;">Este es un mensaje automatizado. Por favor, no respondas a esta dirección.</p>
+    <div style="margin-bottom: 24px; color: #aaa; text-align: left; display: inline-block; font-size: 11px; line-height: 1.6;">
+      Direct-(502)641-6623<br>
+      Office-(502)909-5990<br>
+      Fax- (502)649-0006<br>
+      <a href="mailto:info@zhomesapp.com" style="color:#3498db;text-decoration:none;">info@zhomesapp.com</a><br>
+      <a href="https://www.zhomesre.com" style="color:#3498db;text-decoration:none;">www.zhomesre.com</a><br>
+      7520 Preston Hwy<br>
+      Louisville, KY 40219
+    </div>
+    <div style="font-size: 9px; line-height: 1.5; color: #5a7b97; text-align: justify; margin-top: 16px;">
+      <strong style="color: #c0392b;">Disclaimer:</strong> Periodically, our buyers, sellers, potential buyers, potential sellers, customers, and-or potential customers ask us for names and contact information about lenders, handymen, home inspectors, appraisers and such. It is strongly suggested that the recipient of such information use the information in conjunction with their own research about the suggested contact instead of relying solely upon us. The names provided have done a satisfactory job for us in the past, but by no means it's a blanket endorsement of the person/company. It is also important for the reader to know that we, ZHomes Real Estate or the sender of this e-mail, are not a mortgage lender; therefore, you should contact a lender to understand mortgage products and your eligibility for such products.
+    </div>
+    <p style="margin: 24px 0 4px 0;">Este es un mensaje automatizado. Por favor, no respondas a esta dirección.</p>
     <p style="color:#444;font-size:11px;margin-top:16px;">© ${new Date().getFullYear()} ZHomes. Todos los derechos reservados.</p>
   </div>`
 }
