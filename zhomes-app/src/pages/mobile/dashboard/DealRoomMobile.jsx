@@ -192,7 +192,7 @@ export default function DealRoomMobile() {
 
       // 1. Subir a Storage
       const { error: storageError } = await supabase.storage
-        .from('tc-documents')
+        .from('tc_documents')
         .upload(path, file, { upsert: true })
 
       if (storageError) throw storageError

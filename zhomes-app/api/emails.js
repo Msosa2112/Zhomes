@@ -118,7 +118,7 @@ function footer() {
 
 // ── Template: Broker — Nuevo Lead ─────────────────────────────────────────────
 function tmpl_broker_new_lead({ agentName, clientName, propertyAddress, action, timestamp }) {
-  const actionLabel = action === 'saved' ? '${lucide('heart', '#e74c3c')} Guardó' : action === 'viewed' ? '${lucide('eye', '#3498db')} Vio' : '${lucide('clipboard', '#f1c40f')} Contactó'
+  const actionLabel = action === 'saved' ? `${lucide('heart', '#e74c3c')} Guardó` : action === 'viewed' ? `${lucide('eye', '#3498db')} Vio` : `${lucide('clipboard', '#f1c40f')} Contactó`
   const time = timestamp ? new Date(timestamp).toLocaleString('es-US', { timeZone: 'America/Louisville' }) : new Date().toLocaleString('es-US')
 
   return {
@@ -148,7 +148,7 @@ function tmpl_broker_new_lead({ agentName, clientName, propertyAddress, action, 
 // ── Template: Broker — Alerta de Deadline ─────────────────────────────────────
 function tmpl_broker_deadline_alert({ address, deadlineLabel, daysLeft, clientName, realtorName }) {
   const urgencyColor = daysLeft === 1 ? '#e74c3c' : daysLeft <= 3 ? '#f39c12' : '#3498db'
-  const urgencyText  = daysLeft === 1 ? '${lucide('alert', '#e74c3c')} URGENTE — 1 DÍA' : daysLeft <= 3 ? '${lucide('alert', '#f39c12')} PRÓXIMO' : '${lucide('clipboard', '#3498db')} RECORDATORIO'
+  const urgencyText  = daysLeft === 1 ? `${lucide('alert', '#e74c3c')} URGENTE — 1 DÍA` : daysLeft <= 3 ? `${lucide('alert', '#f39c12')} PRÓXIMO` : `${lucide('clipboard', '#3498db')} RECORDATORIO`
 
   return {
     subject: `${daysLeft === 1 ? 'URGENTE ' : 'Deadline '}: ${deadlineLabel} → ${address}`,
