@@ -5,7 +5,7 @@ import {
   Loader2, ChevronRight, XCircle, RefreshCw, Plus, Calendar,
   AlertCircle, ChevronDown
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { DOCUMENT_CATEGORIES, DOCUMENT_STATUSES, TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
 import './DealRoomMobile.css'
@@ -57,6 +57,8 @@ export default function DealRoomMobile() {
   const [isGeneratingBrief, setIsGeneratingBrief] = useState(false)
   const [briefData, setBriefData]                 = useState(null)
 
+  const { id: urlDealId } = useParams()
+
   // ── Cargar lista de deals ───────────────────────────────────────────────────
   const loadDeals = useCallback(async () => {
     setLoading(true)
@@ -80,7 +82,13 @@ export default function DealRoomMobile() {
     }
   }, [])
 
-  useEffect(() => { loadDeals() }, [loadDeals])
+  useEffect(() => {
+    if (urlDealId) {
+      loadDealDetail(urlDealId)
+    } else {
+      loadDeals()
+    }
+  }, [loadDeals, urlDealId])
 
   // ── Cargar deal seleccionado ────────────────────────────────────────────────
   const loadDealDetail = useCallback(async (dealId) => {

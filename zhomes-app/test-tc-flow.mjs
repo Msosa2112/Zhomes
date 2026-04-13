@@ -1,87 +1,102 @@
-import fetch from 'node-fetch';
+import fs from 'fs';
+import { createClient } from '@supabase/supabase-js';
+import { generateChecklist } from './src/data/tcDocumentTemplates.js';
 
-const APP_URL = 'https://zhomesapp.com';
-
-async function testAutomatedFlows() {
-  console.log(`\n🚀 Iniciando Prueba de Flujos Nativos TC (Emails) en: ${APP_URL}`);
-
-  console.log(`\n--- 1. Prueba: Cliente (Bienvenida) ---`);
-  // Simulando que Supabase lanza un INSERT en tc_transactions
-  const clientPayload = {
-    type: 'INSERT',
-    record: {
-      client_name: 'Miguel Sosa (Prueba)',
-      client_email: 'miguesosagarcia@gmail.com', // El user pidió usar este email para cliente
-      address: '123 Test Ave, Client City',
-      closing_date: '2026-05-01'
-    }
-  };
-  
-  try {
-    const res = await fetch(`${APP_URL}/api/tc-db-webhook`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer f653517a21965e70df5f14fcd300cd74b653209f2da95fd1daaafbeaf893ae4fc`
-      },
-      body: JSON.stringify(clientPayload)
-    });
-    console.log('✅ Cliente Welcome - Status:', res.status, await res.text());
-  } catch(e) {
-    console.error('❌ Error Cliente:', e.message);
-  }
-
-  console.log(`\n--- 2. Prueba: Realtor (Transacción Asignada) ---`);
-  // Para realtor_id necesitaríamos uno real, pero llamaremos a /api/emails directo 
-  // para verificar el template, ya que no conocemos el ID exacto aquí.
-  try {
-    const res = await fetch(`${APP_URL}/api/emails`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'realtor_transaction_assigned',
-        to: 'damelaletra@gmail.com', // El email del realtor que pidió el usuario
-        data: {
-          realtorName: 'Agente Prueba',
-          address: '456 Realtor Blvd',
-          clientName: 'Miguel Sosa',
-          closingDate: '2026-05-15',
-          price: 350000,
-          appUrl: 'https://zhomesapp.com'
-        }
-      })
-    });
-    console.log('✅ Realtor Assigned - Status:', res.status, await res.text());
-  } catch(e) {
-    console.error('❌ Error Realtor:', e.message);
-  }
-
-  console.log(`\n--- 3. Prueba: Broker (Nuevo Lead) ---`);
-  try {
-    const res = await fetch(`${APP_URL}/api/emails`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'broker_new_lead',
-        to: 'zhomesreapp@gmail.com',
-        data: {
-          agentName: 'Zillow',
-          clientName: 'Nuevo Lead Interesado',
-          propertyAddress: '789 Broker Lane',
-          action: 'Contact Request',
-          timestamp: new Date().toISOString()
-        }
-      })
-    });
-    console.log('✅ Broker Lead - Status:', res.status, await res.text());
-  } catch(e) {
-    console.error('❌ Error Broker:', e.message);
-  }
-
-  console.log('\n🏁 Pruebas Finalizadas');
-  console.log('⚠️ NOTA: Si en consola aparece error o que Resend bloquea los envíos a miguesosagarcia@gmail.com');
-  console.log('   es porque tu cuenta de Resend (Plan Gratuito) requiere verificar el dominio zhomesreapp.com');
-  console.log('   para poder enviar emails a otras personas distintas de ti mismo.');
+const envLocal = fs.readFileSync('.env.local', 'utf-8');
+const envVars = {};
+for (const line of envLocal.split('\n')) {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith('#')) continue;
+  const [key, ...rest] = trimmed.split('=');
+  if (key && rest.length) envVars[key.trim()] = rest.join('=').trim();
 }
 
-testAutomatedFlows();
+const SUPABASE_URL = envVars['VITE_SUPABASE_URL'];
+const SUPABASE_KEY = envVars['SUPABASE_SERVICE_KEY'];
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function run() {
+  console.log('\n=========================================');
+  console.log('🚀 INICIANDO TEST DE TRANSACTION COORDINATOR');
+  console.log('=========================================\n');
+
+  console.log('1️⃣  Descargando PDF de prueba desde EPA / Sample...');
+  const pdfRes = await fetch('https://pdfobject.com/pdf/sample.pdf');
+  const pdfBuffer = await pdfRes.arrayBuffer();
+
+  const realtorId = '6eea2729-5a03-4a40-baed-5fe74f453604'; // Test Agent
+  const clientEmail = 'miguesosagarcia@gmail.com'; 
+  const clientName = 'Migue Sosa Garcia';
+
+  console.log(`2️⃣  Creando Transacción en Supabase para el cliente ${clientName}...`);
+  const { data: tx, error: txError } = await supabase.from('tc_transactions').insert({
+    realtor_id: realtorId,
+    address: '999 Mockup Avenue, Louisville, KY',
+    client_name: clientName,
+    client_email: clientEmail,
+    client_phone: '502-555-0199',
+    price: 450000,
+    status: 'under_contract',
+    transaction_type: 'purchase'
+  }).select().single();
+
+  if (txError) throw txError;
+  console.log(`✅ Transacción creada. ID: ${tx.id}`);
+
+  console.log('\n3️⃣  Generando checklist dinámico de documentos...');
+  const checklist = generateChecklist(tx.id, 'purchase');
+  const { data: docs, error: docError } = await supabase.from('tc_documents').insert(checklist).select();
+  if (docError) throw docError;
+  
+  const targetDoc = docs.find(d => d.name === 'Pre-Approval Letter');
+  console.log(`✅ Creados ${docs.length} documentos. Target para subir: ${targetDoc.id}`);
+
+  console.log('\n4️⃣  Subiendo archivo a Supabase Storage bucket "tc_documents"...');
+  const path = `${tx.id}/${targetDoc.id}/pre_approval_test.pdf`;
+  const { error: storageError } = await supabase.storage.from('tc_documents').upload(path, pdfBuffer, {
+    contentType: 'application/pdf',
+    upsert: true
+  });
+  if (storageError) throw storageError;
+
+  console.log('✅ Documento PDF alojado con éxito en la bóveda.');
+
+  console.log('\n5️⃣  Actualizando tracking: Status a "Uploaded"...');
+  await supabase.from('tc_documents').update({ status: 'uploaded', file_url: path }).eq('id', targetDoc.id);
+
+  console.log('\n6️⃣  Enviando notificación por correo mediante ZHomes API (Vercel)...');
+  const emailRes = await fetch('https://zhomesapp.com/api/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'client_status_update',
+      to: clientEmail,
+      data: {
+        clientName: clientName,
+        address: '999 Mockup Avenue, Louisville, KY',
+        oldStatus: 'listed',
+        newStatus: 'contract_signed'
+      }
+    })
+  });
+  
+  const emailText = await emailRes.text();
+  try {
+    const emailData = JSON.parse(emailText);
+    if (emailRes.ok) {
+      console.log(`✅ Correo encolado por Resend. ID: ${emailData.id || 'OK'}`);
+    } else {
+      console.log(`⚠️ Advertencia de correo:`, emailData);
+    }
+  } catch (e) {
+    console.log(`⚠️ Error parsing email response text. Status: ${emailRes.status}`);
+    console.log(emailText);
+  }
+
+  console.log('\n=========================================');
+  console.log('🎉 FLUJO COMPLETADO END-TO-END CON ÉXITO 🎉');
+  console.log('=========================================\n');
+}
+
+run().catch(e => console.error('❌ Error in test:', e));

@@ -63,6 +63,10 @@ export default function UserProfileMobile() {
 
     // Edit Profile State
     const [showEditProfile, setShowEditProfile] = useState(false)
+
+    // Transaction State
+    const [activeTransaction, setActiveTransaction] = useState(null)
+    const [transactionDocs, setTransactionDocs] = useState([])
     const [editName, setEditName] = useState('')
     const [editPhone, setEditPhone] = useState('')
     const [savingProfile, setSavingProfile] = useState(false)
@@ -160,6 +164,27 @@ export default function UserProfileMobile() {
                     .eq('user_id', currentUser.id)
                     .order('created_at', { ascending: false })
                 if (locationsData) setSavedLocations(locationsData)
+
+                // Load active TC transactions
+                const { data: txData, error: txError } = await supabase
+                    .from('tc_transactions')
+                    .select('id, address, status, contract_date, closing_date')
+                    .eq('client_email', currentUser.email)
+                    .order('created_at', { ascending: false })
+
+                if (txData && txData.length > 0) {
+                    const activeTx = txData[0];
+                    setActiveTransaction(activeTx);
+
+                    const { data: docsData } = await supabase
+                        .from('tc_documents')
+                        .select('id, name, status, required, category')
+                        .eq('transaction_id', activeTx.id)
+                    
+                    if (docsData) {
+                        setTransactionDocs(docsData)
+                    }
+                }
             }
             setLoadingLocations(false)
         }
@@ -346,35 +371,63 @@ export default function UserProfileMobile() {
                     </div>
                 </div>
 
-                {/* Offer Vault */}
-                <div className="up-vault-card" onClick={() => setShowVaultModal(true)}>
-                    <div className="up-vault-header">
-                        <Shield size={20} color={vaultComplete ? '#10b981' : '#8B5CF6'} />
-                        <h3>Bóveda de Ofertas</h3>
-                        {vaultComplete
-                            ? <span className="up-vault-status complete">Listo </span>
-                            : <span className="up-vault-status pending">{Object.values(vaultDocs).filter(Boolean).length}/3</span>
-                        }
-                    </div>
-                    <p className="up-vault-desc">Sube tus documentos una vez y haz ofertas con un solo toque.</p>
-                    <div className="up-vault-slots">
-                        <div className={`up-vault-slot ${vaultDocs.preApproval ? 'done' : ''}`}>
-                            {vaultDocs.preApproval ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                            Pre-aprobación
+                {/* TC Transaction / Deal Room OR Offer Vault */}
+                {activeTransaction ? (
+                    <div className="up-vault-card" onClick={() => navigate(`/mi-transaccion/${activeTransaction.id}`)}>
+                        <div className="up-vault-header">
+                            <Shield size={20} color={'#10b981'} />
+                            <h3>{activeTransaction.address}</h3>
+                            <span className="up-vault-status complete">Activa </span>
                         </div>
-                        <div className={`up-vault-slot ${vaultDocs.govId ? 'done' : ''}`}>
-                            {vaultDocs.govId ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                            ID Oficial
+                        <p className="up-vault-desc">Tu transacción en curso. Haz clic para ver progreso, documentos y chatear con nuestro equipo legal.</p>
+                        <div className="up-vault-slots" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div className={`up-vault-slot done`}>
+                                <CheckCircle2 size={14} color="#10b981"/> 
+                                {transactionDocs.filter(d => d.status === 'approved').length} de {transactionDocs.length} documentos listos
+                            </div>
+                            <div className="up-vault-slot done" style={{ background: 'transparent' }}>
+                                <Clock size={14} />
+                                {(() => {
+                                    if (!activeTransaction.closing_date) return 'Cierre sin fecha'
+                                    const d = Math.ceil((new Date(activeTransaction.closing_date) - new Date()) / 86400000)
+                                    return `Cierra en ${d} días`
+                                })()}
+                            </div>
                         </div>
-                        <div className={`up-vault-slot ${vaultDocs.proofOfFunds ? 'done' : ''}`}>
-                            {vaultDocs.proofOfFunds ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                            Prueba de Fondos
+                        <div className="up-vault-cta" style={{ background: '#10b981' }}>
+                            Entrar al Deal Room <ChevronRight size={16} />
                         </div>
                     </div>
-                    <div className="up-vault-cta">
-                        {vaultComplete ? 'Ver documentos' : 'Completar Bóveda'} <ChevronRight size={16} />
+                ) : (
+                    <div className="up-vault-card" onClick={() => setShowVaultModal(true)}>
+                        <div className="up-vault-header">
+                            <Shield size={20} color={vaultComplete ? '#10b981' : '#8B5CF6'} />
+                            <h3>Bóveda de Ofertas</h3>
+                            {vaultComplete
+                                ? <span className="up-vault-status complete">Listo </span>
+                                : <span className="up-vault-status pending">{Object.values(vaultDocs).filter(Boolean).length}/3</span>
+                            }
+                        </div>
+                        <p className="up-vault-desc">Sube tus documentos una vez y haz ofertas con un solo toque.</p>
+                        <div className="up-vault-slots">
+                            <div className={`up-vault-slot ${vaultDocs.preApproval ? 'done' : ''}`}>
+                                {vaultDocs.preApproval ? <CheckCircle2 size={14} /> : <Lock size={14} />}
+                                Pre-aprobación
+                            </div>
+                            <div className={`up-vault-slot ${vaultDocs.govId ? 'done' : ''}`}>
+                                {vaultDocs.govId ? <CheckCircle2 size={14} /> : <Lock size={14} />}
+                                ID Oficial
+                            </div>
+                            <div className={`up-vault-slot ${vaultDocs.proofOfFunds ? 'done' : ''}`}>
+                                {vaultDocs.proofOfFunds ? <CheckCircle2 size={14} /> : <Lock size={14} />}
+                                Prueba de Fondos
+                            </div>
+                        </div>
+                        <div className="up-vault-cta">
+                            {vaultComplete ? 'Ver documentos' : 'Completar Bóveda'} <ChevronRight size={16} />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Pre-Calificación Card */}
                 <div

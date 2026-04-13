@@ -34,11 +34,13 @@ CREATE TABLE IF NOT EXISTS public.tc_transactions (
 
 ALTER TABLE public.tc_transactions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Realtors pueden ver sus transacciones, brokers pueden ver todas"
+CREATE POLICY "Participantes pueden ver sus transacciones"
     ON public.tc_transactions
     FOR SELECT
     USING (
       auth.uid() = realtor_id
+      OR
+      (auth.jwt()->>'email') = client_email
       OR
       (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin')
     );
@@ -83,7 +85,11 @@ CREATE POLICY "Participantes del deal pueden ver documentos"
       EXISTS (
         SELECT 1 FROM public.tc_transactions t 
         WHERE t.id = tc_documents.transaction_id 
-          AND (t.realtor_id = auth.uid() OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin'))
+          AND (
+            t.realtor_id = auth.uid() 
+            OR (auth.jwt()->>'email') = t.client_email
+            OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin')
+          )
       )
     );
 
@@ -113,14 +119,22 @@ CREATE POLICY "Lectura y escritura para participantes del deal"
       EXISTS (
         SELECT 1 FROM public.tc_transactions t 
         WHERE t.id = tc_messages.transaction_id 
-          AND (t.realtor_id = auth.uid() OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin'))
+          AND (
+            t.realtor_id = auth.uid() 
+            OR (auth.jwt()->>'email') = t.client_email
+            OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin')
+          )
       )
     )
     WITH CHECK (
       EXISTS (
         SELECT 1 FROM public.tc_transactions t 
         WHERE t.id = tc_messages.transaction_id 
-          AND (t.realtor_id = auth.uid() OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin'))
+          AND (
+            t.realtor_id = auth.uid() 
+            OR (auth.jwt()->>'email') = t.client_email
+            OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin')
+          )
       )
     );
 
@@ -145,7 +159,11 @@ CREATE POLICY "Lectura de eventos del deal"
       EXISTS (
         SELECT 1 FROM public.tc_transactions t 
         WHERE t.id = tc_events.transaction_id 
-          AND (t.realtor_id = auth.uid() OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin'))
+          AND (
+            t.realtor_id = auth.uid() 
+            OR (auth.jwt()->>'email') = t.client_email
+            OR (auth.jwt()->'user_metadata'->>'role') IN ('broker', 'tc', 'admin')
+          )
       )
     );
 CREATE POLICY "Gestión total a Admins/Broker para Eventos"

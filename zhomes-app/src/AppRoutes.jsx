@@ -83,6 +83,8 @@ export default function AppRoutes() {
                     <Route path="/swipe" element={<SwipeModePageMobile />} />
                     <Route path="/pareja" element={<CoShoppingMobile />} />
                 </Route>
+                {/* Client Deal Room without any specific layout wrapper, or inside Public layout if we want nav, but DealRoom covers the screen */}
+                <Route path="/mi-transaccion/:id" element={<DealRoomMobile />} />
             </Route>
 
             {/* RUTAS PROTEGIDAS PARA EL STAFF */}
