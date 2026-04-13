@@ -98,7 +98,7 @@ export default async function handler(req, res) {
     // 1. Traer todas las transacciones activas con sus deadlines y datos de contacto
     const { data: transactions, error } = await supabase
       .from('tc_transactions')
-      .select('id, address, client_name, client_phone, realtor_id, inspection_deadline, financing_deadline, appraisal_deadline, closing_date, status')
+      .select('id, address, client_name, client_phone, client_email, realtor_id, inspection_deadline, financing_deadline, appraisal_deadline, closing_date, status')
       .not('status', 'in', '("closed","cancelled")')
       .order('closing_date', { ascending: true })
 
@@ -149,10 +149,12 @@ export default async function handler(req, res) {
         })
 
         // 4. Obtener teléfono del Realtor desde auth.users
-        let realtorPhone = null
+        let realtorPhone = null, realtorEmail = null, realtorName = 'Agente'
         if (tx.realtor_id) {
           const { data: realtorData } = await supabase.auth.admin.getUserById(tx.realtor_id)
           realtorPhone = realtorData?.user?.user_metadata?.phone
+          realtorEmail = realtorData?.user?.email
+          realtorName = realtorData?.user?.user_metadata?.first_name || 'Agente'
         }
 
         // 5. Enviar SMS al Realtor
@@ -174,6 +176,34 @@ export default async function handler(req, res) {
           results.sms_sent++
         }
 
+        // Email al Broker
+        await sendEmailViaInternalApi(req, {
+          type: 'broker_deadline_alert',
+          to: 'zhomesreapp@gmail.com',
+          data: {
+            address: tx.address,
+            deadlineLabel: deadline.label,
+            daysLeft,
+            clientName: tx.client_name,
+            realtorName: realtorName
+          }
+        })
+
+        // Email al Realtor
+        if (realtorEmail) {
+          await sendEmailViaInternalApi(req, {
+            type: 'realtor_deadline_reminder',
+            to: realtorEmail,
+            data: {
+              realtorName: realtorName,
+              address: tx.address,
+              deadlineLabel: deadline.label,
+              daysLeft,
+              closingDate: deadlineDate
+            }
+          })
+        }
+
         // 6. Enviar SMS al Cliente (solo en cierre próximo)
         if (deadline.field === 'closing_date' && tx.client_phone) {
           const clientMsg = buildSmsMessage({
@@ -192,6 +222,21 @@ export default async function handler(req, res) {
               type:        'client_closing_alert',
             })
             results.sms_sent++
+          }
+
+          if (tx.client_email) {
+            await sendEmailViaInternalApi(req, {
+              type: 'client_closing_soon',
+              to: tx.client_email,
+              data: {
+                clientName: tx.client_name,
+                address: tx.address,
+                daysLeft,
+                closingDate: deadlineDate,
+                realtorName: realtorName,
+                realtorPhone: realtorPhone || ''
+              }
+            })
           }
         }
 
@@ -272,5 +317,22 @@ async function sendSmsViaN8N({ to, message, transaction, type }) {
   } catch (err) {
     console.error(`[TC SMS] Error enviando a ${to}:`, err.message)
     return false
+  }
+}
+
+// ── Helper: Enviar Email via Internal API ──────────────────────────────────────
+async function sendEmailViaInternalApi(req, payload) {
+  try {
+    const protocol = req.headers['x-forwarded-proto'] || 'https'
+    const host = req.headers.host || 'zhomesapp.com'
+    const url = `${protocol}://${host}/api/emails`
+    const res = await fetch(url, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    if (!res.ok) console.error(`[TC Email] Error HTTP ${res.status}`)
+  } catch (err) {
+    console.error(`[TC Email] Error:`, err.message)
   }
 }

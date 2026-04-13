@@ -101,6 +101,27 @@ export default async function handler(req, res) {
         console.warn('[QStash Notify] Supabase upsert warning:', error.message);
       } else {
         saved = true;
+
+        // Enviar email al broker
+        try {
+          const protocol = req.headers['x-forwarded-proto'] || 'https';
+          const host = req.headers.host || 'zhomesapp.com';
+          fetch(`${protocol}://${host}/api/emails`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'broker_new_lead',
+              to: 'zhomesreapp@gmail.com',
+              data: {
+                agentName: agentKey,
+                clientName: clientName || 'Desconocido',
+                propertyAddress: propertyAddress || 'Propiedad desconocida',
+                action: action,
+                timestamp: receivedAt
+              }
+            })
+          }).catch(e => console.error('[Notify Lead] Error enviando email broker:', e.message));
+        } catch(e) {}
       }
     } catch (err) {
       console.warn('[QStash Notify] Supabase error (no crítico):', err.message);
