@@ -9,7 +9,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import Supercluster from 'supercluster'
 import { useTheme } from '../../../context/ThemeContext'
 import { supabase } from '../../../lib/supabaseClient'
-import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader, Home, Coins, MapPin, Building, Waves, HelpCircle, Bot, Info, Star, Car } from 'lucide-react'
+import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader, Home, Coins, MapPin, Building, Waves, HelpCircle, Bot, Info, Star, Car, DollarSign } from 'lucide-react'
 import './MapPageMobile.css'
 
 // ── Formatea precio ────────────────────────────────────────────────────────────
@@ -394,7 +394,7 @@ export default function MapPageMobile() {
       <div className="map-filter-row top">
         {[
           { key: 'All',        label: <span className="flex items-center gap-1"><Home size={14} /> Todas</span> },
-          { key: 'Active',     label: <span className="flex items-center gap-1"><MapPin size={14} color="#10B981" /> En Venta</span> },
+          { key: 'Active',     label: <span className="flex items-center gap-1"><DollarSign size={14} color="#10B981" /> En Venta</span> },
           { key: 'Exclusivas', label: <span className="flex items-center gap-1"><Star size={14} color="#F59E0B" /> Exclusivas</span> },
         ].map(({ key, label }) => (
           <button
