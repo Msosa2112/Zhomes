@@ -63,8 +63,9 @@ const btnStyle = (color='#c0392b') => `
 `
 
 function logo() {
-  return `<div style="font-size:22px;font-weight:900;color:white;letter-spacing:2px;">
-    🏠 ZHOMES <span style="color:#ff6b6b;font-size:12px;font-weight:400;letter-spacing:1px;">TRANSACTION COORDINATOR</span>
+  return `<div style="text-align:center;">
+    <img src="https://zhomesapp.com/assets/logo/zhomes-horizontal.png" alt="ZHomes" style="height:36px; display:inline-block; vertical-align:middle; margin-bottom:8px;" />
+    <div style="color:#ff6b6b;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Transaction Coordinator</div>
   </div>`
 }
 
