@@ -93,11 +93,11 @@
     margin: 0;
     padding: 0;
     opacity: 0;
-    cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
     z-index: 10;
+    pointer-events: none; /* Let clicks pass to the input below except on thumb */
 }
 
 .zslider-input::-webkit-slider-runnable-track {
@@ -121,6 +121,7 @@
     height: 32px; /* Slightly larger than visual thumb for easy touching */
     border-radius: 50%;
     background: transparent;
+    pointer-events: auto; /* Re-enable pointer events ONLY on the thumb */
     cursor: pointer;
 }
 
@@ -130,5 +131,6 @@
     border-radius: 50%;
     background: transparent;
     border: none;
+    pointer-events: auto; /* Re-enable pointer events ONLY on the thumb */
     cursor: pointer;
 }

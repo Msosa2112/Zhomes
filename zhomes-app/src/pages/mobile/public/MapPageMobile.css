@@ -23,6 +23,11 @@
 .maplibregl-ctrl-bottom-left,
 .maplibregl-ctrl-bottom-right { display: none !important; }
 
+/* DeckGL canvas pointer events - allow clicking HTML markers in standard mode */
+.zhomes-map.mode-standard canvas#deckgl-overlay {
+  pointer-events: none !important;
+}
+
 /* ══════════════════════════════════════════════════════════════
    AI SEARCH BAR
    ══════════════════════════════════════════════════════════════ */

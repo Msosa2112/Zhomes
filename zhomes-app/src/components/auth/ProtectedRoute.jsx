@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
 
-export default function ProtectedRoute() {
+export default function ProtectedRoute({ allowedRoles }) {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState(null)
 
@@ -42,6 +42,15 @@ export default function ProtectedRoute() {
 
     if (!user) {
         return <Navigate to="/login" replace />
+    }
+
+    if (allowedRoles) {
+        const role = user.user_metadata?.role || 'client'
+        if (!allowedRoles.includes(role)) {
+            if (role === 'broker') return <Navigate to="/dashboard" replace />
+            if (role === 'realtor') return <Navigate to="/realtor" replace />
+            return <Navigate to="/perfil" replace />
+        }
     }
 
     return <Outlet />

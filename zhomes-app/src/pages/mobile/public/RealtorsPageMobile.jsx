@@ -160,6 +160,26 @@ export default function RealtorsPageMobile() {
                                     </a>
                                 )}
                             </div>
+
+                            <button 
+                                className="mr-modal-btn" 
+                                style={{
+                                    marginTop: '20px', 
+                                    background: 'var(--zhomes-red, #E31E24)', 
+                                    color: '#fff', 
+                                    width: '100%', 
+                                    padding: '14px', 
+                                    borderRadius: '12px',
+                                    fontWeight: 'bold',
+                                    fontSize: '15px'
+                                }}
+                                onClick={() => {
+                                    alert(`Has seleccionado a ${selectedAgent.name} como tu Realtor. ¡Te contactará pronto!`);
+                                    closeModal();
+                                }}
+                            >
+                                Seleccionar como mi Realtor
+                            </button>
                         </motion.div>
                     </motion.div>
                 )}

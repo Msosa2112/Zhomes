@@ -17,12 +17,14 @@ export default function LoginPageMobile() {
             const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
             const { data: { session } } = await supabase.auth.getSession()
             if (session?.user) {
+                const role = session.user.user_metadata?.role || 'client'
+                localStorage.setItem('zhomes_temp_role', role)
+                
                 if (redirectUrl) {
                     localStorage.removeItem('zhomes_redirect_after_login');
                     navigate(redirectUrl, { replace: true });
                     return;
                 }
-                const role = session.user.user_metadata?.role || 'client'
                 if (role === 'realtor') navigate('/realtor', { replace: true })
                 else if (role === 'broker') navigate('/dashboard', { replace: true })
                 else navigate('/perfil', { replace: true })
@@ -67,6 +69,9 @@ export default function LoginPageMobile() {
             }
             
             const redirectUrl = localStorage.getItem('zhomes_redirect_after_login');
+            
+            localStorage.setItem('zhomes_temp_role', role);
+
             if (redirectUrl) {
                 localStorage.removeItem('zhomes_redirect_after_login');
                 navigate(redirectUrl);
@@ -94,7 +99,7 @@ export default function LoginPageMobile() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: window.location.origin + '/perfil' // Deberíamos redirigir a un manejador que verifique el rol
+                    redirectTo: window.location.origin + '/login'
                 }
             })
             if (error) throw error

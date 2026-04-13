@@ -42,7 +42,7 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
     const [realtors, setRealtors] = useState([])
     const [isLoadingAgents, setIsLoadingAgents] = useState(true)
 
-    // Load agents from Supabase — uses real photo if available, avatar as fallback
+    // Load agents from Supabase — only include those who have a photo uploaded
     useEffect(() => {
         supabase
             .from('zhomes_agents')
@@ -52,10 +52,11 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
             .then(({ data, error }) => {
                 if (error) console.warn('[RealtorRevealModal] Supabase error:', error.message);
                 if (data && data.length > 0) {
-                    setRealtors(data.map(a => ({
+                    const agentsWithPhotos = data.filter(a => a.photo_url && a.photo_url.trim() !== '');
+                    setRealtors(agentsWithPhotos.map(a => ({
                         ...a,
                         name: a.full_name,
-                        photo: a.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(a.full_name)}&background=E31E24&color=fff&size=400&bold=true`
+                        photo: a.photo_url
                     })));
                 }
                 setIsLoadingAgents(false);
@@ -350,30 +351,7 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
             <div className="dashboard-layout marvel-layout">
                 <div className="dashboard-screen marvel-screen" style={{ overflow: 'hidden' }}>
 
-                    {/* ZHOMES Standard Notch Navbar */}
-                    <nav className="top-navbar">
-                        <div className="navbar-nav navbar-nav-left" style={{ flex: 1 }}></div>
-                        <div className="navbar-logo" style={{ color: 'var(--text-on-dark)', fontWeight: 900, letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Star size={16} fill="currentColor" className="text-red" />
-                            Zhomes Real Estate
-                        </div>
-                        <div className="navbar-nav navbar-nav-right" style={{ flex: 1 }}></div>
-                    </nav>
 
-                    {/* Actions Row to align close button */}
-                    <div className="screen-actions-row">
-                        <div className="actions-left"></div>
-                        <div className="actions-right">
-                            <button
-                                className="screen-icon-btn"
-                                onClick={onClose}
-                                aria-label="Close"
-                                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', marginTop: '40px' }}
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-                    </div>
 
                     <div className="marvel-container">
                         {/* --- 1. SELECTION UI (Fades out when in detail view) --- */}

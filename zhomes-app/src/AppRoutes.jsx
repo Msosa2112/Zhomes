@@ -77,7 +77,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* RUTAS PROTEGIDAS PARA EL CLIENTE/USUARIO REGULAR */}
-            <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute allowedRoles={['client']} />}>
                 <Route element={<PublicLayoutMobile />}>
                     <Route path="/perfil" element={<UserProfileMobile />} />
                     <Route path="/swipe" element={<SwipeModePageMobile />} />
@@ -88,7 +88,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* RUTAS PROTEGIDAS PARA EL STAFF */}
-            <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute allowedRoles={['broker', 'admin']} />}>
                 {/* Dashboard interno (Broker) */}
                 <Route element={<DashboardLayoutMobile />}>
                     <Route path="/dashboard" element={<DashboardPageMobile />} />
@@ -109,8 +109,10 @@ export default function AppRoutes() {
                 
                 {/* Admin Configurations */}
                 <Route path="/admin/config" element={<SuperAdminKeysMobile />} />
+            </Route>
 
-                {/* Portal Realtor */}
+            {/* Portal Realtor Wrapper */}
+            <Route element={<ProtectedRoute allowedRoles={['realtor', 'broker', 'admin']} />}>
                 <Route element={<RealtorLayoutMobile />}>
                     <Route path="/realtor" element={<RealtorDashboardMobile />} />
                     <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
@@ -125,6 +127,8 @@ export default function AppRoutes() {
                     <Route path="/realtor/tareas" element={<RealtorTasksMobile />} />
                     <Route path="/realtor/clientes" element={<RealtorClientsMobile />} />
                     <Route path="/realtor/subir-vibe" element={<UploadVibeMobile />} />
+                    <Route path="/realtor/deal" element={<DealRoomMobile />} />
+                    <Route path="/realtor/deal/:id" element={<DealRoomMobile />} />
                 </Route>
             </Route>
         </Routes>

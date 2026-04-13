@@ -179,7 +179,23 @@ export default function MapPageMobile() {
       [...active, ...exclusivas];
 
     if (zhomesOnly)          combined = combined.filter(p => p.exclusive);
-    if (typeFilter !== 'all') combined = combined.filter(p => p.type === typeFilter);
+    
+    if (typeFilter !== 'all') {
+      combined = combined.filter(p => {
+        const t = String(p.type || '').toLowerCase();
+        if (typeFilter === 'Condominium') {
+            return t.includes('condo') || t.includes('apartment') || t.includes('town') || t.includes('multi');
+        } else if (typeFilter === 'Lots/Land') {
+            return t.includes('land') || t.includes('lot') || t.includes('farm') || t.includes('acreage');
+        } else if (typeFilter === 'Single Family') {
+            const isCondo = t.includes('condo') || t.includes('apartment') || t.includes('town') || t.includes('multi');
+            const isLand = t.includes('land') || t.includes('lot') || t.includes('farm') || t.includes('acreage');
+            return !isCondo && !isLand; // Default to houses if it's not a condo or land
+        } else {
+            return t.includes(typeFilter.toLowerCase());
+        }
+      });
+    }
 
     // AI filters
     if (aiFilters.priceMax) combined = combined.filter(p => p.price <= aiFilters.priceMax);
@@ -455,7 +471,7 @@ export default function MapPageMobile() {
         controller={{ touchRotate: false, dragRotate: false }}
         layers={deckLayers}
         onViewStateChange={({ viewState: vs }) => setViewState({ ...vs })}
-        className="zhomes-map"
+        className={`zhomes-map mode-${mapMode}`}
         getCursor={() => 'grab'}
       >
         <Map mapStyle={mapStyle} mapLib={maplibregl} reuseMaps>

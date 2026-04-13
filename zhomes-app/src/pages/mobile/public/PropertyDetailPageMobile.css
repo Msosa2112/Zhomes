@@ -377,12 +377,12 @@
     font-size: 1rem;
 }
 
-/* Mortgage Quick Estimate */
-.mpd-mortgage-quick {
+/* Mortgage Section Inline Calculator */
+.mpd-mortgage-section {
     margin-top: 0.5rem;
 }
 
-.mpd-mortgage-quick h2 {
+.mpd-mortgage-section h2 {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
@@ -396,7 +396,7 @@
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    padding: 1rem;
+    padding: 1.25rem 1rem;
 }
 
 .mpd-mort-main {
@@ -424,36 +424,57 @@
     gap: 0.5rem 1rem;
     font-size: 0.75rem;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.mpd-mort-note {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    font-style: italic;
-    opacity: 0.7;
+.mpd-inline-calc-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-.mpd-calc-btn {
-    margin-top: 0.5rem;
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    background: transparent;
+.mpd-calc-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.mpd-c-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.mpd-c-header span:last-child {
+    font-weight: 700;
+}
+
+.mpd-term-btns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mpd-term-btn {
+    flex: 1;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 600;
+    color: var(--text-secondary);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    transition: all 0.15s;
+    transition: all 0.2s;
 }
 
-.mpd-calc-btn:hover {
-    background: var(--bg-secondary);
+.mpd-term-btn.active {
+    background: var(--zhomes-red);
+    color: white;
+    border-color: var(--zhomes-red);
 }
 
 /* Booking Section */

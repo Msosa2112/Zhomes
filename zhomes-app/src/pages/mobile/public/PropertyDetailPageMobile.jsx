@@ -18,6 +18,7 @@ import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
 import NeighborhoodMap from '../../../components/public/NeighborhoodMap'
 import CommuteIntel from '../../../components/public/CommuteIntel'
 import ScheduleShowingSheet from '../../../components/public/ScheduleShowingSheet'
+import ZSlider from '../../../components/ui/ZSlider'
 import './PropertyDetailPageMobile.css'
 
 // Fix to clear map layout size 
@@ -37,6 +38,12 @@ export default function PropertyDetailPageMobile() {
     const [loading, setLoading] = useState(true)
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false)
     const [bookingOpen, setBookingOpen] = useState(false)
+    
+    // Inline calculator state
+    const [downPercent, setDownPercent] = useState(20)
+    const [interestRate, setInterestRate] = useState(6.5)
+    const [loanYears, setLoanYears] = useState(30)
+
     const { theme } = useTheme()
     const { properties: ctxProperties } = useProperties()
     const { activeAgent, openAgentModal } = useAgent()
@@ -307,17 +314,18 @@ export default function PropertyDetailPageMobile() {
                     propLng={property.lng}
                 />
 
-                {/* Quick Mortgage Estimate */}
+                {/* Interactive Mortgage Estimate */}
                 {property.price > 0 && (
-                    <div className="mpd-mortgage-quick">
+                    <div className="mpd-mortgage-section">
                         <h2><Calculator size={16} /> Estimado Hipotecario</h2>
                         <div className="mpd-mortgage-card">
                             {(() => {
+                                const downPayment = property.price * (downPercent / 100);
                                 const calc = MortgageService.calculateFullPayment({
                                     homePrice: property.price,
-                                    downPayment: property.price * 0.2,
-                                    interestRate: 6.5,
-                                    years: 30
+                                    downPayment: downPayment,
+                                    interestRate: interestRate,
+                                    years: loanYears
                                 });
                                 return (
                                     <>
@@ -331,26 +339,62 @@ export default function PropertyDetailPageMobile() {
                                             <span>Seguro: ${calc.insurance.toLocaleString()}</span>
                                             {calc.pmi > 0 && <span>PMI: ${calc.pmi.toLocaleString()}</span>}
                                         </div>
-                                        <div className="mpd-mort-note">
-                                            Con 20% de enganche · 6.5% tasa · 30 años
+
+                                        <div className="mpd-inline-calc-controls">
+                                            <div className="mpd-calc-group">
+                                                <div className="mpd-c-header">
+                                                    <span>Enganche ({downPercent}%)</span>
+                                                    <span>${downPayment.toLocaleString()}</span>
+                                                </div>
+                                                <ZSlider
+                                                    value={downPercent}
+                                                    min={0}
+                                                    max={50}
+                                                    step={1}
+                                                    onChange={v => setDownPercent(v)}
+                                                    formatOptions={{ style: 'percent' }}
+                                                />
+                                            </div>
+
+                                            <div className="mpd-calc-group">
+                                                <div className="mpd-c-header">
+                                                    <span>Tasa de Interés</span>
+                                                    <span>{interestRate}%</span>
+                                                </div>
+                                                <ZSlider
+                                                    value={interestRate}
+                                                    min={2}
+                                                    max={10}
+                                                    step={0.1}
+                                                    onChange={v => setInterestRate(v)}
+                                                />
+                                            </div>
+
+                                            <div className="mpd-calc-group">
+                                                <span style={{ fontSize: '0.85rem', fontWeight: 500, marginBottom: '8px', display: 'block' }}>Plazo del préstamo</span>
+                                                <div className="mpd-term-btns">
+                                                    {[15, 20, 30].map(y => (
+                                                        <button 
+                                                            key={y} 
+                                                            className={`mpd-term-btn ${loanYears === y ? 'active' : ''}`}
+                                                            onClick={() => setLoanYears(y)}
+                                                        >
+                                                            {y} Años
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 );
                             })()}
                         </div>
-                        <button className="mpd-calc-btn" onClick={() => navigate('/calculadora')}>
-                            <Calculator size={14} /> Calculadora Completa →
-                        </button>
                     </div>
                 )}
 
                 {/* Booking / Schedule Visit Button */}
                 <div className="mpd-booking-section">
                     <button className="mpd-booking-btn" onClick={() => {
-                        if (!activeAgent) {
-                            openAgentModal();
-                            return;
-                        }
                         setBookingOpen(true);
                     }}>
                         <CalendarPlus size={18} /> Agendar Visita
@@ -380,6 +424,7 @@ export default function PropertyDetailPageMobile() {
             {bookingOpen && (
                 <ScheduleShowingSheet 
                     propertyId={property.id}
+                    activeAgent={activeAgent}
                     onClose={() => setBookingOpen(false)}
                 />
             )}

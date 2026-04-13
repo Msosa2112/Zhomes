@@ -25,7 +25,7 @@ export default function RealtorLayoutMobile() {
     }
 
     const handleLogout = async () => {
-        localStorage.removeItem('zhomes_role')
+        localStorage.removeItem('zhomes_temp_role')
         await supabase.auth.signOut()
         navigate('/')
     }

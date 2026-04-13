@@ -41,7 +41,7 @@ const getTimeSlots = () => {
     return slots
 }
 
-export default function ScheduleShowingSheet({ propertyId, onClose }) {
+export default function ScheduleShowingSheet({ propertyId, activeAgent, onClose }) {
     const [days] = useState(getNextDays())
     const [timeSlots] = useState(getTimeSlots())
     
@@ -63,8 +63,13 @@ export default function ScheduleShowingSheet({ propertyId, onClose }) {
         setIsSubmitting(true)
         
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userId = session?.user?.id || null;
+
             const { error } = await supabase.from('bookings').insert({
                 property_id: propertyId,
+                client_id: userId,
+                agent_id: activeAgent?.id || null, // Si es null, "se los guarda Gilbert"
                 booking_date: selectedDate,
                 time_slot: selectedTime,
                 status: 'pending_agent_confirmation'

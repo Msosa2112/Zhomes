@@ -166,7 +166,7 @@ export default function RealtorTransactionsMobile() {
                 </span>
               </div>
               {urgentDeals.map((t, i) => (
-                <RealtorTxCard key={t.id} tx={t} index={i} urgent onClick={() => navigate('/realtor/deal')} />
+                <RealtorTxCard key={t.id} tx={t} index={i} urgent onClick={() => navigate('/realtor/deal/' + t.id)} />
               ))}
               <div style={{ height: '12px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '20px' }} />
             </div>
@@ -184,7 +184,7 @@ export default function RealtorTransactionsMobile() {
           {filtered
             .filter((t) => !urgentDeals.includes(t))
             .map((t, i) => (
-              <RealtorTxCard key={t.id} tx={t} index={i} onClick={() => navigate('/realtor/deal')} />
+              <RealtorTxCard key={t.id} tx={t} index={i} onClick={() => navigate('/realtor/deal/' + t.id)} />
             ))}
         </div>
       )}
