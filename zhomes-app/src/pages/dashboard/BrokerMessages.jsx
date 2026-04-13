@@ -26,7 +26,7 @@ const MOCK_MESSAGES = {
     judith: [
         { id: 1, sender: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png', isMine: false, text: '¡Buenos días! Ya firmé los documentos de 220 River Rd. Todo listo.', time: '9:00 AM', date: 'Ayer' },
         { id: 2, sender: 'Gilbert Zaldivar', isMine: true, text: 'Perfecto Judith. Ya revisé todos los documentos, todo en orden. Listos para el próximo cliente.', time: '9:15 AM', date: 'Ayer' },
-        { id: 3, sender: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png', isMine: false, text: '¡Gracias! 🎉 Ya estoy trabajando en un nuevo listing en St. Matthews.', time: '9:22 AM', date: 'Ayer' },
+        { id: 3, sender: 'Judith Gonzalez', avatar: '/assets/agents/Judith Gonzalez.png', isMine: false, text: '¡Gracias!  Ya estoy trabajando en un nuevo listing en St. Matthews.', time: '9:22 AM', date: 'Ayer' },
     ],
     miriam: [
         { id: 1, sender: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png', isMine: false, text: 'Gilbert, el comprador de 2215 Tremont quiere negociar $10K menos.', time: '2:00 PM', date: 'Hoy' },
@@ -34,7 +34,7 @@ const MOCK_MESSAGES = {
         { id: 3, sender: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png', isMine: false, text: 'Me parece justo. Voy a preparar la enmienda.', time: '2:20 PM', date: 'Hoy' },
         { id: 4, sender: 'Gilbert Zaldivar', isMine: true, text: 'Perfecto. Avísame cuando la suba el comprador firmada.', time: '2:22 PM', date: 'Hoy' },
         { id: 5, sender: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png', isMine: false, text: '¡El comprador aceptó! Contraoferta firmada, la subo ahora.', time: '4:30 PM', date: 'Hoy' },
-        { id: 6, sender: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png', isMine: false, text: 'Ya está en el Document Vault ✅', time: '4:35 PM', date: 'Hoy' },
+        { id: 6, sender: 'Miriam C Castaño', avatar: '/assets/agents/Miriam Castano.png', isMine: false, text: 'Ya está en el Document Vault ', time: '4:35 PM', date: 'Hoy' },
     ],
     yusleidy: [
         { id: 1, sender: 'Gilbert Zaldivar', isMine: true, text: 'Yusleidy, ¿cómo va el caso de relocation de la familia Miller?', time: '11:00 AM', date: 'Ayer' },

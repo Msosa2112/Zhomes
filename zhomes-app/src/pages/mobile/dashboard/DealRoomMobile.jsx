@@ -226,7 +226,7 @@ export default function DealRoomMobile() {
         transaction_id: selectedDeal.id,
         sender_name:    'ZHomes TC',
         sender_role:    'system',
-        content:        `📎 Documento subido: "${docName}". En revisión.`,
+        content:        ` Documento subido: "${docName}". En revisión.`,
         message_type:   'document_update',
       })
 
@@ -414,7 +414,7 @@ export default function DealRoomMobile() {
                             fontSize: '11px', background: 'rgba(245,158,11,0.1)',
                             color: '#f59e0b', padding: '2px 8px', borderRadius: '20px'
                           }}>
-                            ⚠️ Cierra en {daysLeft}d
+                             Cierra en {daysLeft}d
                           </span>
                         )}
                       </div>

@@ -3,12 +3,12 @@ import { MapPin, FileText, GripVertical, ChevronLeft, ChevronRight } from 'lucid
 import './KanbanPipeline.css'
 
 const COLUMNS = [
-    { key: 'under_contract', label: 'Bajo Contrato', color: '#8B5CF6', emoji: '✍️' },
-    { key: 'inspection', label: 'Inspección', color: '#F59E0B', emoji: '🔍' },
-    { key: 'appraisal', label: 'Tasación', color: '#F97316', emoji: '📊' },
-    { key: 'pre_close', label: 'Pre-Cierre', color: '#10B981', emoji: '📝' },
-    { key: 'closed', label: 'Cerrada', color: '#06B6D4', emoji: '🏠' },
-    { key: 'paid', label: 'Pagada', color: '#22C55E', emoji: '💰' },
+    { key: 'under_contract', label: 'Bajo Contrato', color: '#8B5CF6', emoji: '' },
+    { key: 'inspection', label: 'Inspección', color: '#F59E0B', emoji: '' },
+    { key: 'appraisal', label: 'Tasación', color: '#F97316', emoji: '' },
+    { key: 'pre_close', label: 'Pre-Cierre', color: '#10B981', emoji: '' },
+    { key: 'closed', label: 'Cerrada', color: '#06B6D4', emoji: '' },
+    { key: 'paid', label: 'Pagada', color: '#22C55E', emoji: '' },
 ]
 
 const INITIAL_CARDS = [

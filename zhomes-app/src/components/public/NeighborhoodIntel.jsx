@@ -26,7 +26,7 @@ export default function NeighborhoodIntel({ address, lat, lng }) {
   if (loading) {
     return (
       <div className="ni-section">
-        <h2>🏘️ Vecindario</h2>
+        <h2> Vecindario</h2>
         <div className="ni-loading">
           <div className="ni-loading-dot"></div>
           <div className="ni-loading-dot"></div>
@@ -40,7 +40,7 @@ export default function NeighborhoodIntel({ address, lat, lng }) {
   if (!scores) {
     return (
       <div className="ni-section">
-        <h2>🏘️ Vecindario</h2>
+        <h2> Vecindario</h2>
         <div className="ni-placeholder">
           <div className="ni-score-cards">
             <ScoreCard icon={<MapPin size={18} />} label="Walk Score" score="—" color="#6B7280" desc="Disponible pronto" />
@@ -55,7 +55,7 @@ export default function NeighborhoodIntel({ address, lat, lng }) {
 
   return (
     <div className="ni-section">
-      <h2>🏘️ Vecindario</h2>
+      <h2> Vecindario</h2>
       <div className="ni-score-cards">
         <ScoreCard 
           icon={<MapPin size={18} />} 

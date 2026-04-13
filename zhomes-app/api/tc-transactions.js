@@ -162,7 +162,7 @@ export default async function handler(req, res) {
         transaction_id: newTx.id,
         sender_name:    'ZHomes TC',
         sender_role:    'system',
-        content:        `✅ Transacción abierta para ${address}. Se generó un checklist de ${checklist.length} documentos requeridos. El realtor puede comenzar a subir documentos.`,
+        content:        ` Transacción abierta para ${address}. Se generó un checklist de ${checklist.length} documentos requeridos. El realtor puede comenzar a subir documentos.`,
         message_type:   'system',
       });
 
@@ -198,7 +198,7 @@ export default async function handler(req, res) {
             transaction_id: id,
             sender_name:    'ZHomes TC',
             sender_role:    'system',
-            content:        `📋 Estado actualizado a "${updates.status}" para ${existing.address}`,
+            content:        ` Estado actualizado a "${updates.status}" para ${existing.address}`,
             message_type:   'status_change',
           });
         }

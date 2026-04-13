@@ -50,20 +50,20 @@ function buildSmsMessage({ type, address, deadlineLabel, daysLeft, closingDate }
 
   if (type === 'realtor') {
     if (daysLeft === 1) {
-      return `🚨 ZHomes TC: MAÑANA vence el deadline de ${deadlineLabel} para ${address}. Confirma estado inmediatamente.`
+      return ` ZHomes TC: MAÑANA vence el deadline de ${deadlineLabel} para ${address}. Confirma estado inmediatamente.`
     }
     if (daysLeft <= 3) {
-      return `⚠️ ZHomes TC: El deadline de ${deadlineLabel} para ${address} vence en ${daysLeft} días (${dateStr}). Actúa hoy.`
+      return `️ ZHomes TC: El deadline de ${deadlineLabel} para ${address} vence en ${daysLeft} días (${dateStr}). Actúa hoy.`
     }
-    return `📋 ZHomes TC: Recordatorio — el deadline de ${deadlineLabel} para ${address} vence en ${daysLeft} días (${dateStr}).`
+    return ` ZHomes TC: Recordatorio — el deadline de ${deadlineLabel} para ${address} vence en ${daysLeft} días (${dateStr}).`
   }
 
   if (type === 'client') {
     if (daysLeft === 1) {
-      return `🏠 ZHomes: ¡Mañana es el gran día! Tu cierre de ${address} es mañana (${dateStr}). Confirma con tu agente que todo está listo.`
+      return ` ZHomes: ¡Mañana es el gran día! Tu cierre de ${address} es mañana (${dateStr}). Confirma con tu agente que todo está listo.`
     }
     if (daysLeft <= 7) {
-      return `🏠 ZHomes: ¡Tu cierre se acerca! ${address} cierra el ${dateStr} (en ${daysLeft} días). Si tienes preguntas, responde este mensaje.`
+      return ` ZHomes: ¡Tu cierre se acerca! ${address} cierra el ${dateStr} (en ${daysLeft} días). Si tienes preguntas, responde este mensaje.`
     }
     return null // No molestar al cliente con alertas tempranas de etapas intermedias
   }
@@ -271,7 +271,7 @@ export default async function handler(req, res) {
         transaction_id: tx.id,
         sender_name:    'ZHomes TC Sistema',
         sender_role:    'system',
-        content:        `🚨 ALERTA CRÍTICA: El deadline de ${alert.deadline} vence MAÑANA. Se envió SMS al realtor.`,
+        content:        ` ALERTA CRÍTICA: El deadline de ${alert.deadline} vence MAÑANA. Se envió SMS al realtor.`,
         message_type:   'alert',
       })
     }

@@ -74,7 +74,7 @@ export default function CoShoppingMobile() {
             try {
                 await navigator.share({
                     title: 'ZHomes - Modo Parejas',
-                    text: '¡Únete conmigo para buscar casa juntos en ZHomes! 🏠❤️',
+                    text: '¡Únete conmigo para buscar casa juntos en ZHomes! ',
                     url: inviteUrl
                 });
             } catch (err) {
@@ -150,7 +150,7 @@ export default function CoShoppingMobile() {
                     </div>
 
                     <div className="co-demo-notice">
-                        <small>💡 Para esta demo, el estado de "vinculado" se activará automáticamente 3 segundos después de copiar el enlace.</small>
+                        <small> Para esta demo, el estado de "vinculado" se activará automáticamente 3 segundos después de copiar el enlace.</small>
                     </div>
                 </div>
             ) : (

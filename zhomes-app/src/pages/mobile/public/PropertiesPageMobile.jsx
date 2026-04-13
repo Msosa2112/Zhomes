@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map, ChevronDown, Tag, Lock } from 'lucide-react'
+import { Filter, MapPin, Search, Heart, ChevronRight, Home, Building, Map, ChevronDown, Tag, Lock, Flame, Star, Car, Bed, Bath } from 'lucide-react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react'
 import { useProperties } from '../../../context/PropertyContext'
@@ -151,7 +151,7 @@ export default function PropertiesPageMobile() {
                     showToast('Error: ' + error.message, true)
                 }
             } else {
-                showToast('♥ Guardada en favoritos')
+                showToast('Guardada en favoritos')
             }
         }
     }
@@ -603,16 +603,16 @@ export default function PropertiesPageMobile() {
                                             <><Lock size={10}/> Exclusiva</>
                                 } else if (p.exclusive) {
                                     bg = 'var(--zhomes-red)'
-                                    label = p.status === 'Pending' ? '🔥 Pending ZHomes' :
-                                            p.status === 'Active Under Contract' ? '🔒 Bajo Contrato' :
-                                            '⭐ ZHomes'
+                                    label = p.status === 'Pending' ? <><Flame size={10}/> Pending ZHomes</> :
+                                            p.status === 'Active Under Contract' ? <><Lock size={10}/> Bajo Contrato</> :
+                                            <><Star size={10}/> ZHomes</>
                                 } else {
                                     bg = p.status === 'Pending' ? 'rgba(245,158,11,0.9)' :
                                          p.status === 'Active Under Contract' ? 'rgba(59,130,246,0.85)' :
                                          'rgba(16,185,129,0.85)'
-                                    label = p.status === 'Pending' ? '🔥 Pending' :
-                                            p.status === 'Active Under Contract' ? '🔒 Bajo Contrato' :
-                                            '● En Venta'
+                                    label = p.status === 'Pending' ? <><Flame size={10}/> Pending</> :
+                                            p.status === 'Active Under Contract' ? <><Lock size={10}/> Bajo Contrato</> :
+                                            <><MapPin size={10}/> En Venta</>
                                 }
                                 return (
                                     <div style={{
@@ -637,7 +637,7 @@ export default function PropertiesPageMobile() {
                                     {p.aiBullets.slice(0, 2).map((t, idx) => (
                                         <span key={idx} className="mgc-tag">{t}</span>
                                     ))}
-                                    <span className="mgc-tag commute">🚗 {p.commuteMins} min</span>
+                                    <span className="mgc-tag commute"><Car size={10} style={{marginRight: 4}}/> {p.commuteMins} min</span>
                                 </div>
                                 <div className="mgc-location-badge"><MapPin size={10} /> {p.city}</div>
                                 <h3 className="mgc-addr">{p.address}</h3>
@@ -647,7 +647,7 @@ export default function PropertiesPageMobile() {
                                             ? `${formatPricePill(p.closePrice)} vendida`
                                             : formatPricePill(p.price)}
                                     </span>
-                                    <span className="mgc-glass-pill">{p.beds}🛏 {p.baths}🚿</span>
+                                    <span className="mgc-glass-pill flex items-center gap-1"><Bed size={12}/> {p.beds} <Bath size={12} style={{marginLeft: 4}}/> {p.baths}</span>
                                     {p.sqft > 0 && <span className="mgc-glass-pill">{p.sqft.toLocaleString()} sqft</span>}
                                 </div>
                                 <button className="mgc-details-btn">Ver Detalles <ChevronRight size={16} /></button>

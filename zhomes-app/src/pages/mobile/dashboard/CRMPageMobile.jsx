@@ -162,7 +162,7 @@ export default function CRMPageMobile() {
             ))
             setShowTransfer(false)
             setTransferAgent('')
-            alert(`✅ Lead transferido a ${agentRecord.name}`)
+            alert(` Lead transferido a ${agentRecord.name}`)
         } catch (err) {
             alert('Error al transferir: ' + err.message)
         } finally {

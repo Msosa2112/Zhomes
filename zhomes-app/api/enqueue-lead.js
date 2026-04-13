@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     });
 
     const delayMinutes = Math.round(LEAD_DELAY_SECONDS / 60);
-    console.log(`[Enqueue Lead] ✔ Lead encolado — Agente: ${agentKey} | Acción: ${action} | Delay: ${delayMinutes}min | ID: ${result.messageId}`);
+    console.log(`[Enqueue Lead]  Lead encolado — Agente: ${agentKey} | Acción: ${action} | Delay: ${delayMinutes}min | ID: ${result.messageId}`);
 
     return res.status(200).json({
       enqueued: true,

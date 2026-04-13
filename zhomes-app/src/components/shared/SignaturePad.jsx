@@ -132,7 +132,7 @@ export default function SignaturePad({ documentTitle, signerName, onSave, onClos
           />
           {!signed && (
             <div className="sigpad-placeholder">
-              Dibuja tu firma aquí ✍️
+              Dibuja tu firma aquí 
             </div>
           )}
         </div>

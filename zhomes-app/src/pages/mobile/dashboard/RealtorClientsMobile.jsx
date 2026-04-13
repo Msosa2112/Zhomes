@@ -261,7 +261,7 @@ export default function RealtorClientsMobile() {
                                     <div className="rc-info-card">
                                         <div className="rc-info-header"><Shield size={18} color="#8B5CF6"/> Bóveda del Cliente</div>
                                         <div className="rc-info-val" style={{fontSize: '16px'}}>
-                                            {selectedClient.preApproval?.documentsComplete ? 'Completa ✓' : 'Faltan documentos'}
+                                            {selectedClient.preApproval?.documentsComplete ? 'Completa ' : 'Faltan documentos'}
                                         </div>
                                     </div>
                                     <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('saved'); }}>
@@ -269,7 +269,7 @@ export default function RealtorClientsMobile() {
                                         <div className="rc-info-val">{selectedClient.savedProperties?.length || 0} Casas</div>
                                     </div>
                                     <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('ai_matches'); }}>
-                                        <div className="rc-info-header"><Sparkles size={18} color="#F59E0B"/> Sugerencias IA ✨</div>
+                                        <div className="rc-info-header"><Sparkles size={18} color="#F59E0B"/> Sugerencias IA </div>
                                         <div className="rc-info-val" style={{color: '#F59E0B'}}>{selectedClient.aiMatches?.length || 0} Matches</div>
                                     </div>
                                     <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('open_houses'); }}>
@@ -283,7 +283,7 @@ export default function RealtorClientsMobile() {
                                 <div className="rc-properties-view">
                                     <div className="rc-filter-tabs">
                                         <button className={`rc-filter-tab ${propertyFilter === 'saved' ? 'active' : ''}`} onClick={() => setPropertyFilter('saved')}>Guardadas</button>
-                                        <button className={`rc-filter-tab ${propertyFilter === 'ai_matches' ? 'active' : ''}`} onClick={() => setPropertyFilter('ai_matches')}>Sugerencias IA ✨</button>
+                                        <button className={`rc-filter-tab ${propertyFilter === 'ai_matches' ? 'active' : ''}`} onClick={() => setPropertyFilter('ai_matches')}>Sugerencias IA </button>
                                         <button className={`rc-filter-tab ${propertyFilter === 'open_houses' ? 'active' : ''}`} onClick={() => setPropertyFilter('open_houses')}>Open Houses</button>
                                     </div>
 
@@ -311,7 +311,7 @@ export default function RealtorClientsMobile() {
                                                         <img src={p.img} alt={p.address} className="rc-property-img" />
                                                         <div className="rc-property-details">
                                                             <h4>{p.address}</h4>
-                                                            <p style={{fontSize: '12px', fontWeight: 600, color: '#F59E0B', marginBottom: '4px'}}>✨ {p.matchReason}</p>
+                                                            <p style={{fontSize: '12px', fontWeight: 600, color: '#F59E0B', marginBottom: '4px'}}> {p.matchReason}</p>
                                                             <div className="rc-property-price">{p.price}</div>
                                                         </div>
                                                     </div>
@@ -326,7 +326,7 @@ export default function RealtorClientsMobile() {
                                                         <img src={p.img} alt={p.address} className="rc-property-img" />
                                                         <div className="rc-property-details">
                                                             <h4>{p.address}</h4>
-                                                            <p style={{color: '#3B82F6', fontWeight: 600}}>🗓 {p.date}</p>
+                                                            <p style={{color: '#3B82F6', fontWeight: 600}}> {p.date}</p>
                                                             <div className="rc-property-price">{p.price}</div>
                                                         </div>
                                                     </div>

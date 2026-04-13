@@ -5,12 +5,12 @@ import './PrequalToolMobile.css'
 
 // ─── Rate table by FICO score tier ──────────────────────────────────────────
 const CREDIT_TIERS = [
-    { label: '740+ (Excelente)',      min: 740, rate30: 6.5,  rate15: 5.9,  type: 'Convencional',    color: '#10B981', emoji: '🏆' },
-    { label: '700–739 (Muy bueno)',   min: 700, rate30: 6.9,  rate15: 6.2,  type: 'Convencional',    color: '#10B981', emoji: '✅' },
-    { label: '660–699 (Bueno)',       min: 660, rate30: 7.35, rate15: 6.7,  type: 'Convencional',    color: '#F59E0B', emoji: '👍' },
-    { label: '620–659 (Regular)',     min: 620, rate30: 7.9,  rate15: 7.2,  type: 'FHA preferible',  color: '#F97316', emoji: '⚠️' },
-    { label: '580–619 (FHA mínimo)',  min: 580, rate30: 8.5,  rate15: null, type: 'Solo FHA',         color: '#EF4444', emoji: '🔴' },
-    { label: 'Menos de 580',          min: 0,   rate30: null, rate15: null, type: 'No califica',     color: '#6B7280', emoji: '❌' },
+    { label: '740+ (Excelente)',      min: 740, rate30: 6.5,  rate15: 5.9,  type: 'Convencional',    color: '#10B981', emoji: '' },
+    { label: '700–739 (Muy bueno)',   min: 700, rate30: 6.9,  rate15: 6.2,  type: 'Convencional',    color: '#10B981', emoji: '' },
+    { label: '660–699 (Bueno)',       min: 660, rate30: 7.35, rate15: 6.7,  type: 'Convencional',    color: '#F59E0B', emoji: '' },
+    { label: '620–659 (Regular)',     min: 620, rate30: 7.9,  rate15: 7.2,  type: 'FHA preferible',  color: '#F97316', emoji: '' },
+    { label: '580–619 (FHA mínimo)',  min: 580, rate30: 8.5,  rate15: null, type: 'Solo FHA',         color: '#EF4444', emoji: '' },
+    { label: 'Menos de 580',          min: 0,   rate30: null, rate15: null, type: 'No califica',     color: '#6B7280', emoji: '' },
 ]
 
 const PROP_TAX_RATE = 0.012
@@ -320,7 +320,7 @@ export default function PrequalToolMobile({ onClose, userId }) {
                             {result.qualified ? (
                                 <>
                                     <div className="prequal-range-card">
-                                        <div className="prequal-range-label">🏠 Rango de Casa Estimado</div>
+                                        <div className="prequal-range-label"> Rango de Casa Estimado</div>
                                         <div className="prequal-range-values">
                                             <span className="prequal-range-low">{fmt(result.rangeLow)}</span>
                                             <span className="prequal-range-dash">—</span>
@@ -352,7 +352,7 @@ export default function PrequalToolMobile({ onClose, userId }) {
 
                                     <div className="prequal-breakdown-card">
                                         <div className="prequal-breakdown-title">
-                                            💸 Pago mensual estimado
+                                             Pago mensual estimado
                                             <span className="prequal-breakdown-total">{fmt(result.totalMonthly)}/mes</span>
                                         </div>
                                         <div className="prequal-breakdown-rows">

@@ -223,7 +223,7 @@ export default function RealtorProfile() {
                         </div>
 
                         {savedMsg && (
-                            <div className="rp-saved-toast">✓ Redes sociales actualizadas</div>
+                            <div className="rp-saved-toast"> Redes sociales actualizadas</div>
                         )}
 
                         <div className="rp-social-list">

@@ -54,11 +54,11 @@ export default function LandingPageMobile() {
     const [demoUser, setDemoUser] = useState(null)
 
     const CATEGORIES = [
-        { id: 'all', label: t('home.categories.all'), icon: '🏠' },
-        { id: 'exclusive', label: t('home.categories.exclusive'), icon: '⭐' },
-        { id: 'new', label: t('home.categories.new'), icon: '🆕' },
-        { id: 'under300', label: t('home.categories.under300'), icon: '💰' },
-        { id: 'luxury', label: t('home.categories.luxury'), icon: '👑' },
+        { id: 'all', label: t('home.categories.all'), icon: '' },
+        { id: 'exclusive', label: t('home.categories.exclusive'), icon: '' },
+        { id: 'new', label: t('home.categories.new'), icon: '' },
+        { id: 'under300', label: t('home.categories.under300'), icon: '' },
+        { id: 'luxury', label: t('home.categories.luxury'), icon: '' },
     ]
 
     const { properties: globalProperties, loading: ctxLoading } = useProperties()

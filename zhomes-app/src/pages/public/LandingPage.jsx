@@ -27,7 +27,7 @@ export default function LandingPage() {
         { value: '150+', label: 'Propiedades Vendidas', icon: Building2 },
         { value: '4', label: 'Realtors Expertos', icon: Users },
         { value: '$45M+', label: 'En Ventas', icon: TrendingUp },
-        { value: '4.9★', label: 'Calificación', icon: Star },
+        { value: '4.9', label: 'Calificación', icon: Star },
     ]
 
     const featured = [

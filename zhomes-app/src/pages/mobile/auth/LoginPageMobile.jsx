@@ -114,7 +114,7 @@ export default function LoginPageMobile() {
                     <h1>{loginRole === 'broker' ? 'Portal Broker' : 'Portal ZHOMES'}</h1>
                     <p>
                         {loginRole === 'broker' 
-                            ? 'Si no eres Gilbert o Ernesto, ¿qué haces aquí? 👀' 
+                            ? 'Si no eres Gilbert o Ernesto, ¿qué haces aquí? ' 
                             : 'Inicia sesión en tu cuenta'}
                     </p>
                 </div>

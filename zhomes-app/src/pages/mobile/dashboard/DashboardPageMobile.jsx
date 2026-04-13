@@ -200,7 +200,7 @@ export default function DashboardPageMobile() {
         <div className="mobile-dash-header">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <h2>Hola, Gilbert 👋</h2>
+              <h2>Hola, Gilbert </h2>
               <p>Aquí tienes el estado de tu agencia.</p>
             </div>
             <button

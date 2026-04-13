@@ -101,11 +101,11 @@ export function generateChecklist(transactionId, transactionType = 'purchase') {
 
 // Categorías con etiquetas en español para la UI
 export const DOCUMENT_CATEGORIES = {
-  contract:   { label: 'Contrato',      color: '#6366f1', icon: '📋' },
-  inspection: { label: 'Inspección',    color: '#f59e0b', icon: '🔍' },
-  financial:  { label: 'Financiamiento', color: '#10b981', icon: '💰' },
-  title:      { label: 'Título',        color: '#3b82f6', icon: '🏛️' },
-  closing:    { label: 'Cierre',        color: '#8b5cf6', icon: '🎉' },
+  contract:   { label: 'Contrato',      color: '#6366f1', icon: '' },
+  inspection: { label: 'Inspección',    color: '#f59e0b', icon: '' },
+  financial:  { label: 'Financiamiento', color: '#10b981', icon: '' },
+  title:      { label: 'Título',        color: '#3b82f6', icon: '' },
+  closing:    { label: 'Cierre',        color: '#8b5cf6', icon: '' },
 };
 
 // Estados de documento con sus etiquetas y colores
@@ -113,7 +113,7 @@ export const DOCUMENT_STATUSES = {
   pending:    { label: 'Pendiente',    color: '#6b7280', bg: '#f3f4f6' },
   uploaded:   { label: 'Subido',       color: '#f59e0b', bg: '#fffbeb' },
   reviewing:  { label: 'En Revisión',  color: '#3b82f6', bg: '#eff6ff' },
-  approved:   { label: 'Aprobado ✓',  color: '#10b981', bg: '#f0fdf4' },
+  approved:   { label: 'Aprobado ',  color: '#10b981', bg: '#f0fdf4' },
   rejected:   { label: 'Rechazado',   color: '#ef4444', bg: '#fef2f2' },
 };
 
@@ -124,6 +124,6 @@ export const TRANSACTION_STATUSES = {
   inspection:       { label: 'Inspección',       step: 2, color: '#f59e0b' },
   appraisal:        { label: 'Tasación',         step: 2, color: '#f59e0b' },
   pre_close:        { label: 'Pre-Cierre',       step: 3, color: '#8b5cf6' },
-  closed:           { label: '¡Cerrada! 🎉',    step: 4, color: '#10b981' },
+  closed:           { label: '¡Cerrada! ',    step: 4, color: '#10b981' },
   cancelled:        { label: 'Cancelada',        step: -1, color: '#ef4444' },
 };

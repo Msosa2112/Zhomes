@@ -7,12 +7,12 @@ import {
 import './ESignaturesMobile.css'
 
 const TEMPLATES = [
-    { id: 1, name: 'Oferta de Compra', description: 'Contrato estándar de oferta para compra residencial', fields: 12, icon: '📝' },
-    { id: 2, name: 'Acuerdo de Listado', description: 'Contrato de representación para vendedor', fields: 8, icon: '🏠' },
-    { id: 3, name: 'Acuerdo de Representación', description: 'Contrato buyer agent para comprador', fields: 6, icon: '🤝' },
-    { id: 4, name: 'Addendum de Inspección', description: 'Aditivo post-inspección con reparaciones', fields: 5, icon: '🔍' },
-    { id: 5, name: 'Contraoferta', description: 'Respuesta formal a una oferta recibida', fields: 7, icon: '💰' },
-    { id: 6, name: 'Disclosure de Propiedad', description: 'Declaración de condición del vendedor', fields: 15, icon: '📋' },
+    { id: 1, name: 'Oferta de Compra', description: 'Contrato estándar de oferta para compra residencial', fields: 12, icon: '' },
+    { id: 2, name: 'Acuerdo de Listado', description: 'Contrato de representación para vendedor', fields: 8, icon: '' },
+    { id: 3, name: 'Acuerdo de Representación', description: 'Contrato buyer agent para comprador', fields: 6, icon: '' },
+    { id: 4, name: 'Addendum de Inspección', description: 'Aditivo post-inspección con reparaciones', fields: 5, icon: '' },
+    { id: 5, name: 'Contraoferta', description: 'Respuesta formal a una oferta recibida', fields: 7, icon: '' },
+    { id: 6, name: 'Disclosure de Propiedad', description: 'Declaración de condición del vendedor', fields: 15, icon: '' },
 ]
 
 const DOCUMENTS = [
@@ -381,7 +381,7 @@ export default function ESignaturesMobile() {
                     </div>
                     <div className="esign-sign-body">
                         <div className="esign-sign-card">
-                            <div className="esign-sign-icon">✍️</div>
+                            <div className="esign-sign-icon"></div>
                             <h3>Firma Electrónica Segura</h3>
                             <p>Serás redirigido al portal seguro de DocuSeal para completar la firma. Una vez que termines, regresa aquí.</p>
                             <button
@@ -397,7 +397,7 @@ export default function ESignaturesMobile() {
                                 className="esign-action-btn outline"
                                 onClick={() => confirmCompletion(signingDoc.id)}
                             >
-                                Ya firmé el documento ✓
+                                Ya firmé el documento 
                             </button>
                         </div>
                     </div>

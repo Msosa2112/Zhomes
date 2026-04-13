@@ -88,10 +88,10 @@ const MOCK_NOTIFICATIONS = [
 
 const FILTERS = [
     { key: 'all', label: 'Todas' },
-    { key: 'urgent', label: '🔴 Urgentes' },
+    { key: 'urgent', label: ' Urgentes' },
     { key: 'action', label: '🟡 Acción' },
-    { key: 'info', label: '🔵 Info' },
-    { key: 'completed', label: '✅ Completas' },
+    { key: 'info', label: ' Info' },
+    { key: 'completed', label: ' Completas' },
 ]
 
 const typeColors = {
@@ -224,7 +224,7 @@ export default function NotificationCenter({ isOpen, onClose }) {
                                                 <p className="notif-body">{n.body}</p>
                                                 <div className="notif-meta">
                                                     <span className="notif-time">{n.time}</span>
-                                                    {n.tx && <span className="notif-tx">📍 {n.tx}</span>}
+                                                    {n.tx && <span className="notif-tx"> {n.tx}</span>}
                                                 </div>
                                                 {n.action && (
                                                     <button className="notif-action-btn" style={{ color: typeColors[n.type], borderColor: `${typeColors[n.type]}30`, background: `${typeColors[n.type]}06` }}>

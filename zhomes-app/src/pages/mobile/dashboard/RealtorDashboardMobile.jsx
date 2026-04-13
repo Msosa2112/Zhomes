@@ -99,7 +99,7 @@ export default function RealtorDashboardMobile() {
         <div className="mobile-dash-page">
             <div className="mobile-dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                    <h2>Hola, {userName} 👋</h2>
+                    <h2>Hola, {userName} </h2>
                     <p>Aquí tienes tu Centro de Mando en vivo.</p>
                 </div>
             </div>
@@ -248,7 +248,7 @@ export default function RealtorDashboardMobile() {
 
             {(offMarketListings || []).length > 0 && (
             <div className="m-dash-section">
-                <h3>⭐ Propiedades Exclusivas</h3>
+                <h3> Propiedades Exclusivas</h3>
                 <div className="m-alerts-list">
                     {(offMarketListings || []).slice(0, 5).map((prop, idx) => (
                         <div className="m-alert" key={idx} style={{ padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid rgba(255,215,0,0.15)', display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -332,7 +332,7 @@ export default function RealtorDashboardMobile() {
                             <div className="mai-rules-list" style={{ marginTop: '16px' }}>
                                 <div className="mai-rule-card" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', background: 'rgba(16,185,129,0.05)', borderColor: 'rgba(16,185,129,0.2)' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                        <strong style={{ color: '#10B981' }}>🔥 Cliente: Alex G.</strong>
+                                        <strong style={{ color: '#10B981' }}> Cliente: Alex G.</strong>
                                         <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Vio una casa 5 veces hoy</span>
                                     </div>
                                     

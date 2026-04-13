@@ -62,6 +62,30 @@ const btnStyle = (color='#c0392b') => `
   font-weight: 700; font-size: 14px; margin-top: 20px;
 `
 
+
+function lucide(name, color = '#ffffff', size = 16) {
+  const icons = {
+    heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+    eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+    alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    smartphone: '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    party: '<path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.31 1.7-1.07 2.16L12 11"/><line x1="10" y1="14" x2="6" y2="10"/>',
+    id_card: '<path d="M16 10h2"/><path d="M16 14h2"/><path d="M6.17 15a3 3 0 0 1 5.66 0"/><circle cx="9" cy="11" r="2"/><rect x="2" y="5" width="20" height="14" rx="2"/>',
+    car: '<path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a2 2 0 0 0-1.6-.8H8.3a2 2 0 0 0-1.6.8L4 11l-5.16.86a1 1 0 0 0-.84.99V16h3m10 0a2 2 0 1 1-4 0m-6 0a2 2 0 1 1-4 0"/>',
+    file_signature: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+    bar_chart: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+    bank: '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>'
+  };
+  const inner = icons[name] || icons.home;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:text-bottom; margin-right:6px;">${inner}</svg>`;
+}
+
+
 function logo() {
   return `<div style="text-align:center;">
     <img src="https://zhomesapp.com/assets/logo/zhomes-logo-main.png" alt="ZHomes" style="height:44px; display:inline-block; vertical-align:middle; margin-bottom:8px;" />
@@ -94,11 +118,11 @@ function footer() {
 
 // ── Template: Broker — Nuevo Lead ─────────────────────────────────────────────
 function tmpl_broker_new_lead({ agentName, clientName, propertyAddress, action, timestamp }) {
-  const actionLabel = action === 'saved' ? '❤️ Guardó' : action === 'viewed' ? '👁️ Vio' : '📋 Contactó'
+  const actionLabel = action === 'saved' ? '${lucide('heart', '#e74c3c')} Guardó' : action === 'viewed' ? '${lucide('eye', '#3498db')} Vio' : '${lucide('clipboard', '#f1c40f')} Contactó'
   const time = timestamp ? new Date(timestamp).toLocaleString('es-US', { timeZone: 'America/Louisville' }) : new Date().toLocaleString('es-US')
 
   return {
-    subject: `🏠 Nuevo Lead: ${clientName} → ${propertyAddress}`,
+    subject: `Nuevo Lead: ${clientName} → ${propertyAddress}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
@@ -124,10 +148,10 @@ function tmpl_broker_new_lead({ agentName, clientName, propertyAddress, action, 
 // ── Template: Broker — Alerta de Deadline ─────────────────────────────────────
 function tmpl_broker_deadline_alert({ address, deadlineLabel, daysLeft, clientName, realtorName }) {
   const urgencyColor = daysLeft === 1 ? '#e74c3c' : daysLeft <= 3 ? '#f39c12' : '#3498db'
-  const urgencyText  = daysLeft === 1 ? '🚨 URGENTE — 1 DÍA' : daysLeft <= 3 ? '⚠️ PRÓXIMO' : '📋 RECORDATORIO'
+  const urgencyText  = daysLeft === 1 ? '${lucide('alert', '#e74c3c')} URGENTE — 1 DÍA' : daysLeft <= 3 ? '${lucide('alert', '#f39c12')} PRÓXIMO' : '${lucide('clipboard', '#3498db')} RECORDATORIO'
 
   return {
-    subject: `${daysLeft === 1 ? '🚨 URGENTE' : '⚠️ Deadline'}: ${deadlineLabel} → ${address}`,
+    subject: `${daysLeft === 1 ? 'URGENTE ' : 'Deadline '}: ${deadlineLabel} → ${address}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
@@ -158,12 +182,12 @@ function tmpl_realtor_transaction_assigned({ realtorName, address, clientName, c
   const priceStr = price ? `$${Number(price).toLocaleString('en-US')}` : 'Por confirmar'
 
   return {
-    subject: `🏠 Nueva Transacción Asignada: ${address}`,
+    subject: `Nueva Transacción Asignada: ${address}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
         <span style="${badgeStyle('#27ae60')}">Nueva Transacción</span>
-        <h2 style="color:white;margin:16px 0 8px;">Hola, ${realtorName} 👋</h2>
+        <h2 style="color:white;margin:16px 0 8px;">Hola, ${realtorName}</h2>
         <p style="color:#aaa;">ZHomes TC ha abierto una nueva transacción asignada a ti. Aquí están los detalles:</p>
         <div style="${cardStyle}">
           <table style="width:100%;border-collapse:collapse;">
@@ -187,7 +211,7 @@ function tmpl_realtor_deadline_reminder({ realtorName, address, deadlineLabel, d
   const dateStr  = closingDate ? new Date(closingDate).toLocaleDateString('es-US', { month: 'long', day: 'numeric' }) : ''
 
   return {
-    subject: `${daysLeft === 1 ? '🚨' : '⚠️'} Deadline en ${daysLeft}d: ${deadlineLabel} → ${address}`,
+    subject: `Deadline en ${daysLeft}d: ${deadlineLabel} → ${address}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
@@ -209,18 +233,18 @@ function tmpl_realtor_deadline_reminder({ realtorName, address, deadlineLabel, d
 // ── Template: Client — Bienvenida ─────────────────────────────────────────────
 function tmpl_client_welcome({ clientName, realtorName, appUrl }) {
   return {
-    subject: `🏠 Bienvenido a ZHomes, ${clientName.split(' ')[0]}!`,
+    subject: `Bienvenido a ZHomes, ${clientName.split(' ')[0]}!`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
-        <h2 style="color:white;margin:0 0 16px;">Hola, ${clientName} 👋</h2>
+        <h2 style="color:white;margin:0 0 16px;">Hola, ${clientName}</h2>
         <p style="color:#aaa;">¡Bienvenido a ZHomes! Tu agente <strong style="color:white">${realtorName}</strong> está listo para acompañarte en el proceso de compra.</p>
         <div style="${cardStyle}">
           <h3 style="color:white;margin:0 0 12px;">¿Qué sigue?</h3>
-          <p style="color:#aaa;margin:8px 0;">✅ Tu perfil fue creado en nuestro sistema</p>
-          <p style="color:#aaa;margin:8px 0;">🔍 Ya puedes explorar propiedades en la app</p>
-          <p style="color:#aaa;margin:8px 0;">💬 Contacta a tu agente directamente por WhatsApp</p>
-          <p style="color:#aaa;margin:8px 0;">📱 Descarga la app de ZHomes para seguimiento en tiempo real</p>
+          <p style="color:#aaa;margin:8px 0;">${lucide('check', '#2ecc71')} Tu perfil fue creado en nuestro sistema</p>
+          <p style="color:#aaa;margin:8px 0;">${lucide('search', '#3498db')} Ya puedes explorar propiedades en la app</p>
+          <p style="color:#aaa;margin:8px 0;">${lucide('clipboard', '#f1c40f')} Contacta a tu agente directamente por WhatsApp</p>
+          <p style="color:#aaa;margin:8px 0;">${lucide('smartphone', '#9b59b6')} Descarga la app de ZHomes para seguimiento en tiempo real</p>
         </div>
         ${appUrl ? `<a href="${appUrl}" style="${btnStyle()}">Explorar propiedades →</a>` : ''}
       </div>
@@ -234,11 +258,11 @@ function tmpl_client_closing_soon({ clientName, address, daysLeft, closingDate, 
   const dateStr = closingDate ? new Date(closingDate).toLocaleDateString('es-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''
 
   return {
-    subject: `🎉 ¡Tu cierre se acerca! ${address} — ${daysLeft} día${daysLeft !== 1 ? 's' : ''}`,
+    subject: `¡Tu cierre se acerca! ${address} — ${daysLeft} día${daysLeft !== 1 ? 's' : ''}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
-        <h2 style="color:white;margin:0 0 8px;">¡${clientName.split(' ')[0]}, casi es tuya! 🎉</h2>
+        <h2 style="color:white;margin:0 0 8px;">¡${clientName.split(' ')[0]}, casi es tuya!</h2>
         <p style="color:#aaa;">Tu cierre en <strong style="color:white">${address}</strong> está a solo ${daysLeft} día${daysLeft !== 1 ? 's' : ''} de distancia.</p>
         <div style="${cardStyle};text-align:center;">
           <div style="font-size:56px;font-weight:900;color:#27ae60;">${daysLeft}</div>
@@ -246,11 +270,11 @@ function tmpl_client_closing_soon({ clientName, address, daysLeft, closingDate, 
           <div style="color:white;font-weight:700;margin-top:12px;">${dateStr}</div>
         </div>
         <div style="${cardStyle}">
-          <h3 style="color:white;margin:0 0 12px;">📋 Asegúrate de tener listo:</h3>
-          <p style="color:#aaa;margin:6px 0;">💵 Fondos de cierre (cashier's check o wire transfer)</p>
-          <p style="color:#aaa;margin:6px 0;">🪪 Identificación oficial con foto</p>
-          <p style="color:#aaa;margin:6px 0;">📋 Cualquier documento pendiente solicitado</p>
-          <p style="color:#aaa;margin:6px 0;">🚗 Llegar puntual a la closing table</p>
+          <h3 style="color:white;margin:0 0 12px;">${lucide('clipboard', '#ffffff', 20)} Asegúrate de tener listo:</h3>
+          <p style="color:#aaa;margin:6px 0;">${lucide('bank', '#e74c3c')} Fondos de cierre (cashier's check o wire transfer)</p>
+          <p style="color:#aaa;margin:6px 0;">${lucide('id_card', '#3498db')} Identificación oficial con foto</p>
+          <p style="color:#aaa;margin:6px 0;">${lucide('clipboard', '#f1c40f')} Cualquier documento pendiente solicitado</p>
+          <p style="color:#aaa;margin:6px 0;">${lucide('car', '#2ecc71')} Llegar puntual a la closing table</p>
         </div>
         ${realtorPhone ? `<p style="color:#aaa;font-size:14px;">¿Preguntas? Escríbele directamente a ${realtorName}: <strong style="color:white">${realtorPhone}</strong></p>` : ''}
       </div>
@@ -262,12 +286,12 @@ function tmpl_client_closing_soon({ clientName, address, daysLeft, closingDate, 
 // ── Template: Client — Actualización de Estado ────────────────────────────────
 function tmpl_client_status_update({ clientName, address, oldStatus, newStatus }) {
   const statusLabels = {
-    contract_signed: '📝 Contrato firmado',
-    inspection:      '🔍 En inspección',
-    appraisal:       '📊 Tasación (Appraisal)',
-    financing:       '🏦 Aprobación de financiamiento',
-    pre_close:       '✅ Pre-cierre — ¡casi listo!',
-    closed:          '🎉 ¡CERRADO! — ¡Felicidades!',
+    contract_signed: lucide('file_signature', '#3498db') + ' Contrato firmado',
+    inspection: lucide('search', '#f39c12') + ' En inspección',
+    appraisal:       lucide('bar_chart', '#9b59b6') + ' Tasación (Appraisal)',
+    financing: lucide('bank', '#2ecc71') + ' Aprobación de financiamiento',
+    pre_close: lucide('check', '#3498db') + ' Pre-cierre — ¡casi listo!',
+    closed: lucide('party', '#f1c40f') + ' ¡CERRADO! — ¡Felicidades!',
   }
 
   const newLabel   = statusLabels[newStatus] || newStatus
@@ -275,19 +299,19 @@ function tmpl_client_status_update({ clientName, address, oldStatus, newStatus }
   const accentColor = isClosing ? '#27ae60' : '#3498db'
 
   return {
-    subject: `📢 Actualización: Tu transacción de ${address}`,
+    subject: `Actualización: Tu transacción de ${address}`,
     html: `<div style="${baseStyle}"><div style="${containerStyle}">
       <div style="${headerStyle}">${logo()}</div>
       <div style="${bodyStyle}">
         <span style="${badgeStyle(accentColor)}">Actualización de Estado</span>
         <h2 style="color:white;margin:16px 0 8px;">
-          ${isClosing ? `¡${clientName.split(' ')[0]}, lo lograste! 🎉` : `Hola, ${clientName.split(' ')[0]}`}
+          ${isClosing ? `¡${clientName.split(' ')[0]}, lo lograste!` : `Hola, ${clientName.split(' ')[0]}`}
         </h2>
         <p style="color:#aaa;">Tu transacción de <strong style="color:white">${address}</strong> ha avanzado:</p>
         <div style="${cardStyle};text-align:center;">
           <div style="color:#555;font-size:13px;margin-bottom:8px;">NUEVO ESTADO</div>
           <div style="font-size:22px;font-weight:700;color:${accentColor};">${newLabel}</div>
-          ${isClosing ? `<p style="color:#aaa;margin-top:16px;">¡Bienvenido a tu nuevo hogar! Ha sido un placer acompañarte en este proceso. 🏡</p>` : ''}
+          ${isClosing ? `<p style="color:#aaa;margin-top:16px;">¡Bienvenido a tu nuevo hogar! Ha sido un placer acompañarte en este proceso.</p>` : ''}
         </div>
         <p style="color:#aaa;font-size:14px;">Si tienes preguntas sobre este cambio, contacta a tu agente o responde a este correo.</p>
       </div>
@@ -364,7 +388,7 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: result.message || 'Error enviando email', details: result })
     }
 
-    console.log(`[Emails] ✅ Enviado: ${type} → ${to} | ID: ${result.id}`)
+    console.log(`[Emails]  Enviado: ${type} → ${to} | ID: ${result.id}`)
     return res.status(200).json({ success: true, id: result.id, type, to })
 
   } catch (err) {

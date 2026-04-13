@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle, Pause, Play } from 'lucide-react';
+import { Heart, Share2, Info, ChevronLeft, MapPin, Bed, Bath, Square, X, Phone, MessageCircle, Pause, Play, Sparkles, Sofa, Waves, Trees, Car, Package, Home, Gem, Building, Music, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabaseClient';
 import './VibeFeedMobile.css';
@@ -162,18 +162,18 @@ export default function VibeFeedMobile() {
 
 // Small helper to simulate AI "extracting" key features from the MLS remarks
 function extractAIHighlights(description) {
-    if (!description) return ["✨ Excelente distribución", "🛋 Diseño acogedor", "📍 Gran ubicación"];
+    if (!description) return [<><Sparkles size={12} style={{display: 'inline', marginRight: 4}}/> Excelente distribución</>, <><Sofa size={12} style={{display: 'inline', marginRight: 4}}/> Diseño acogedor</>, <><MapPin size={12} style={{display: 'inline', marginRight: 4}}/> Gran ubicación</>];
     const lower = description.toLowerCase();
     const highlights = [];
-    if (lower.includes('pool') || lower.includes('piscina')) highlights.push("🏊‍♀️ Piscina");
-    if (lower.includes('hardwood') || lower.includes('madera')) highlights.push("🪵 Pisos de madera");
-    if (lower.includes('new') || lower.includes('renovated') || lower.includes('nuevo') || lower.includes('remodelado')) highlights.push("✨ Recién remodelado");
-    if (lower.includes('yard') || lower.includes('patio') || lower.includes('garden')) highlights.push("🌳 Amplio patio");
-    if (lower.includes('garage') || lower.includes('garaje')) highlights.push("🚗 Garaje incluido");
-    if (lower.includes('basement') || lower.includes('sótano')) highlights.push("📦 Sótano espacioso");
+    if (lower.includes('pool') || lower.includes('piscina')) highlights.push(<><Waves size={12} style={{display: 'inline', marginRight: 4}}/> Piscina</>);
+    if (lower.includes('hardwood') || lower.includes('madera')) highlights.push(<><Trees size={12} style={{display: 'inline', marginRight: 4}}/> Pisos de madera</>);
+    if (lower.includes('new') || lower.includes('renovated') || lower.includes('nuevo') || lower.includes('remodelado')) highlights.push(<><Sparkles size={12} style={{display: 'inline', marginRight: 4}}/> Recién remodelado</>);
+    if (lower.includes('yard') || lower.includes('patio') || lower.includes('garden')) highlights.push(<><Trees size={12} style={{display: 'inline', marginRight: 4}}/> Amplio patio</>);
+    if (lower.includes('garage') || lower.includes('garaje')) highlights.push(<><Car size={12} style={{display: 'inline', marginRight: 4}}/> Garaje incluido</>);
+    if (lower.includes('basement') || lower.includes('sótano')) highlights.push(<><Package size={12} style={{display: 'inline', marginRight: 4}}/> Sótano espacioso</>);
     
     // Fill up to 3 if we couldn't find matches
-    const fallbacks = ["🤩 Espacios iluminados", "🏡 Listo para mudarse", "💎 Increíble oportunidad", "🏙 Barrio tranquilo"];
+    const fallbacks = [<><Sparkles size={12} style={{display: 'inline', marginRight: 4}}/> Espacios iluminados</>, <><Home size={12} style={{display: 'inline', marginRight: 4}}/> Listo para mudarse</>, <><Gem size={12} style={{display: 'inline', marginRight: 4}}/> Increíble oportunidad</>, <><Building size={12} style={{display: 'inline', marginRight: 4}}/> Barrio tranquilo</>];
     while (highlights.length < 3) {
         let f = fallbacks[Math.floor(Math.random() * fallbacks.length)];
         if (!highlights.includes(f)) highlights.push(f);
@@ -226,7 +226,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
     const handleShare = async () => {
         const shareData = {
-            title: `🏠 ZHomes Vibe: ${property.property_address || property.address}`,
+            title: `ZHomes Vibe: ${property.property_address || property.address}`,
             text: `¡Mira esta increíble propiedad en ${property.city} por $${property.price?.toLocaleString()}!`,
             url: window.location.origin + `/propiedades/${property.id}`,
         };
@@ -276,7 +276,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                         {!isFollowing ? (
                             <button className="vibe-realtor-add" onClick={handleFollow}>+</button>
                         ) : (
-                            <button className="vibe-realtor-add" style={{background: 'var(--zhomes-red)'}} onClick={(e) => e.stopPropagation()}>✓</button>
+                            <button className="vibe-realtor-add" style={{background: 'var(--zhomes-red)'}} onClick={(e) => e.stopPropagation()}></button>
                         )}
                     </div>
                 </div>
@@ -305,7 +305,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
             {/* Bottom Info Area */}
             <div className="vibe-info-area">
-                {/* 🔥 FIXED: AI Property Summaries moved here for natural flex stacking */}
+                {/*  FIXED: AI Property Summaries moved here for natural flex stacking */}
                 {isActive && (
                     <div className="vibe-ai-summary">
                         {aiBullets.map((bullet, i) => (
@@ -322,7 +322,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
                 <div className="vibe-stats">
                     <div className="v-stat"><Bed size={16}/> {property.beds} Hab</div>
                     <div className="v-stat"><Bath size={16}/> {property.baths} Ba</div>
-                    {/* 🔥 NEW: Calculadora de Hipoteca Interactiva */}
+                    {/*  NEW: Calculadora de Hipoteca Interactiva */}
                     <div className="v-stat mortgage-clickable" onClick={(e) => { e.stopPropagation(); setShowMortgage(!showMortgage); }}>
                         <Square size={16}/> 
                         {showMortgage ? `~$${Math.round(property.price * 0.0068).toLocaleString()}/mes` : `${property.sqft} sqft`}
@@ -331,7 +331,7 @@ function VibePost({ property, isActive, onOpenRealtor }) {
 
                 {/* Simulated "Now Playing" sound ticker for TikTok feel */}
                 <div className="vibe-sound-ticker">
-                    <div className="music-icon">🎵</div>
+                    <div className="music-icon"><Music size={16} color="white"/></div>
                     <div className="ticker-text">
                         <div className="ticker-scroll">
                             ZHomes Original Sound - Recorrido de Lujo en {property.city}
@@ -391,7 +391,7 @@ function RealtorContactSheet({ realtor, onClose }) {
                     </div>
 
                     <div className="video-caption">
-                        "¡Hola! Te muestro esta propiedad en vivo. Escríbeme 👇"
+                        "¡Hola! Te muestro esta propiedad en vivo. Escríbeme abajo" <ArrowDown size={14} style={{display: 'inline'}}/>
                     </div>
 
                     <div className="sheet-actions">

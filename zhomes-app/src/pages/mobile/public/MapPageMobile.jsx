@@ -9,7 +9,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import Supercluster from 'supercluster'
 import { useTheme } from '../../../context/ThemeContext'
 import { supabase } from '../../../lib/supabaseClient'
-import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader } from 'lucide-react'
+import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader, Home, Coins, MapPin, Building, Waves, HelpCircle, Bot, Info, Star, Car } from 'lucide-react'
 import './MapPageMobile.css'
 
 // ── Formatea precio ────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ const getMapStyle = (dark) => ({
         ? 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
         : 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'],
       tileSize: 256,
-      attribution: '© CartoDB © OpenStreetMap',
+      attribution: ' CartoDB  OpenStreetMap',
     },
   },
   layers: [{ id: 'carto-tiles', type: 'raster', source: 'carto' }],
@@ -78,7 +78,7 @@ function PropCard({ prop, isActive, onClick, onView }) {
           alt={prop.address}
           onError={e => { e.target.src = fallback; }}
         />
-        {prop.exclusive && <span className="map-bottom-card-badge">⭐ ZH</span>}
+        {prop.exclusive && <span className="map-bottom-card-badge"> ZH</span>}
         {isActive && (
           <button className="map-bottom-card-view" onClick={e => { e.stopPropagation(); onView(); }}>
             Ver →
@@ -377,14 +377,14 @@ export default function MapPageMobile() {
       {/* ── Status filter pills ────────────────────────────────────────── */}
       <div className="map-filter-row top">
         {[
-          { key: 'All',        label: '🏠 Todas' },
-          { key: 'Active',     label: '🟢 En Venta' },
-          { key: 'Exclusivas', label: '⭐ Exclusivas' },
+          { key: 'All',        label: <span className="flex items-center gap-1"><Home size={14} /> Todas</span> },
+          { key: 'Active',     label: <span className="flex items-center gap-1"><MapPin size={14} color="#10B981" /> En Venta</span> },
+          { key: 'Exclusivas', label: <span className="flex items-center gap-1"><Star size={14} color="#F59E0B" /> Exclusivas</span> },
         ].map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setStatusFilter(key)}
-            className={`map-pill ${statusFilter === key ? `active-${key.toLowerCase()}` : ''}`}
+            className={`map-pill flex items-center ${statusFilter === key ? `active-${key.toLowerCase()}` : ''}`}
           >{label}</button>
         ))}
         <button
@@ -400,14 +400,14 @@ export default function MapPageMobile() {
         <div className="map-filter-row types">
           {[
             { key: 'all',          label: 'Todos' },
-            { key: 'Single Family',label: '🏡 Casas' },
-            { key: 'Condominium',  label: '🏢 Apt' },
-            { key: 'Lots/Land',    label: '🌿 Lotes' },
+            { key: 'Single Family',label: <span className="flex items-center gap-1"><Home size={14} /> Casas</span> },
+            { key: 'Condominium',  label: <span className="flex items-center gap-1"><Building size={14} /> Apt</span> },
+            { key: 'Lots/Land',    label: <span className="flex items-center gap-1"><MapPin size={14} /> Lotes</span> },
           ].map(({ key, label }) => (
             <button
               key={key}
               onClick={() => { setTypeFilter(key); setShowTypeDropdown(false); }}
-              className={`map-pill sm ${
+              className={`map-pill sm flex items-center ${
                 typeFilter === key ? 'active-type' :
                 (typeFilter === 'Townhouse' || typeFilter === 'Multifamily') && key === 'all' && typeFilter !== 'all' ? '' : ''
               }`}
@@ -421,7 +421,7 @@ export default function MapPageMobile() {
               (typeFilter === 'Townhouse' || typeFilter === 'Multifamily') ? 'active-type' : ''
             }`}
           >
-            {typeFilter === 'Townhouse' ? '🏘️ Town' : typeFilter === 'Multifamily' ? '🏗️ Multi' : '···'}
+            {typeFilter === 'Townhouse' ? <span className="flex items-center gap-1"><Building size={14} /> Town</span> : typeFilter === 'Multifamily' ? <span className="flex items-center gap-1"><Building size={14} /> Multi</span> : '···'}
           </button>
         </div>
 
@@ -435,13 +435,13 @@ export default function MapPageMobile() {
             />
             <div className="map-type-dropdown">
               {[
-                { key: 'Townhouse',  label: '🏘️ Townhouse' },
-                { key: 'Multifamily',label: '🏗️ Multifamiliar' },
+                { key: 'Townhouse',  label: <span className="flex items-center gap-1"><Building size={14} /> Townhouse</span> },
+                { key: 'Multifamily',label: <span className="flex items-center gap-1"><Building size={14} /> Multifamiliar</span> },
               ].map(({ key, label }) => (
                 <button
                   key={key}
                   onClick={() => { setTypeFilter(key); setShowTypeDropdown(false); }}
-                  className={`map-type-dropdown-item ${typeFilter === key ? 'active' : ''}`}
+                  className={`map-type-dropdown-item flex items-center ${typeFilter === key ? 'active' : ''}`}
                 >{label}</button>
               ))}
             </div>
@@ -510,7 +510,7 @@ export default function MapPageMobile() {
       {/* ── Mode indicator label ───────────────────────────────────────── */}
       {mapMode !== 'standard' && (
         <div className="map-mode-label">
-          {mapMode === 'heat' ? '🌡️ Densidad de precios' : '🐝 Precios 3D por zona'}
+          {mapMode === 'heat' ? <span className="flex items-center gap-1"><Flame size={14}/> Densidad de precios</span> : <span className="flex items-center gap-1"><Hexagon size={14}/> Precios 3D por zona</span>}
         </div>
       )}
 
@@ -519,9 +519,9 @@ export default function MapPageMobile() {
         {mapLoading ? 'Cargando...' : (
           <>
             <span>{mapMode === 'standard' ? visibleProps.length : filteredProps.length} prop{(visibleProps.length !== 1) ? 's' : ''}</span>
-            {hasAiFilters && <span className="map-count-ai">🤖 IA</span>}
+            {hasAiFilters && <span className="map-count-ai flex items-center gap-1"><Bot size={12}/> IA</span>}
             {filteredProps.filter(p => p.exclusive).length > 0 && !zhomesOnly && (
-              <span className="map-count-zh">⭐ {filteredProps.filter(p => p.exclusive).length}</span>
+              <span className="map-count-zh"> {filteredProps.filter(p => p.exclusive).length}</span>
             )}
           </>
         )}
@@ -584,7 +584,7 @@ export default function MapPageMobile() {
                   onError={e => { e.target.src = '/assets/logo/fav.png'; }}
                 />
                 <div className="map-list-info">
-                  <p className="map-list-price">{fmtPrice(p.price)} {p.exclusive && '⭐'}</p>
+                  <p className="map-list-price">{fmtPrice(p.price)} {p.exclusive && <Star size={14} color="#F59E0B" className="inline"/>}</p>
                   <p className="map-list-address">{p.address}</p>
                   <p className="map-list-meta">{p.beds} rec · {p.baths} baños · {p.sqft?.toLocaleString()} ft²</p>
                 </div>

@@ -37,7 +37,7 @@ export default function SuperAdminKeysMobile() {
         setTesting(true)
         setTimeout(() => {
             setTesting(false)
-            alert("✅ APIs simulando conexión con éxito.")
+            alert(" APIs simulando conexión con éxito.")
         }, 1500)
     }
 

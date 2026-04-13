@@ -95,10 +95,10 @@ export default function CMAPageMobile() {
 
                 {/* Metodología mini-info */}
                 <div className="cma-method-pills">
-                    <span>📍 Radio 1.5mi</span>
-                    <span>📅 180 días</span>
-                    <span>⚖️ Ajustes industria</span>
-                    <span>🎯 Ponderado</span>
+                    <span> Radio 1.5mi</span>
+                    <span> 180 días</span>
+                    <span> Ajustes industria</span>
+                    <span> Ponderado</span>
                 </div>
             </div>
 
@@ -153,8 +153,8 @@ export default function CMAPageMobile() {
                             {selectedProperty.yearBuilt && <span><Home size={12} /> {selectedProperty.yearBuilt}</span>}
                         </div>
                         {selectedProperty.lat && selectedProperty.lng
-                            ? <span className="cma-gps-ok">✓ GPS disponible — análisis real</span>
-                            : <span className="cma-gps-warn">⚠ Sin coordenadas GPS — análisis limitado</span>
+                            ? <span className="cma-gps-ok"> GPS disponible — análisis real</span>
+                            : <span className="cma-gps-warn"> Sin coordenadas GPS — análisis limitado</span>
                         }
                     </div>
                     <div className="cma-subject-price">{fmtK(selectedProperty.price)}</div>
@@ -314,12 +314,12 @@ export default function CMAPageMobile() {
             {/* Default state */}
             {!selectedProperty && !result && (
                 <div className="cma-empty">
-                    <div className="cma-empty-icon">🏠</div>
+                    <div className="cma-empty-icon"></div>
                     <h3>Valuación Profesional CMA</h3>
                     <p>Busca cualquier propiedad del MLS de Louisville para obtener un análisis comparativo basado en ventas reales cercanas.</p>
                     <div className="cma-feature-list">
                         <div><Target size={14} /> Comparables reales vendidos</div>
-                        <div><BarChart2 size={14} /> Ajustes estándar de REALTORS®</div>
+                        <div><BarChart2 size={14} /> Ajustes estándar de REALTORS</div>
                         <div><CheckCircle2 size={14} /> Ponderación por distancia y recencia</div>
                     </div>
                 </div>

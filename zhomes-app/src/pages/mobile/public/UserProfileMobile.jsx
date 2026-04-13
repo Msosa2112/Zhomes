@@ -352,7 +352,7 @@ export default function UserProfileMobile() {
                         <Shield size={20} color={vaultComplete ? '#10b981' : '#8B5CF6'} />
                         <h3>Bóveda de Ofertas</h3>
                         {vaultComplete
-                            ? <span className="up-vault-status complete">Listo ✓</span>
+                            ? <span className="up-vault-status complete">Listo </span>
                             : <span className="up-vault-status pending">{Object.values(vaultDocs).filter(Boolean).length}/3</span>
                         }
                     </div>
@@ -582,7 +582,7 @@ export default function UserProfileMobile() {
                             style={{ width: '100%', marginTop: '20px', background: '#8B5CF6', color: 'white', opacity: vaultComplete ? 1 : 0.6 }}
                             onClick={() => setShowVaultModal(false)}
                         >
-                            {vaultComplete ? '✓ Bóveda Completa — ¡Lista para ofertas!' : `Guardado (${Object.values(vaultDocs).filter(Boolean).length}/3)`}
+                            {vaultComplete ? ' Bóveda Completa — ¡Lista para ofertas!' : `Guardado (${Object.values(vaultDocs).filter(Boolean).length}/3)`}
                         </button>
                     </div>
                 </div>

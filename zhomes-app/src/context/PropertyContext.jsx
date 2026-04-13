@@ -42,9 +42,9 @@ export function PropertiesProvider({ children }) {
                     });
                     setProperties(formattedProps);
                     const zhomesActive = formattedProps.filter(p => p.exclusive).length;
-                    console.log(`✅ Loaded ${formattedProps.length} active MLS properties (${zhomesActive} ZHomes)`);
+                    console.log(` Loaded ${formattedProps.length} active MLS properties (${zhomesActive} ZHomes)`);
                 } else {
-                    console.warn('⚠️ Supabase returned 0 active properties');
+                    console.warn(' Supabase returned 0 active properties');
                     setProperties([]);
                 }
 
@@ -53,7 +53,7 @@ export function PropertiesProvider({ children }) {
                 if (offMarketProps.length > 0) {
                     const formatted = offMarketProps.map(p => SupabasePropertyService.formatForApp(p));
                     setOffMarketListings(formatted);
-                    console.log(`✅ Loaded ${formatted.length} off-market (app-uploaded) properties`);
+                    console.log(` Loaded ${formatted.length} off-market (app-uploaded) properties`);
                 }
 
                 // ── ZHomes Agents ──
@@ -75,9 +75,9 @@ export function PropertiesProvider({ children }) {
                         recentDeals: a.recent_deals || []
                     }));
                     setAgentStats(stats);
-                    console.log(`✅ Loaded ${agents.length} agents from Supabase`);
+                    console.log(` Loaded ${agents.length} agents from Supabase`);
                 } else {
-                    console.warn('⚠️ Agents table empty, fetching from Spark...');
+                    console.warn(' Agents table empty, fetching from Spark...');
                     try {
                         const sparkData = await SparkService.getZHomesAgents();
                         const sparkAgents = sparkData?.value || [];
@@ -91,10 +91,10 @@ export function PropertiesProvider({ children }) {
                                 city: a.MemberCity || '', state: a.MemberStateOrProvince || '', source: 'Spark'
                             }));
                             setZhomesAgents(agents);
-                            console.log(`✅ Loaded ${agents.length} agents from Spark (fallback)`);
+                            console.log(` Loaded ${agents.length} agents from Spark (fallback)`);
                         }
                     } catch (e) {
-                        console.warn('⚠️ Could not load agents:', e.message);
+                        console.warn(' Could not load agents:', e.message);
                     }
                 }
 
@@ -108,11 +108,11 @@ export function PropertiesProvider({ children }) {
                         brokerKey: o.broker_key, mlsId: o.mls_id, status: o.status,
                         source: 'Supabase'
                     });
-                    console.log(`✅ Loaded office: ${o.name}`);
+                    console.log(` Loaded office: ${o.name}`);
                 }
 
             } catch (err) {
-                console.warn('⚠️ Data loading error:', err.message);
+                console.warn(' Data loading error:', err.message);
                 setProperties([]);
             } finally {
                 setLoading(false);
@@ -161,10 +161,10 @@ export function PropertiesProvider({ children }) {
             // Add to local state immediately
             const formatted = SupabasePropertyService.formatForApp(data);
             setOffMarketListings(prev => [formatted, ...prev]);
-            console.log('✅ Off Market property saved to Supabase:', data.id);
+            console.log(' Off Market property saved to Supabase:', data.id);
             return formatted;
         } catch (err) {
-            console.error('❌ Failed to save off-market property:', err.message);
+            console.error(' Failed to save off-market property:', err.message);
             // Fallback: add locally
             const localProp = {
                 id: `local-${Date.now()}`,

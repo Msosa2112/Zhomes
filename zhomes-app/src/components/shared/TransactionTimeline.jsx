@@ -28,7 +28,7 @@ const STEPS = [
         key: 'under_contract',
         label: 'Bajo Contrato',
         icon: Handshake,
-        narrative: '¡Oferta aceptada! 🎉 Los documentos legales están en proceso.',
+        narrative: '¡Oferta aceptada!  Los documentos legales están en proceso.',
     },
     {
         key: 'pre_close',
@@ -40,7 +40,7 @@ const STEPS = [
         key: 'closed',
         label: '¡Cerrada!',
         icon: Key,
-        narrative: '🎉 ¡Felicidades! La transacción se completó exitosamente.',
+        narrative: ' ¡Felicidades! La transacción se completó exitosamente.',
     },
 ]
 

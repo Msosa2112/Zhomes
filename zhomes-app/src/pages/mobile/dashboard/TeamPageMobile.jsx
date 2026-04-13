@@ -123,7 +123,7 @@ export default function TeamPageMobile() {
                             : <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random`} alt="" />
                         }
                         <div className="m-ainfo">
-                            <strong>{a.name} {a.isBroker ? '👑' : ''}</strong>
+                            <strong>{a.name} {a.isBroker ? '' : ''}</strong>
                             <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                                 {a.deals > 0 ? `${a.deals} cierres · ${a.vol}` : `${a.experience || 0} años exp`} · {a.languages}
                             </span>

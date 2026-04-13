@@ -38,7 +38,7 @@ export default function AIInsightsWidget() {
             ) : (
                 <div className="ai-content">
                     <div className="ai-section">
-                        <h4>🔥 Leads Calientes (Top 1%)</h4>
+                        <h4> Leads Calientes (Top 1%)</h4>
                         {MOCK_INSIGHTS.filter(i => i.type === 'lead').map((lead, idx) => (
                             <motion.div
                                 key={idx}
@@ -60,7 +60,7 @@ export default function AIInsightsWidget() {
                     </div>
 
                     <div className="ai-section">
-                        <h4>📊 Predicción de Mercado</h4>
+                        <h4> Predicción de Mercado</h4>
                         <div className="ai-market-pulse">
                             <TrendingUp size={16} className="text-success" />
                             <span>Alta Demanda en 40205 (+12% vs ayer)</span>

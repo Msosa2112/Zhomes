@@ -6,8 +6,8 @@ import { supabase } from '../../lib/supabaseClient'
 import './CreatePropertyPage.css'
 
 const PROPERTY_CATEGORIES = [
-    { value: 'Fix & Flip', label: '🔨 Fix & Flip', desc: 'Para inversionistas, necesita remodelación' },
-    { value: 'Exclusiva ZHomes', label: '⭐ Exclusiva ZHomes', desc: 'Pocket listing exclusivo de ZHomes' },
+    { value: 'Fix & Flip', label: ' Fix & Flip', desc: 'Para inversionistas, necesita remodelación' },
+    { value: 'Exclusiva ZHomes', label: ' Exclusiva ZHomes', desc: 'Pocket listing exclusivo de ZHomes' },
 ]
 
 const PROPERTY_TYPES = [
@@ -90,7 +90,7 @@ export default function CreatePropertyPage() {
         return (
             <div className="create-property-page animate-fadeIn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
                 <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 64, marginBottom: 16 }}>✅</div>
+                    <div style={{ fontSize: 64, marginBottom: 16 }}></div>
                     <h2>¡Propiedad publicada!</h2>
                     <p style={{ opacity: 0.7 }}>Redirigiendo...</p>
                 </div>

@@ -242,13 +242,13 @@ export default async function handler(req, res) {
   let synced = 0, skipped = 0, errors = 0;
 
   try {
-    log.push('🏘️ Starting Camino neighborhood sync...');
+    log.push('️ Starting Camino neighborhood sync...');
 
     const properties = await getPropertiesToSync();
     log.push(`Found ${properties.length} properties to enrich`);
 
     if (!properties.length) {
-      log.push('✅ Nothing to sync — all properties are up to date');
+      log.push(' Nothing to sync — all properties are up to date');
       await updateLog(logId, { status: 'success', duration_seconds: 0, details: { log } });
       return res.status(200).json({ success: true, synced: 0, log });
     }
@@ -267,19 +267,19 @@ export default async function handler(req, res) {
 
       } catch (err) {
         if (err.message === 'RATE_LIMIT') {
-          log.push(`⚠️ Rate limit hit at property ${synced + errors + 1} — waiting 5s`);
+          log.push(`️ Rate limit hit at property ${synced + errors + 1} — waiting 5s`);
           await sleep(5000);
           skipped++;
         } else {
           await markSyncError(property.id, err, property.lat, property.lng);
           errors++;
-          if (errors <= 5) log.push(`  ❌ ${property.id}: ${err.message}`);
+          if (errors <= 5) log.push(`   ${property.id}: ${err.message}`);
         }
       }
     }
 
     const elapsed = Math.round((Date.now() - start) / 1000);
-    log.push(`✅ Done in ${elapsed}s — synced: ${synced}, errors: ${errors}, skipped: ${skipped}`);
+    log.push(` Done in ${elapsed}s — synced: ${synced}, errors: ${errors}, skipped: ${skipped}`);
 
     const status = errors === 0 ? 'success' : synced > 0 ? 'partial' : 'failed';
     await updateLog(logId, {
@@ -340,7 +340,7 @@ async function* sparkPagedQuery(filter, select) {
 
   while (url) {
     page++;
-    console.log(`  📄 Descargando página ${page} desde Spark...`);
+    console.log(`   Descargando página ${page} desde Spark...`);
 
     const res = await fetch(url, {
       headers: {
@@ -452,11 +452,11 @@ export async function syncHistoricalClosedListings() {
 
   console.log('');
   console.log('══════════════════════════════════════════════════');
-  console.log('  🏠 CARGA HISTÓRICA CMA — ZHomes Real Estate');
+  console.log('   CARGA HISTÓRICA CMA — ZHomes Real Estate');
   console.log('══════════════════════════════════════════════════');
   console.log(`  Fecha de corte: ${cutoff} (últimos 180 días)`);
   console.log(`  Supabase URL:   ${SUPABASE_SVC_URL}`);
-  console.log(`  Spark key:      ${SPARK_KEY ? SPARK_KEY.slice(0, 8) + '...' : '❌ NO CONFIGURADA'}`);
+  console.log(`  Spark key:      ${SPARK_KEY ? SPARK_KEY.slice(0, 8) + '...' : ' NO CONFIGURADA'}`);
   console.log('');
 
   if (!SUPABASE_SVC_URL || !SUPABASE_SVC_KEY) {
@@ -502,9 +502,9 @@ export async function syncHistoricalClosedListings() {
     try {
       await supabaseUpsertBatch(pendingBatch);
       totalInserted += pendingBatch.length;
-      console.log(`  ✅ Insertados ${totalInserted} registros en Supabase...`);
+      console.log(`   Insertados ${totalInserted} registros en Supabase...`);
     } catch (err) {
-      console.error(`  ❌ Error en batch upsert: ${err.message}`);
+      console.error(`   Error en batch upsert: ${err.message}`);
       totalErrors += pendingBatch.length;
     }
     pendingBatch = [];
@@ -539,11 +539,11 @@ export async function syncHistoricalClosedListings() {
 
   console.log('');
   console.log('══════════════════════════════════════════════════');
-  console.log(`  ✅ CARGA HISTÓRICA COMPLETADA en ${elapsed}s`);
-  console.log(`  📊 Descargados de Spark:   ${totalFetched}`);
-  console.log(`  💾 Insertados en Supabase: ${totalInserted}`);
-  console.log(`  ❌ Errores:                ${totalErrors}`);
-  console.log(`  ⚠️  Sin GPS/precio (skip):  ${totalFetched - totalInserted - totalErrors}`);
+  console.log(`   CARGA HISTÓRICA COMPLETADA en ${elapsed}s`);
+  console.log(`   Descargados de Spark:   ${totalFetched}`);
+  console.log(`   Insertados en Supabase: ${totalInserted}`);
+  console.log(`   Errores:                ${totalErrors}`);
+  console.log(`  ️  Sin GPS/precio (skip):  ${totalFetched - totalInserted - totalErrors}`);
   console.log('══════════════════════════════════════════════════');
   console.log('');
   console.log('  Ahora puedes usar el CMA con datos reales.');
@@ -577,15 +577,15 @@ if (isDirectRun && process.argv.includes('--historical')) {
         if (!process.env[key.trim()]) process.env[key.trim()] = val;
       }
     }
-    console.log('  📂 .env.local cargado');
+    console.log('   .env.local cargado');
   } catch {
-    console.log('  ⚠️  No se encontró .env.local — usando variables de entorno del sistema');
+    console.log('  ️  No se encontró .env.local — usando variables de entorno del sistema');
   }
 
   syncHistoricalClosedListings()
     .then(() => process.exit(0))
     .catch(err => {
-      console.error('\n❌ Error fatal:', err.message);
+      console.error('\n Error fatal:', err.message);
       process.exit(1);
     });
 }

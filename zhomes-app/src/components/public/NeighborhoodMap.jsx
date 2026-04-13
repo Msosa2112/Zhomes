@@ -41,15 +41,15 @@ function generatePOIs(lat, lng) {
 }
 
 const DAY_TIMELINE = [
-    { time: '7:00 AM', emoji: '☕', activity: 'Café a 5 min caminando', category: 'dining' },
-    { time: '7:45 AM', emoji: '🚗', activity: 'I-64 a 3 min — Commute fluido', category: 'commute' },
-    { time: '8:00 AM', emoji: '🏫', activity: 'Dejar niños en la escuela (0.4 mi)', category: 'schools' },
-    { time: '12:00 PM', emoji: '🍽️', activity: 'Almuerzo en El Nopal (0.3 mi)', category: 'dining' },
-    { time: '3:30 PM', emoji: '🏫', activity: 'Recoger niños de la escuela', category: 'schools' },
-    { time: '4:00 PM', emoji: '🌳', activity: 'Cherokee Park — caminata familiar (1.5 mi)', category: 'lifestyle' },
-    { time: '5:30 PM', emoji: '🏋️', activity: 'Session en Planet Fitness (0.8 mi)', category: 'lifestyle' },
-    { time: '6:30 PM', emoji: '🛒', activity: 'Compras en Kroger (0.4 mi)', category: 'lifestyle' },
-    { time: '7:30 PM', emoji: '🏠', activity: 'De vuelta en casa — tu hogar', category: 'home' },
+    { time: '7:00 AM', emoji: '', activity: 'Café a 5 min caminando', category: 'dining' },
+    { time: '7:45 AM', emoji: '', activity: 'I-64 a 3 min — Commute fluido', category: 'commute' },
+    { time: '8:00 AM', emoji: '', activity: 'Dejar niños en la escuela (0.4 mi)', category: 'schools' },
+    { time: '12:00 PM', emoji: '', activity: 'Almuerzo en El Nopal (0.3 mi)', category: 'dining' },
+    { time: '3:30 PM', emoji: '', activity: 'Recoger niños de la escuela', category: 'schools' },
+    { time: '4:00 PM', emoji: '', activity: 'Cherokee Park — caminata familiar (1.5 mi)', category: 'lifestyle' },
+    { time: '5:30 PM', emoji: '', activity: 'Session en Planet Fitness (0.8 mi)', category: 'lifestyle' },
+    { time: '6:30 PM', emoji: '', activity: 'Compras en Kroger (0.4 mi)', category: 'lifestyle' },
+    { time: '7:30 PM', emoji: '', activity: 'De vuelta en casa — tu hogar', category: 'home' },
 ]
 
 const LAYER_CONFIG = {
@@ -192,7 +192,7 @@ export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
                                     <Popup>
                                         <div className="nh-popup-poi">
                                             <strong>{p.name}</strong>
-                                            <span>{p.type} · ⭐ {p.rating}/10</span>
+                                            <span>{p.type} ·  {p.rating}/10</span>
                                             <span>{p.dist}</span>
                                         </div>
                                     </Popup>
@@ -228,7 +228,7 @@ export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
                                     <Popup>
                                         <div className="nh-popup-poi">
                                             <strong>{p.name}</strong>
-                                            <span>🚗 {p.time}</span>
+                                            <span> {p.time}</span>
                                         </div>
                                     </Popup>
                                 </Marker>

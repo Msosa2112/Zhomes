@@ -3,7 +3,7 @@ import { Search, Send, ArrowLeft } from 'lucide-react'
 import './BrokerMessagesMobile.css'
 
 const CHATS = [
-    { id: 'jessica', name: 'Jessica Hernandez', msg: 'La tasación ya llegó, todo OK 👍', time: '10:25 AM', unread: 1 },
+    { id: 'jessica', name: 'Jessica Hernandez', msg: 'La tasación ya llegó, todo OK ', time: '10:25 AM', unread: 1 },
     { id: 'miriam', name: 'Miriam Castaño', msg: 'El comprador aceptó la contraoferta.', time: 'Ayer', unread: 0 },
     { id: 'tx-2215', name: '2215 Tremont Dr', msg: 'Broker: Necesitamos el addendum.', time: 'Mar', unread: 0 },
 ]
@@ -11,7 +11,7 @@ const CHATS = [
 export default function BrokerMessagesMobile() {
     const [view, setView] = useState('list') // list | chat
     const [msgs, setMsgs] = useState([
-        { id: 1, type: 'rec', text: 'Hola, la tasación ya llegó, todo OK 👍' },
+        { id: 1, type: 'rec', text: 'Hola, la tasación ya llegó, todo OK ' },
         { id: 2, type: 'sent', text: 'Excelente, sube el reporte al sistema por favor.' }
     ])
     const [inputStr, setInputStr] = useState('')

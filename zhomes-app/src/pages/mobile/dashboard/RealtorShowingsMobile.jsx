@@ -186,7 +186,7 @@ export default function RealtorShowingsMobile() {
                             {selectedShowing.feedback && (
                                 <div className="rt-feedback-summary">
                                     <h4>Feedback</h4>
-                                    <div className="rt-stars">{'★'.repeat(selectedShowing.feedback.rating)}{'☆'.repeat(5 - selectedShowing.feedback.rating)}</div>
+                                    <div className="rt-stars">{''.repeat(selectedShowing.feedback.rating)}{''.repeat(5 - selectedShowing.feedback.rating)}</div>
                                     <span className={`rt-interest rt-interest-${selectedShowing.feedback.interest}`}>Interés: {selectedShowing.feedback.interest === 'high' ? 'Alto' : selectedShowing.feedback.interest === 'medium' ? 'Medio' : 'Bajo'}</span>
                                     {selectedShowing.feedback.comment && <p>{selectedShowing.feedback.comment}</p>}
                                 </div>
@@ -232,7 +232,7 @@ export default function RealtorShowingsMobile() {
                                 <label>Rating del cliente</label>
                                 <div className="rt-star-picker">
                                     {[1,2,3,4,5].map(n => (
-                                        <button key={n} className={`rt-star-btn ${feedbackData.rating >= n ? 'active' : ''}`} onClick={() => setFeedbackData({...feedbackData, rating: n})}>★</button>
+                                        <button key={n} className={`rt-star-btn ${feedbackData.rating >= n ? 'active' : ''}`} onClick={() => setFeedbackData({...feedbackData, rating: n})}></button>
                                     ))}
                                 </div>
                             </div>
@@ -241,7 +241,7 @@ export default function RealtorShowingsMobile() {
                                 <div className="rt-interest-picker">
                                     {['low', 'medium', 'high'].map(l => (
                                         <button key={l} className={`rt-interest-btn ${feedbackData.interest === l ? 'active' : ''}`} onClick={() => setFeedbackData({...feedbackData, interest: l})}>
-                                            {l === 'high' ? '🔥 Alto' : l === 'medium' ? '😐 Medio' : '❄️ Bajo'}
+                                            {l === 'high' ? ' Alto' : l === 'medium' ? ' Medio' : ' Bajo'}
                                         </button>
                                     ))}
                                 </div>

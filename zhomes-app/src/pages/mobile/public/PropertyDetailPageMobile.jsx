@@ -239,7 +239,7 @@ export default function PropertyDetailPageMobile() {
                         <img src={activeAgent.photo} alt={activeAgent.name} style={{ border: '1px solid var(--zhomes-red)' }} />
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <strong style={{ fontSize: '1.1rem' }}>{activeAgent.name}</strong>
-                            <span style={{ color: 'var(--zhomes-red)', fontWeight: 600 }}>★ Tu Asesor Elegido</span>
+                            <span style={{ color: 'var(--zhomes-red)', fontWeight: 600 }}> Tu Asesor Elegido</span>
                         </div>
                     </div>
                 ) : (
@@ -283,7 +283,7 @@ export default function PropertyDetailPageMobile() {
                         </svg>
                     </div>
                     <div className="vibe-text">
-                        <h3>🎯 Home Score</h3>
+                        <h3> Home Score</h3>
                         <p>Puntuación personalizada basada en tus preferencias de búsqueda.</p>
                     </div>
                 </div>
@@ -398,7 +398,7 @@ export default function PropertyDetailPageMobile() {
                                 width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)',
                                 color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}>
-                                ✕
+                                
                             </button>
                         </div>
                         <iframe 

@@ -8,21 +8,21 @@ import '../dashboard/DashboardPage.css'
 import './RealtorDashboard.css'
 
 const CHALLENGES = [
-    { emoji: '📄', name: 'Upload Master', desc: 'Sube 5 documentos esta semana', current: 3, total: 5, xp: 150, color: '#3B82F6' },
-    { emoji: '💬', name: 'Comunicador', desc: 'Responde 10 mensajes del broker', current: 7, total: 10, xp: 100, color: '#8B5CF6' },
-    { emoji: '🏠', name: 'Cerrador', desc: 'Cierra 1 transacción', current: 0, total: 1, xp: 500, color: '#10B981' },
-    { emoji: '⚡', name: 'Speed Demon', desc: 'Sube un doc en menos de 24h', current: 1, total: 1, xp: 75, color: '#F59E0B' },
+    { emoji: '', name: 'Upload Master', desc: 'Sube 5 documentos esta semana', current: 3, total: 5, xp: 150, color: '#3B82F6' },
+    { emoji: '', name: 'Comunicador', desc: 'Responde 10 mensajes del broker', current: 7, total: 10, xp: 100, color: '#8B5CF6' },
+    { emoji: '', name: 'Cerrador', desc: 'Cierra 1 transacción', current: 0, total: 1, xp: 500, color: '#10B981' },
+    { emoji: '', name: 'Speed Demon', desc: 'Sube un doc en menos de 24h', current: 1, total: 1, xp: 75, color: '#F59E0B' },
 ]
 
 const BADGES = [
-    { emoji: '🚀', name: 'First Deal', unlocked: true },
-    { emoji: '📋', name: 'Doc Pro', unlocked: true },
-    { emoji: '💎', name: '$50K Club', unlocked: true },
-    { emoji: '🔥', name: '7-Day Streak', unlocked: true },
-    { emoji: '🏆', name: 'Top Agent', unlocked: false },
-    { emoji: '⭐', name: '$100K Club', unlocked: false },
-    { emoji: '👑', name: 'Perfect Month', unlocked: false },
-    { emoji: '🎯', name: '10 Deals', unlocked: false },
+    { emoji: '', name: 'First Deal', unlocked: true },
+    { emoji: '', name: 'Doc Pro', unlocked: true },
+    { emoji: '', name: '$50K Club', unlocked: true },
+    { emoji: '', name: '7-Day Streak', unlocked: true },
+    { emoji: '', name: 'Top Agent', unlocked: false },
+    { emoji: '', name: '$100K Club', unlocked: false },
+    { emoji: '', name: 'Perfect Month', unlocked: false },
+    { emoji: '', name: '10 Deals', unlocked: false },
 ]
 
 const XP = { current: 2450, level: 7, levelName: 'Rising Star', nextAt: 3000, prevAt: 2000 }
@@ -47,7 +47,7 @@ export default function RealtorDashboard() {
         <div className="realtor-dashboard">
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Hola, {realtor.name.split(' ')[0]} 👋</h1>
+                    <h1 className="page-title">Hola, {realtor.name.split(' ')[0]} </h1>
                     <p className="page-subtitle">Aquí está el resumen de tu actividad.</p>
                 </div>
             </div>
@@ -148,7 +148,7 @@ export default function RealtorDashboard() {
                     {/* Streak + Badges */}
                     <div className="streak-badges-card animate-fadeInUp">
                         <div className="streak-block">
-                            <span className="streak-fire">🔥</span>
+                            <span className="streak-fire"></span>
                             <div className="streak-info">
                                 <span className="streak-count">{STREAK} días</span>
                                 <span className="streak-label">Racha activa</span>

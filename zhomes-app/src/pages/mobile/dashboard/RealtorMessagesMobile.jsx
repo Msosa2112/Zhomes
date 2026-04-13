@@ -11,7 +11,7 @@ const CHATS = [
 export default function RealtorMessagesMobile() {
     const [view, setView] = useState('list')
     const [msgs, setMsgs] = useState([
-        { id: 1, type: 'sent', text: 'Hola, la tasación ya llegó, todo OK 👍' },
+        { id: 1, type: 'sent', text: 'Hola, la tasación ya llegó, todo OK ' },
         { id: 2, type: 'rec', text: 'Excelente, sube el reporte al sistema por favor.' }
     ])
     const [inputStr, setInputStr] = useState('')
