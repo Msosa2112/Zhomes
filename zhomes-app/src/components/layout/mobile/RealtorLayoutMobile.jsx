@@ -35,7 +35,7 @@ export default function RealtorLayoutMobile() {
         { path: '/realtor', icon: Home, label: 'Inicio' },
         { path: '/realtor/clientes', icon: Users, label: 'Clientes' },
         { path: '/realtor/documentos', icon: FileText, label: 'Docs' },
-        { path: '/realtor/mensajes', icon: MessageSquare, label: 'Chat' },
+        { path: '/realtor/deal', icon: Briefcase, label: 'Deal Room' },
     ]
 
     const extras = [
@@ -44,6 +44,7 @@ export default function RealtorLayoutMobile() {
         { path: '/realtor/leads', icon: Users, label: 'Leads' },
         { path: '/realtor/transacciones', icon: Briefcase, label: 'Deals' },
         { path: '/realtor/tareas', icon: ClipboardList, label: 'Tareas' },
+        { path: '/realtor/mensajes', icon: MessageSquare, label: 'Chat' },
         { path: '/realtor/subir-vibe', icon: Video, label: 'Vibe' },
         { path: '/cma', icon: LineChart, label: 'CMA' },
         { path: '/realtor/perfil', icon: User, label: 'Perfil' },

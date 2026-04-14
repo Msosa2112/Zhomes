@@ -35,12 +35,13 @@ export default function DashboardLayoutMobile() {
         { path: '/dashboard', icon: Home, label: 'Inicio' },
         { path: '/transacciones', icon: Briefcase, label: 'Pipeline' },
         { path: '/documentos', icon: FileText, label: 'Docs' },
-        { path: '/mensajes', icon: MessageSquare, label: 'Chat' },
+        { path: '/dashboard/deal', icon: Briefcase, label: 'Deal Room' },
     ]
 
     const extras = [
         { path: '/dashboard/perfil', icon: User, label: 'Mi Perfil' },
         { path: '/visitas', icon: Calendar, label: 'Visitas' },
+        { path: '/mensajes', icon: MessageSquare, label: 'Chat' },
     ]
 
     return (
