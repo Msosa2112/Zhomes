@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
     Calendar, Users, CheckCircle2, AlertCircle, Briefcase,
     PenTool, LineChart, Upload, ChevronRight, Home,
-    Phone, Clock, Bell, Loader2, Plus, FileText,
+    Phone, Clock, Loader2, FileText,
     MessageSquare, ArrowRight, X, TrendingUp
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -120,16 +120,12 @@ export default function RealtorDashboardMobile() {
     return (
         <div className="rdb-page">
 
-            {/* ── 1. HEADER ─────────────────────────────────── */}
+            {/* ── 1. HEADER ───────────────────────────── */}
             <div className="rdb-header">
                 <div>
                     <h1>{greeting}{user?.name ? `, ${user.name}` : ''}</h1>
                     <p className="rdb-date">{todayLabel}</p>
                 </div>
-                <button className="rdb-notif-btn" onClick={() => navigate('/realtor/notifications')}>
-                    <Bell size={20} />
-                    {alerts.length > 0 && <span className="rdb-notif-dot" />}
-                </button>
             </div>
 
             {/* ── 2. ALERTAS URGENTES (solo si hay) ─────────── */}
