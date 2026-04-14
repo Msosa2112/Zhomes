@@ -446,45 +446,51 @@
 .up-journey-tracker {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
     position: relative;
-    padding: 0 10px;
+    padding: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
+/* Remove old rigid line approach */
 .up-journey-line {
-    position: absolute;
-    top: 20px;
-    left: 40px;
-    right: 40px;
-    height: 4px;
-    background: var(--border-color);
-    border-radius: 2px;
-    z-index: 1;
+    display: none;
 }
-
 .up-journey-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: var(--zhomes-red);
-    border-radius: 2px;
-    transition: width 0.5s ease;
+    display: none;
 }
 
 .up-journey-step {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     z-index: 2;
-    width: 60px;
     gap: 8px;
 }
 
+/* Premium connector line originating from each step (except the last) */
+.up-journey-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 18px; /* Half of 36px icon */
+    left: 50%;
+    width: 100%;
+    height: 3px;
+    background: var(--border-color);
+    z-index: -1;
+    transition: background-color 0.4s ease;
+}
+
+/* If the step is completed, color its outbound line red */
+.up-journey-step.completed:not(:last-child)::after {
+    background: var(--zhomes-red);
+}
+
 .up-journey-icon {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: var(--bg-primary);
     border: 2px solid var(--border-color);
@@ -492,7 +498,14 @@
     justify-content: center;
     align-items: center;
     color: var(--text-tertiary);
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    z-index: 2; /* keep above the line */
+}
+
+/* SVG sizes inside the icon */
+.up-journey-icon svg {
+    width: 16px;
+    height: 16px;
 }
 
 .up-journey-step.completed .up-journey-icon {
@@ -509,17 +522,18 @@
 }
 
 .up-journey-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-align: center;
     color: var(--text-secondary);
     font-weight: 500;
     line-height: 1.2;
+    max-width: 60px;
 }
 
 .up-journey-step.completed .up-journey-label,
 .up-journey-step.active .up-journey-label {
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .up-journey-message {
