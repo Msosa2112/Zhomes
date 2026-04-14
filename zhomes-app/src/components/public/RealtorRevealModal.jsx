@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { X, ChevronLeft, ChevronRight, Star, Instagram, Facebook, Phone } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Star, Camera, Share2, Phone } from 'lucide-react'
 import { supabase } from '../../lib/supabaseClient'
 import './RealtorRevealModal.css'
 
@@ -476,11 +476,11 @@ export default function RealtorRevealModal({ isOpen, onClose, onSelect, initialI
                                                     </button>
                                                     {/* Instagram */}
                                                     <button className="social-btn" onClick={() => window.open('https://instagram.com', '_blank')} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
-                                                        <Instagram size={20} />
+                                                        <Camera size={20} />
                                                     </button>
                                                     {/* Facebook */}
                                                     <button className="social-btn" onClick={() => window.open('https://facebook.com', '_blank')} style={{ background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
-                                                        <Facebook size={20} />
+                                                        <Share2 size={20} />
                                                     </button>
                                                     {/* WhatsApp */}
                                                     <button className="social-btn" onClick={() => window.open(`https://wa.me/${(r.phone || '13055551234').replace(/\D/g, '')}`, '_blank')} style={{ background: '#25D366', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Star, MapPin, Phone, Mail, Award, Globe, Instagram, Facebook, Linkedin, Youtube, Edit3, Save, X, ExternalLink } from 'lucide-react'
+import { Star, MapPin, Phone, Mail, Award, Globe, Camera, Share2, Briefcase, Play, Edit3, Save, X, ExternalLink } from 'lucide-react'
 import { REALTORS, REALTOR_TRANSACTIONS } from '../../data/mockData'
 import { supabase } from '../../lib/supabaseClient'
 import './RealtorProfile.css'
@@ -12,11 +12,11 @@ const TikTokIcon = ({ size = 18 }) => (
 )
 
 const SOCIAL_NETWORKS = [
-    { key: 'instagram', label: 'Instagram', icon: Instagram, placeholder: 'https://instagram.com/tu_usuario', color: '#E4405F' },
-    { key: 'facebook', label: 'Facebook', icon: Facebook, placeholder: 'https://facebook.com/tu_pagina', color: '#1877F2' },
-    { key: 'linkedin', label: 'LinkedIn', icon: Linkedin, placeholder: 'https://linkedin.com/in/tu_perfil', color: '#0A66C2' },
-    { key: 'tiktok', label: 'TikTok', icon: TikTokIcon, placeholder: 'https://tiktok.com/@tu_usuario', color: '#000000' },
-    { key: 'youtube', label: 'YouTube', icon: Youtube, placeholder: 'https://youtube.com/@tu_canal', color: '#FF0000' },
+    { key: 'instagram', label: 'Instagram', icon: Camera,    placeholder: 'https://instagram.com/tu_usuario',  color: 'var(--text-secondary)' },
+    { key: 'facebook',  label: 'Facebook',  icon: Share2,    placeholder: 'https://facebook.com/tu_pagina',    color: 'var(--text-secondary)' },
+    { key: 'linkedin',  label: 'LinkedIn',  icon: Briefcase, placeholder: 'https://linkedin.com/in/tu_perfil', color: 'var(--text-secondary)' },
+    { key: 'tiktok',    label: 'TikTok',    icon: TikTokIcon, placeholder: 'https://tiktok.com/@tu_usuario',   color: 'var(--text-secondary)' },
+    { key: 'youtube',   label: 'YouTube',   icon: Play,      placeholder: 'https://youtube.com/@tu_canal',    color: 'var(--text-secondary)' },
     { key: 'website', label: 'Sitio Web', icon: Globe, placeholder: 'https://tu-sitio-web.com', color: '#6366F1' },
 ]
 
