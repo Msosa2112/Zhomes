@@ -1,4 +1,4 @@
-import { FileText, DollarSign, Clock, TrendingUp, ArrowUpRight, CheckCircle2, AlertCircle, Upload, Flame, Trophy, Star, Target } from 'lucide-react'
+﻿import { FileText, DollarSign, Clock, TrendingUp, ArrowUpRight, CheckCircle2, AlertCircle, Upload, Flame, Trophy, Star, Target } from 'lucide-react'
 import StackedAlerts from '../../components/shared/StackedAlerts'
 import { Link } from 'react-router-dom'
 import TransactionTimeline from '../../components/shared/TransactionTimeline'
@@ -8,10 +8,10 @@ import '../dashboard/DashboardPage.css'
 import './RealtorDashboard.css'
 
 const CHALLENGES = [
-    { emoji: '', name: 'Upload Master', desc: 'Sube 5 documentos esta semana', current: 3, total: 5, xp: 150, color: '#3B82F6' },
-    { emoji: '', name: 'Comunicador', desc: 'Responde 10 mensajes del broker', current: 7, total: 10, xp: 100, color: '#8B5CF6' },
+    { emoji: '', name: 'Upload Master', desc: 'Sube 5 documentos esta semana', current: 3, total: 5, xp: 150, color: 'var(--text-secondary)' },
+    { emoji: '', name: 'Comunicador', desc: 'Responde 10 mensajes del broker', current: 7, total: 10, xp: 100, color: 'var(--text-secondary)' },
     { emoji: '', name: 'Cerrador', desc: 'Cierra 1 transacción', current: 0, total: 1, xp: 500, color: '#10B981' },
-    { emoji: '', name: 'Speed Demon', desc: 'Sube un doc en menos de 24h', current: 1, total: 1, xp: 75, color: '#F59E0B' },
+    { emoji: '', name: 'Speed Demon', desc: 'Sube un doc en menos de 24h', current: 1, total: 1, xp: 75, color: 'var(--text-secondary)' },
 ]
 
 const BADGES = [
@@ -60,7 +60,7 @@ export default function RealtorDashboard() {
             {/* KPI Cards */}
             <div className="kpi-grid">
                 <div className="kpi-card animate-fadeInUp">
-                    <div className="kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3B82F6' }}>
+                    <div className="kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.12)', color: 'var(--text-secondary)' }}>
                         <FileText size={22} />
                     </div>
                     <div className="kpi-content">
@@ -70,7 +70,7 @@ export default function RealtorDashboard() {
                     <span className="kpi-trend up"><ArrowUpRight size={14} /> +1</span>
                 </div>
                 <div className="kpi-card animate-fadeInUp delay-1">
-                    <div className="kpi-icon" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#F59E0B' }}>
+                    <div className="kpi-icon" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--text-secondary)' }}>
                         <Clock size={22} />
                     </div>
                     <div className="kpi-content">

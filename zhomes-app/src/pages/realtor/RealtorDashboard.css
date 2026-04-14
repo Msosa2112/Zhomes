@@ -1,4 +1,4 @@
-/* ---- Realtor Dashboard ---- */
+﻿/* ---- Realtor Dashboard ---- */
 .realtor-dashboard {
     padding: 0;
 }
@@ -136,14 +136,14 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #F59E0B, #EF4444, #8B5CF6);
+    background: linear-gradient(90deg, var(--text-secondary), var(--zhomes-red), var(--text-secondary));
 }
 
 .xp-level-badge {
     width: 64px;
     height: 64px;
     border-radius: var(--radius-full);
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--text-secondary), var(--zhomes-red));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -185,7 +185,7 @@
 .xp-bar-fill {
     height: 100%;
     border-radius: var(--radius-full);
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--text-secondary), var(--zhomes-red));
     transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -387,7 +387,7 @@
 }
 
 .streak-day.active {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--text-secondary), var(--zhomes-red));
     color: white;
 }
 

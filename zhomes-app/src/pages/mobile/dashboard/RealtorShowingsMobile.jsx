@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Calendar, Plus, Clock, MapPin, User, Phone, ChevronLeft, ChevronRight, Check, X, Star, AlertCircle, MessageSquare, Home } from 'lucide-react'
 import './RealtorShowingsMobile.css'
 
@@ -51,10 +51,10 @@ export default function RealtorShowingsMobile() {
     const pendingCount = showings.filter(s => s.status === 'pending').length
 
     const statusConfig = {
-        pending: { label: 'Pendiente', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-        confirmed: { label: 'Confirmada', color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-        completed: { label: 'Completada', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
-        cancelled: { label: 'Cancelada', color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
+        pending: { label: 'Pendiente', color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        confirmed: { label: 'Confirmada', color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        completed: { label: 'Completada', color: '#10B981', bg: 'var(--bg-secondary)' },
+        cancelled: { label: 'Cancelada', color: 'var(--zhomes-red)', bg: 'rgba(228,31,37,0.08)' },
     }
 
     const addShowing = () => {

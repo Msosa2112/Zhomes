@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { X, DollarSign, TrendingUp, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, BarChart3, Home, Shield, Info, Save, Clock } from 'lucide-react'
 import { supabase } from '../../lib/supabaseClient'
 import './PrequalToolMobile.css'
@@ -7,9 +7,9 @@ import './PrequalToolMobile.css'
 const CREDIT_TIERS = [
     { label: '740+ (Excelente)',      min: 740, rate30: 6.5,  rate15: 5.9,  type: 'Convencional',    color: '#10B981', emoji: '' },
     { label: '700–739 (Muy bueno)',   min: 700, rate30: 6.9,  rate15: 6.2,  type: 'Convencional',    color: '#10B981', emoji: '' },
-    { label: '660–699 (Bueno)',       min: 660, rate30: 7.35, rate15: 6.7,  type: 'Convencional',    color: '#F59E0B', emoji: '' },
+    { label: '660–699 (Bueno)',       min: 660, rate30: 7.35, rate15: 6.7,  type: 'Convencional',    color: 'var(--text-secondary)', emoji: '' },
     { label: '620–659 (Regular)',     min: 620, rate30: 7.9,  rate15: 7.2,  type: 'FHA preferible',  color: '#F97316', emoji: '' },
-    { label: '580–619 (FHA mínimo)',  min: 580, rate30: 8.5,  rate15: null, type: 'Solo FHA',         color: '#EF4444', emoji: '' },
+    { label: '580–619 (FHA mínimo)',  min: 580, rate30: 8.5,  rate15: null, type: 'Solo FHA',         color: 'var(--zhomes-red)', emoji: '' },
     { label: 'Menos de 580',          min: 0,   rate30: null, rate15: null, type: 'No califica',     color: '#6B7280', emoji: '' },
 ]
 
@@ -432,7 +432,7 @@ export default function PrequalToolMobile({ onClose, userId }) {
                                 </>
                             ) : (
                                 <div className="prequal-no-qualify">
-                                    <AlertCircle size={48} color="#EF4444" />
+                                    <AlertCircle size={48} color="var(--zhomes-red)" />
                                     <h3>No califica en este momento</h3>
                                     <p>{result.reason}</p>
                                     <div className="prequal-recommendations">

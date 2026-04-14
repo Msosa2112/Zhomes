@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import {
     Upload, CheckCircle2, Clock, Eye, Download,
     FolderOpen, FolderClosed, File, AlertCircle,
@@ -116,7 +116,7 @@ const BROKER_TRANSACTIONS = [
 
 const DOC_ICONS = {
     approved: { icon: CheckCircle2, color: '#10B981', label: 'Aprobado' },
-    uploaded: { icon: Eye, color: '#3B82F6', label: 'En revisión' },
+    uploaded: { icon: Eye, color: 'var(--text-secondary)', label: 'En revisión' },
     pending: { icon: Clock, color: '#9CA3AF', label: 'Pendiente' },
 }
 

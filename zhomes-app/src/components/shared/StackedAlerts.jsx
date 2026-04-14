@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'motion/react'
 import { ArrowUpRight, AlertCircle, CheckCircle2, Clock, Info, Upload, FileText, Zap } from 'lucide-react'
 import './StackedAlerts.css'
@@ -28,10 +28,10 @@ const fadeSwitchTransition = {
 }
 
 const TYPE_CONFIG = {
-    danger: { color: '#EF4444', bg: 'rgba(239, 68, 68, 0.08)', icon: AlertCircle },
-    warning: { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.08)', icon: Clock },
+    danger: { color: 'var(--zhomes-red)', bg: 'rgba(239, 68, 68, 0.08)', icon: AlertCircle },
+    warning: { color: 'var(--text-secondary)', bg: 'rgba(245, 158, 11, 0.08)', icon: Clock },
     success: { color: '#10B981', bg: 'rgba(16, 185, 129, 0.08)', icon: CheckCircle2 },
-    info: { color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.08)', icon: Info },
+    info: { color: 'var(--text-secondary)', bg: 'rgba(59, 130, 246, 0.08)', icon: Info },
 }
 
 /**

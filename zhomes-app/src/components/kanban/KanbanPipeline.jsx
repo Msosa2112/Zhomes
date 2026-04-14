@@ -1,10 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { MapPin, FileText, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react'
 import './KanbanPipeline.css'
 
 const COLUMNS = [
-    { key: 'under_contract', label: 'Bajo Contrato', color: '#8B5CF6', emoji: '' },
-    { key: 'inspection', label: 'Inspección', color: '#F59E0B', emoji: '' },
+    { key: 'under_contract', label: 'Bajo Contrato', color: 'var(--text-secondary)', emoji: '' },
+    { key: 'inspection', label: 'Inspección', color: 'var(--text-secondary)', emoji: '' },
     { key: 'appraisal', label: 'Tasación', color: '#F97316', emoji: '' },
     { key: 'pre_close', label: 'Pre-Cierre', color: '#10B981', emoji: '' },
     { key: 'closed', label: 'Cerrada', color: '#06B6D4', emoji: '' },

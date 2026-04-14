@@ -1,4 +1,4 @@
-.commute-intel-card {
+﻿.commute-intel-card {
     background: var(--bg-secondary, #fff);
     border: 1px solid var(--border-color, #eaeaea);
     border-radius: 16px;
@@ -31,8 +31,8 @@
     padding: 14px;
     border-radius: 12px;
     background: transparent;
-    border: 1px solid #3B82F6;
-    color: #3B82F6;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
@@ -40,7 +40,7 @@
 }
 
 .commute-calc-btn:active {
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--bg-secondary);
 }
 
 .commute-shimmer-wrapper {
@@ -119,8 +119,8 @@
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,7 +161,7 @@
 .commute-time {
     font-weight: 700;
     font-size: 1rem;
-    color: #3B82F6; /* Azul brillante como ruta */
+    color: var(--text-secondary); /* Azul brillante como ruta */
 }
 
 .commute-dist {

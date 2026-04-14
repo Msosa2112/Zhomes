@@ -1,4 +1,4 @@
-.rt-open-house-page {
+﻿.rt-open-house-page {
     padding-top: 80px;
     padding-bottom: 90px;
     min-height: 100vh;
@@ -122,7 +122,7 @@
     padding: 4px 10px;
     border-radius: 100px;
 }
-.rt-oh-status-badge.upcoming { background: #EFF6FF; color: #3B82F6; }
+.rt-oh-status-badge.upcoming { background: #EFF6FF; color: var(--text-secondary); }
 .rt-oh-status-badge.completed { background: #F3F4F6; color: #6B7280; }
 
 .rt-oh-card-body {
@@ -221,7 +221,7 @@
     width: 40px;
     height: 40px;
     background: #EFF6FF;
-    color: #3B82F6;
+    color: var(--text-secondary);
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -332,7 +332,7 @@
 .rt-qr-instruction {
     font-size: 0.85rem !important;
     background: #FEF2F2;
-    color: #EF4444 !important;
+    color: var(--zhomes-red) !important;
     padding: 12px;
     border-radius: 12px;
 }

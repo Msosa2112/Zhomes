@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DeckGL from 'deck.gl'
 import { WebMercatorViewport } from 'deck.gl'
@@ -395,7 +395,7 @@ export default function MapPageMobile() {
         {[
           { key: 'All',        label: <span className="flex items-center gap-1"><Home size={14} /> Todas</span> },
           { key: 'Active',     label: <span className="flex items-center gap-1"><DollarSign size={14} color="#10B981" /> En Venta</span> },
-          { key: 'Exclusivas', label: <span className="flex items-center gap-1"><Star size={14} color="#F59E0B" /> Exclusivas</span> },
+          { key: 'Exclusivas', label: <span className="flex items-center gap-1"><Star size={14} color="var(--text-secondary)" /> Exclusivas</span> },
         ].map(({ key, label }) => (
           <button
             key={key}
@@ -600,7 +600,7 @@ export default function MapPageMobile() {
                   onError={e => { e.target.src = '/assets/logo/fav.png'; }}
                 />
                 <div className="map-list-info">
-                  <p className="map-list-price">{fmtPrice(p.price)} {p.exclusive && <Star size={14} color="#F59E0B" className="inline"/>}</p>
+                  <p className="map-list-price">{fmtPrice(p.price)} {p.exclusive && <Star size={14} color="var(--text-secondary)" className="inline"/>}</p>
                   <p className="map-list-address">{p.address}</p>
                   <p className="map-list-meta">{p.beds} rec · {p.baths} baños · {p.sqft?.toLocaleString()} ft²</p>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import {
     Star, Home, Clock, Award, Trophy, TrendingUp, TrendingDown,
     Flame, Target, FileCheck, ChevronUp, ChevronDown, Zap, Medal,
@@ -43,12 +43,12 @@ const TEAM = [
 
 const BADGES_MAP = {
     top_producer: { label: 'Top Producer', icon: Crown, color: '#F5A623' },
-    fastest_closer: { label: 'Fastest Closer', icon: Zap, color: '#8B5CF6' },
+    fastest_closer: { label: 'Fastest Closer', icon: Zap, color: 'var(--text-secondary)' },
     doc_master: { label: 'Doc Master', icon: FileCheck, color: '#10B981' },
-    streak_5: { label: 'Racha x5', icon: Flame, color: '#EF4444' },
+    streak_5: { label: 'Racha x5', icon: Flame, color: 'var(--zhomes-red)' },
     streak_3: { label: 'Racha x3', icon: Flame, color: '#F97316' },
-    rising_star: { label: 'Rising Star', icon: Star, color: '#3B82F6' },
-    goal_crusher: { label: 'Goal Crusher', icon: Target, color: '#EC4899' },
+    rising_star: { label: 'Rising Star', icon: Star, color: 'var(--text-secondary)' },
+    goal_crusher: { label: 'Goal Crusher', icon: Target, color: 'var(--text-secondary)' },
 }
 
 const PERIOD_OPTIONS = ['Este Mes', 'Este Trimestre', 'Este Año']
@@ -60,7 +60,7 @@ export default function TeamPage() {
     const getRankChange = (r) => {
         const diff = r.prevRank - r.rank
         if (diff > 0) return { icon: ChevronUp, label: `+${diff}`, color: '#10B981' }
-        if (diff < 0) return { icon: ChevronDown, label: `${diff}`, color: '#EF4444' }
+        if (diff < 0) return { icon: ChevronDown, label: `${diff}`, color: 'var(--zhomes-red)' }
         return { icon: null, label: '—', color: '#9CA3AF' }
     }
 

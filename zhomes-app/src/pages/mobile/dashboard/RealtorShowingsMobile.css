@@ -1,4 +1,4 @@
-.rt-showings-page {
+﻿.rt-showings-page {
     padding-top: 80px;
     padding-bottom: 90px;
     min-height: 100vh;
@@ -62,8 +62,8 @@
 .rt-kpi-icon {
     margin-bottom: 4px;
 }
-.rt-kpi-icon.blue { color: #3B82F6; }
-.rt-kpi-icon.amber { color: #F59E0B; }
+.rt-kpi-icon.blue { color: var(--text-secondary); }
+.rt-kpi-icon.amber { color: var(--text-secondary); }
 .rt-kpi-icon.green { color: #10B981; }
 
 .rt-show-kpi strong {
@@ -150,7 +150,7 @@
 }
 
 .rt-cal-day.today {
-    color: #3B82F6;
+    color: var(--text-secondary);
     font-weight: 700;
 }
 
@@ -163,7 +163,7 @@
 .rt-cal-dot {
     width: 4px;
     height: 4px;
-    background: #F59E0B;
+    background: var(--text-secondary);
     border-radius: 50%;
     position: absolute;
     bottom: 4px;
@@ -340,7 +340,7 @@
 }
 
 .rt-detail-row a {
-    color: #3B82F6;
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
 }
@@ -386,7 +386,7 @@
 
 .rt-action-btn.confirm {
     background: #EFF6FF;
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .rt-action-btn.complete {
@@ -396,7 +396,7 @@
 
 .rt-action-btn.cancel {
     background: #FEF2F2;
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 /* Feedback Summary inside Detail Modal */
@@ -416,7 +416,7 @@
 
 .rt-feedback-summary .rt-stars {
     font-size: 1.2rem;
-    color: #F59E0B;
+    color: var(--text-secondary);
     margin-bottom: 12px;
     letter-spacing: 2px;
 }
@@ -429,8 +429,8 @@
     font-weight: 600;
     margin-bottom: 12px;
 }
-.rt-interest-high { background: #FEF2F2; color: #EF4444; }
-.rt-interest-medium { background: #FFFBEB; color: #F59E0B; }
+.rt-interest-high { background: #FEF2F2; color: var(--zhomes-red); }
+.rt-interest-medium { background: #FFFBEB; color: var(--text-secondary); }
 .rt-interest-low { background: #F3F4F6; color: #6B7280; }
 
 .rt-feedback-summary p {
@@ -526,7 +526,7 @@
 }
 
 .rt-star-btn.active {
-    color: #F59E0B;
+    color: var(--text-secondary);
 }
 
 .rt-interest-picker {

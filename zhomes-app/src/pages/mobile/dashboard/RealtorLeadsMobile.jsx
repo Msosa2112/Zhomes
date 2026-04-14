@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { Search, Plus, User, Phone, Mail, Clock, Filter, ChevronRight, MessageSquare, Briefcase, Calendar, Loader2, X, Trash2 } from 'lucide-react'
 import { supabase } from '../../../lib/supabaseClient'
 import './RealtorLeadsMobile.css'
@@ -17,11 +17,11 @@ export default function RealtorLeadsMobile() {
     const [agentEmail, setAgentEmail] = useState(null)
 
     const statusConfig = {
-        new:       { label: 'Nuevo',         color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-        contacted: { label: 'Contactado',     color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-        showing:   { label: 'Viendo Casas',   color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-        offer:     { label: 'En Oferta',      color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
-        closed:    { label: 'Cerrado',        color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+        new:       { label: 'Nuevo',         color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        contacted: { label: 'Contactado',     color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        showing:   { label: 'Viendo Casas',   color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        offer:     { label: 'En Oferta',      color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+        closed:    { label: 'Cerrado',        color: '#10B981', bg: 'var(--bg-secondary)' },
     }
 
     // ── Obtener email del agente autenticado ─────────────────

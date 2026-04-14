@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, DollarSign, Clock, FileText, Users, MapPin } from 'lucide-react'
 import './AnalyticsPage.css'
 
@@ -33,10 +33,10 @@ const GEO_ZONES = [
 ]
 
 const PULSE_DATA = [
-    { label: 'Revenue Mensual', value: '$1.2M', trend: '+18%', up: true, sparkData: [30, 45, 35, 50, 65, 55, 70, 90], color: '#3B82F6' },
+    { label: 'Revenue Mensual', value: '$1.2M', trend: '+18%', up: true, sparkData: [30, 45, 35, 50, 65, 55, 70, 90], color: 'var(--text-secondary)' },
     { label: 'Días Prom. Cierre', value: '28', trend: '-4 días', up: true, sparkData: [38, 35, 32, 34, 30, 31, 29, 28], color: '#10B981' },
-    { label: 'Docs Completados', value: '87%', trend: '+12%', up: true, sparkData: [60, 65, 70, 68, 75, 78, 82, 87], color: '#F59E0B' },
-    { label: 'Comisiones Pagadas', value: '$18.6K', trend: '3 pend.', up: false, sparkData: [8, 12, 10, 15, 14, 18, 16, 18.6], color: '#8B5CF6' },
+    { label: 'Docs Completados', value: '87%', trend: '+12%', up: true, sparkData: [60, 65, 70, 68, 75, 78, 82, 87], color: 'var(--text-secondary)' },
+    { label: 'Comisiones Pagadas', value: '$18.6K', trend: '3 pend.', up: false, sparkData: [8, 12, 10, 15, 14, 18, 16, 18.6], color: 'var(--text-secondary)' },
 ]
 
 /* ==========================================
@@ -343,10 +343,10 @@ function CommissionFlow() {
     const pad = 40
 
     // Positions
-    const salesNode = { x: pad, y: 30, h: 140, color: '#3B82F6', label: 'Ventas', amount: `$${(totalSales / 1000000).toFixed(1)}M` }
-    const commNode = { x: W / 2 - nodeW / 2, y: 40, h: 120, color: '#F59E0B', label: 'Comisión 3%', amount: `$${(totalCommission / 1000).toFixed(0)}K` }
+    const salesNode = { x: pad, y: 30, h: 140, color: 'var(--text-secondary)', label: 'Ventas', amount: `$${(totalSales / 1000000).toFixed(1)}M` }
+    const commNode = { x: W / 2 - nodeW / 2, y: 40, h: 120, color: 'var(--text-secondary)', label: 'Comisión 3%', amount: `$${(totalCommission / 1000).toFixed(0)}K` }
     const brokerNode = { x: W - pad - nodeW, y: 25, h: 80, color: '#10B981', label: 'Broker 55%', amount: `$${(brokerSplit / 1000).toFixed(0)}K` }
-    const realtorNode = { x: W - pad - nodeW, y: 115, h: 65, color: '#8B5CF6', label: 'Realtors 45%', amount: `$${(realtorSplit / 1000).toFixed(0)}K` }
+    const realtorNode = { x: W - pad - nodeW, y: 115, h: 65, color: 'var(--text-secondary)', label: 'Realtors 45%', amount: `$${(realtorSplit / 1000).toFixed(0)}K` }
 
     // Build flow paths (curved Bézier)
     const flowPath = (x1, y1, h1, x2, y2, h2) => {

@@ -1,4 +1,4 @@
-import { DollarSign, TrendingUp, Clock, CheckCircle2, Download } from 'lucide-react'
+﻿import { DollarSign, TrendingUp, Clock, CheckCircle2, Download } from 'lucide-react'
 import './CommissionsPage.css'
 
 const COMMISSIONS = [
@@ -11,9 +11,9 @@ const COMMISSIONS = [
 
 const statusMap = {
     paid: { label: 'Pagada', color: '#22C55E', bg: 'rgba(34,197,94,0.15)' },
-    approved: { label: 'Aprobada', color: '#3B82F6', bg: 'rgba(59,130,246,0.15)' },
-    docs_complete: { label: 'Docs Completos', color: '#F59E0B', bg: 'rgba(245,158,11,0.15)' },
-    pending: { label: 'Pendiente', color: '#EF4444', bg: 'rgba(239,68,68,0.15)' },
+    approved: { label: 'Aprobada', color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+    docs_complete: { label: 'Docs Completos', color: 'var(--text-secondary)', bg: 'rgba(245,158,11,0.15)' },
+    pending: { label: 'Pendiente', color: 'var(--zhomes-red)', bg: 'rgba(239,68,68,0.15)' },
 }
 
 export default function CommissionsPage() {

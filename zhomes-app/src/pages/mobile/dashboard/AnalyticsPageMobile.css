@@ -1,4 +1,4 @@
-.mobile-analytics-page {
+﻿.mobile-analytics-page {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -95,7 +95,7 @@
 }
 
 .kpi-icon.blue {
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .kpi-icon.green {
@@ -164,8 +164,8 @@
 }
 
 .score.high {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
 }
 
 .mobile-zones-list {

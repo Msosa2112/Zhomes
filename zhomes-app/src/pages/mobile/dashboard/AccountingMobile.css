@@ -1,4 +1,4 @@
-.accounting-page {
+﻿.accounting-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -76,7 +76,7 @@
 }
 
 .acc-trend.positive { color: #10B981; }
-.acc-trend.negative { color: #EF4444; }
+.acc-trend.negative { color: var(--zhomes-red); }
 
 /* KPI Row */
 .acc-kpi-row {
@@ -98,8 +98,8 @@
 .acc-kpi strong { font-size: 1.1rem; font-weight: 900; }
 .acc-kpi span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
 .acc-icon-green { color: #10B981; }
-.acc-icon-red { color: #EF4444; }
-.acc-icon-blue { color: #3B82F6; }
+.acc-icon-red { color: var(--zhomes-red); }
+.acc-icon-blue { color: var(--text-secondary); }
 
 /* Sections */
 .acc-section {
@@ -135,7 +135,7 @@
     overflow: hidden;
 }
 
-.acc-bar.income { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #10B981, #3B82F6); }
+.acc-bar.income { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #10B981, var(--text-secondary)); }
 
 .acc-month-amounts {
     display: flex;
@@ -145,7 +145,7 @@
 }
 
 .acc-income { font-size: 0.75rem; font-weight: 700; color: #10B981; }
-.acc-expense { font-size: 0.7rem; color: #EF4444; }
+.acc-expense { font-size: 0.7rem; color: var(--zhomes-red); }
 
 /* Expense Breakdown */
 .acc-expense-list {
@@ -218,7 +218,7 @@
 }
 
 .acc-tx-amount.income { color: #10B981; }
-.acc-tx-amount.expense { color: #EF4444; }
+.acc-tx-amount.expense { color: var(--zhomes-red); }
 
 /* Split Cards */
 .acc-split-card {
@@ -259,7 +259,7 @@
 }
 
 .acc-split-agent-fill { background: #10B981; }
-.acc-split-broker-fill { background: #3B82F6; }
+.acc-split-broker-fill { background: var(--text-secondary); }
 
 .acc-split-amounts {
     display: flex;
@@ -277,7 +277,7 @@
 .acc-split-col span { display: block; font-size: 0.65rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
 .acc-split-col strong { font-size: 0.85rem; font-weight: 800; }
 .text-green { color: #10B981 !important; }
-.text-blue { color: #3B82F6 !important; }
+.text-blue { color: var(--text-secondary) !important; }
 
 /* Export */
 .acc-export-btn {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { CheckCircle2, ChevronRight, X, User, Phone, Mail, FolderHeart, DollarSign, Home, Shield, UploadCloud, AlertCircle, Search, Compass, MapPin, Key, Heart, Calendar, Sparkles } from 'lucide-react'
 import './RealtorClientsMobile.css'
 
@@ -259,7 +259,7 @@ export default function RealtorClientsMobile() {
                                         </div>
                                     </div>
                                     <div className="rc-info-card">
-                                        <div className="rc-info-header"><Shield size={18} color="#8B5CF6"/> Bóveda del Cliente</div>
+                                        <div className="rc-info-header"><Shield size={18} color="var(--text-secondary)"/> Bóveda del Cliente</div>
                                         <div className="rc-info-val" style={{fontSize: '16px'}}>
                                             {selectedClient.preApproval?.documentsComplete ? 'Completa ' : 'Faltan documentos'}
                                         </div>
@@ -269,11 +269,11 @@ export default function RealtorClientsMobile() {
                                         <div className="rc-info-val">{selectedClient.savedProperties?.length || 0} Casas</div>
                                     </div>
                                     <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('ai_matches'); }}>
-                                        <div className="rc-info-header"><Sparkles size={18} color="#F59E0B"/> Sugerencias IA </div>
-                                        <div className="rc-info-val" style={{color: '#F59E0B'}}>{selectedClient.aiMatches?.length || 0} Matches</div>
+                                        <div className="rc-info-header"><Sparkles size={18} color="var(--text-secondary)"/> Sugerencias IA </div>
+                                        <div className="rc-info-val" style={{color: 'var(--text-secondary)'}}>{selectedClient.aiMatches?.length || 0} Matches</div>
                                     </div>
                                     <div className="rc-info-card clickable" onClick={() => { setWorkspaceTab('properties'); setPropertyFilter('open_houses'); }}>
-                                        <div className="rc-info-header"><Calendar size={18} color="#3B82F6"/> Open Houses Agend.</div>
+                                        <div className="rc-info-header"><Calendar size={18} color="var(--text-secondary)"/> Open Houses Agend.</div>
                                         <div className="rc-info-val">{selectedClient.openHouses?.length || 0} Visitas</div>
                                     </div>
                                 </div>
@@ -311,7 +311,7 @@ export default function RealtorClientsMobile() {
                                                         <img src={p.img} alt={p.address} className="rc-property-img" />
                                                         <div className="rc-property-details">
                                                             <h4>{p.address}</h4>
-                                                            <p style={{fontSize: '12px', fontWeight: 600, color: '#F59E0B', marginBottom: '4px'}}> {p.matchReason}</p>
+                                                            <p style={{fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '4px'}}> {p.matchReason}</p>
                                                             <div className="rc-property-price">{p.price}</div>
                                                         </div>
                                                     </div>
@@ -326,7 +326,7 @@ export default function RealtorClientsMobile() {
                                                         <img src={p.img} alt={p.address} className="rc-property-img" />
                                                         <div className="rc-property-details">
                                                             <h4>{p.address}</h4>
-                                                            <p style={{color: '#3B82F6', fontWeight: 600}}> {p.date}</p>
+                                                            <p style={{color: 'var(--text-secondary)', fontWeight: 600}}> {p.date}</p>
                                                             <div className="rc-property-price">{p.price}</div>
                                                         </div>
                                                     </div>
@@ -373,7 +373,7 @@ export default function RealtorClientsMobile() {
 
                             {workspaceTab === 'documents' && (
                                 <div>
-                                    <div className="rc-section-title"><Shield size={18} color="#8B5CF6"/> Bóveda del Cliente</div>
+                                    <div className="rc-section-title"><Shield size={18} color="var(--text-secondary)"/> Bóveda del Cliente</div>
                                     <p style={{color:'var(--text-secondary)', fontSize:'13px', marginBottom:'16px'}}>
                                         Documentos privados resguardados por el cliente. Solo lectura.
                                     </p>
@@ -381,7 +381,7 @@ export default function RealtorClientsMobile() {
                                         {selectedClient.clientVault.length === 0 ? <p style={{color:'var(--text-tertiary)', fontSize:'14px'}}>La bóveda está vacía.</p> : null}
                                         {selectedClient.clientVault.map(doc => (
                                             <div key={doc.id} className="rc-doc-item">
-                                                <div className="rc-doc-icon"><CheckCircle2 size={24} color="#8B5CF6"/></div>
+                                                <div className="rc-doc-icon"><CheckCircle2 size={24} color="var(--text-secondary)"/></div>
                                                 <div>
                                                     <div className="rc-doc-name">{doc.name}</div>
                                                     <div className="rc-doc-meta">Subido: {doc.date}</div>

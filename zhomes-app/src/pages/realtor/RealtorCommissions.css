@@ -1,4 +1,4 @@
-/* ---- Realtor Commissions Page ---- */
+﻿/* ---- Realtor Commissions Page ---- */
 .rc-page {
     padding: 0;
 }
@@ -44,12 +44,12 @@
 
 .rc-summary-card.pending .rc-summary-icon {
     background: rgba(245, 158, 11, 0.12);
-    color: #F59E0B;
+    color: var(--text-secondary);
 }
 
 .rc-summary-card.last .rc-summary-icon {
     background: rgba(59, 130, 246, 0.12);
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .rc-summary-amount {

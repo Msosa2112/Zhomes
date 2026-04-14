@@ -1,4 +1,4 @@
-.super-admin-page {
+﻿.super-admin-page {
     min-height: 100vh;
     padding: 80px 20px 100px;
     background: var(--bg-main);
@@ -38,7 +38,7 @@
 }
 
 .admin-warning strong {
-    color: #EF4444;
+    color: var(--zhomes-red);
     display: block;
     margin-bottom: 6px;
     font-size: 14px;

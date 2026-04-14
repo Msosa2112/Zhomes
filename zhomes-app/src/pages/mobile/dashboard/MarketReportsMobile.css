@@ -1,4 +1,4 @@
-.market-page {
+﻿.market-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -49,7 +49,7 @@
 }
 
 .market-trend.positive { color: #10B981; }
-.market-trend.negative { color: #EF4444; }
+.market-trend.negative { color: var(--zhomes-red); }
 
 /* Stats Grid */
 .market-stats-grid {
@@ -70,10 +70,10 @@
 
 .market-stat strong { font-size: 1.15rem; font-weight: 900; }
 .market-stat span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
-.ms-icon.blue { color: #3B82F6; }
-.ms-icon.amber { color: #F59E0B; }
+.ms-icon.blue { color: var(--text-secondary); }
+.ms-icon.amber { color: var(--text-secondary); }
 .ms-icon.green { color: #10B981; }
-.ms-icon.violet { color: #8B5CF6; }
+.ms-icon.violet { color: var(--text-secondary); }
 
 .market-mini-trend {
     font-size: 0.7rem !important;
@@ -81,7 +81,7 @@
 }
 
 .market-mini-trend.positive { color: #10B981 !important; }
-.market-mini-trend.negative { color: #EF4444 !important; }
+.market-mini-trend.negative { color: var(--zhomes-red) !important; }
 
 /* Sections */
 .market-section h3 { font-size: 1rem; font-weight: 800; margin: 8px 0 12px; }
@@ -124,7 +124,7 @@
 }
 
 .market-bar.sales {
-    background: linear-gradient(180deg, #3B82F6, color-mix(in srgb, #3B82F6 60%, transparent));
+    background: linear-gradient(180deg, var(--text-secondary), color-mix(in srgb, var(--text-secondary) 60%, transparent));
 }
 
 .market-bar-label {

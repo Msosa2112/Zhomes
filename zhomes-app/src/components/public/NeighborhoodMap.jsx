@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+﻿import { useState, useMemo, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import { GraduationCap, Utensils, Car, TreePine, ShoppingBag, Dumbbell, Coffee, Clock, MapPin, Layers } from 'lucide-react'
@@ -53,10 +53,10 @@ const DAY_TIMELINE = [
 ]
 
 const LAYER_CONFIG = {
-    schools: { label: 'Escuelas', icon: GraduationCap, color: '#3B82F6' },
-    dining: { label: 'Restaurantes', icon: Utensils, color: '#F59E0B' },
+    schools: { label: 'Escuelas', icon: GraduationCap, color: 'var(--text-secondary)' },
+    dining: { label: 'Restaurantes', icon: Utensils, color: 'var(--text-secondary)' },
     lifestyle: { label: 'Estilo de Vida', icon: TreePine, color: '#10B981' },
-    commute: { label: 'Commute', icon: Car, color: '#8B5CF6' },
+    commute: { label: 'Commute', icon: Car, color: 'var(--text-secondary)' },
 }
 
 function createLayerIcon(color) {

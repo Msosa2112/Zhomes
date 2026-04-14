@@ -1,4 +1,4 @@
-/* UI Nativa Móvil - Deal Room */
+﻿/* UI Nativa Móvil - Deal Room */
 .mobile-deal-room {
     background: var(--bg-primary);
     min-height: 100vh;
@@ -162,7 +162,7 @@
 }
 
 .mdr-doc-status.uploaded {
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .mdr-doc-status.pending {
@@ -280,8 +280,8 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -321,7 +321,7 @@
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    background: linear-gradient(135deg, var(--text-secondary) 0%, #2563EB 100%);
     color: white;
     border: none;
     border-radius: 20px;
@@ -343,7 +343,7 @@
 
 .ai-loading-icon {
     animation: spin 1s linear infinite;
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 @keyframes spin {
@@ -410,7 +410,7 @@
     align-items: center;
     gap: 8px;
     font-weight: 800;
-    color: #3B82F6;
+    color: var(--text-secondary);
     font-size: 1.05rem;
 }
 
@@ -471,7 +471,7 @@
 
 .ai-next-action {
     background: linear-gradient(to right, rgba(59, 130, 246, 0.05), transparent);
-    border-left: 3px solid #3B82F6;
+    border-left: 3px solid var(--text-secondary);
     padding: 1rem;
     border-radius: 0 8px 8px 0;
     margin-bottom: 1rem;
@@ -481,7 +481,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #3B82F6;
+    color: var(--text-secondary);
     margin-bottom: 6px;
 }
 
@@ -503,7 +503,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #3B82F6;
+    background: var(--text-secondary);
     color: white;
     padding: 8px 16px;
     border-radius: 12px;

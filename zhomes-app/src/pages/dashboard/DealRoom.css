@@ -1,4 +1,4 @@
-/* ---- Deal Room — Transaction Workspace ---- */
+﻿/* ---- Deal Room — Transaction Workspace ---- */
 .deal-room {
     width: 100%;
     min-width: 0;
@@ -568,7 +568,7 @@
 }
 
 .comm-status-badge.pending {
-    color: #F59E0B;
+    color: var(--text-secondary);
     background: rgba(245, 158, 11, 0.08);
 }
 
@@ -766,14 +766,14 @@
 }
 
 .radar-polygon-data {
-    fill: rgba(59, 130, 246, 0.15);
-    stroke: #3B82F6;
+    fill: var(--bg-secondary);
+    stroke: var(--text-secondary);
     stroke-width: 2;
     stroke-linejoin: round;
 }
 
 .radar-dot {
-    fill: #3B82F6;
+    fill: var(--text-secondary);
     stroke: white;
     stroke-width: 2;
     cursor: pointer;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import {
     Users, Plus, Phone, Mail, ChevronRight, X, Search, Filter,
     MapPin, DollarSign, Clock, MessageSquare, FileText, Calendar,
@@ -8,10 +8,10 @@ import { supabase } from '../../../lib/supabaseClient'
 import './CRMPageMobile.css'
 
 const PIPELINE_STAGES = [
-    { id: 'new',         label: 'Nuevo Lead',   color: '#8B5CF6', icon: Star },
-    { id: 'contacted',   label: 'Contactado',   color: '#3B82F6', icon: Phone },
+    { id: 'new',         label: 'Nuevo Lead',   color: 'var(--text-secondary)', icon: Star },
+    { id: 'contacted',   label: 'Contactado',   color: 'var(--text-secondary)', icon: Phone },
     { id: 'preapproved', label: 'Pre-Aprobado', color: '#06B6D4', icon: CheckCircle2 },
-    { id: 'searching',   label: 'Buscando',     color: '#F59E0B', icon: Search },
+    { id: 'searching',   label: 'Buscando',     color: 'var(--text-secondary)', icon: Search },
     { id: 'offer',       label: 'Oferta',       color: '#F97316', icon: FileText },
     { id: 'closing',     label: 'Cierre',       color: '#10B981', icon: Home },
 ]

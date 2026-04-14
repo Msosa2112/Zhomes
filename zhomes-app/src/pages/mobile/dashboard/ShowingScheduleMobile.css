@@ -1,4 +1,4 @@
-.showing-page {
+﻿.showing-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -56,8 +56,8 @@
 .showing-stat strong { font-size: 1.2rem; font-weight: 900; }
 .showing-stat span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
 .showing-stat.warn { border-color: rgba(245, 158, 11, 0.3); }
-.showing-stat.warn svg { color: #F59E0B; }
-.showing-stat.warn strong { color: #F59E0B; }
+.showing-stat.warn svg { color: var(--text-secondary); }
+.showing-stat.warn strong { color: var(--text-secondary); }
 
 /* Calendar */
 .showing-calendar {
@@ -337,10 +337,10 @@
 
 .showing-action-btn.cancel {
     background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 .showing-action-btn.complete {
-    background: #3B82F6;
+    background: var(--text-secondary);
     color: white;
 }

@@ -1,4 +1,4 @@
-.prospect-page {
+﻿.prospect-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -28,8 +28,8 @@
 .prospect-kpi strong { font-size: 1.2rem; font-weight: 900; }
 .prospect-kpi span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
 .prospect-kpi.hot { border-color: rgba(245, 158, 11, 0.3); }
-.prospect-kpi.hot svg { color: #F59E0B; }
-.prospect-kpi.hot strong { color: #F59E0B; }
+.prospect-kpi.hot svg { color: var(--text-secondary); }
+.prospect-kpi.hot strong { color: var(--text-secondary); }
 .kpi-target { color: var(--zhomes-red) !important; }
 
 /* Zone Cards */
@@ -76,9 +76,9 @@
     font-weight: 800;
 }
 
-.zone-hot-score.hot { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
-.zone-hot-score.warm { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
-.zone-hot-score.cool { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+.zone-hot-score.hot { background: rgba(239, 68, 68, 0.1); color: var(--zhomes-red); }
+.zone-hot-score.warm { background: var(--bg-secondary); color: var(--text-secondary); }
+.zone-hot-score.cool { background: var(--bg-secondary); color: var(--text-secondary); }
 
 .zone-stats-row {
     display: flex;

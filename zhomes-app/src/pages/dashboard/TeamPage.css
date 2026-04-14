@@ -1,4 +1,4 @@
-/* ---- Team Page — Gamified Leaderboard ---- */
+﻿/* ---- Team Page — Gamified Leaderboard ---- */
 .team-page {
     width: 100%;
     min-width: 0;
@@ -145,7 +145,7 @@
 }
 
 .podium-avatar.gold-ring {
-    background: linear-gradient(135deg, #F5A623, #FFD700, #F5A623);
+    background: linear-gradient(135deg, #F5A623, var(--text-secondary), #F5A623);
     box-shadow: 0 0 24px rgba(245, 166, 35, 0.25);
 }
 
@@ -229,7 +229,7 @@
     margin-top: var(--space-2);
     font-size: var(--text-xs);
     font-weight: 700;
-    color: #EF4444;
+    color: var(--zhomes-red);
     background: rgba(239, 68, 68, 0.06);
     padding: 2px 10px;
     border-radius: var(--radius-full);
@@ -425,7 +425,7 @@
     gap: 4px;
     font-size: var(--text-sm);
     font-weight: 700;
-    color: #EF4444;
+    color: var(--zhomes-red);
     background: rgba(239, 68, 68, 0.06);
     padding: 2px 10px;
     border-radius: var(--radius-full);

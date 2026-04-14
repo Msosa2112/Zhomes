@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Trophy, Star, TrendingUp, Plus, Trash2, Edit3, Check, X, User, Percent, Phone, Mail } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
 import ZSlider from '../../../components/ui/ZSlider'
@@ -98,7 +98,7 @@ export default function TeamPageMobile() {
             {topAgent && (
                 <div className="m-podium-section">
                     <div className="m-podium-card">
-                        <Trophy size={40} color="#F59E0B" className="m-trophy" />
+                        <Trophy size={40} color="var(--text-secondary)" className="m-trophy" />
                         {topAgent.avatar 
                             ? <img src={topAgent.avatar} alt="" className="m-pod-img" />
                             : <div className="m-pod-img-placeholder"><User size={32} /></div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import {
     Calendar, Clock, MapPin, User, Phone, ChevronRight, Plus, X,
     Check, XCircle, ChevronLeft, Home, Star, MessageSquare,
@@ -11,10 +11,10 @@ const DAYS   = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 const STATUS_MAP = {
-    pending:   { label: 'Pendiente',   color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-    confirmed: { label: 'Confirmado',  color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
-    completed: { label: 'Completado',  color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
-    cancelled: { label: 'Cancelado',   color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
+    pending:   { label: 'Pendiente',   color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+    confirmed: { label: 'Confirmado',  color: '#10B981', bg: 'var(--bg-secondary)' },
+    completed: { label: 'Completado',  color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' },
+    cancelled: { label: 'Cancelado',   color: 'var(--zhomes-red)', bg: 'rgba(228,31,37,0.08)' },
     no_show:   { label: 'No se presentó', color: '#6B7280', bg: 'rgba(107,114,128,0.1)' },
 }
 

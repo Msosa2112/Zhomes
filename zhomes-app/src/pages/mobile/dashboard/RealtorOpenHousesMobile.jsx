@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Plus, Users, Calendar, MapPin, Clock, ExternalLink, QrCode, Copy, Check, ChevronRight } from 'lucide-react'
 import './RealtorOpenHousesMobile.css'
 
@@ -74,7 +74,7 @@ export default function RealtorOpenHousesMobile() {
                     <div key={oh.id} className="rt-oh-card" onClick={() => setSelectedOH(oh)}>
                         <div className="rt-oh-card-header">
                             <div className="rt-oh-title">
-                                <MapPin size={16} color="#3B82F6" />
+                                <MapPin size={16} color="var(--text-secondary)" />
                                 <h3>{oh.property}</h3>
                             </div>
                             <span className={`rt-oh-status-badge ${oh.status}`}>

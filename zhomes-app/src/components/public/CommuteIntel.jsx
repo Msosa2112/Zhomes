@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Car, Loader2, MapPin, Search, ChevronRight } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { CommuteService } from '../../services/commuteService';
@@ -68,7 +68,7 @@ export default function CommuteIntel({ propertyAddress, propLat, propLng }) {
     return (
         <div className="commute-intel-card">
             <div className="commute-intel-header">
-                <Car size={20} color="#3B82F6" />
+                <Car size={20} color="var(--text-secondary)" />
                 <h3>Tiempos de Traslado</h3>
             </div>
             

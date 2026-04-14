@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import {
     MapPin, DollarSign, FileText, CheckCircle2, Clock, Eye,
     Upload, Download, MessageSquare, StickyNote, ArrowLeft,
@@ -58,15 +58,15 @@ const DEAL = {
 
 const DOC_ICONS = {
     approved: { icon: CheckCircle2, color: '#10B981', label: 'Aprobado' },
-    uploaded: { icon: Eye, color: '#3B82F6', label: 'En revisión' },
+    uploaded: { icon: Eye, color: 'var(--text-secondary)', label: 'En revisión' },
     pending: { icon: Clock, color: '#9CA3AF', label: 'Pendiente' },
 }
 
 const TIMELINE_ICONS = {
-    doc: { icon: FileText, color: '#3B82F6' },
+    doc: { icon: FileText, color: 'var(--text-secondary)' },
     approval: { icon: CheckCircle2, color: '#10B981' },
-    message: { icon: MessageSquare, color: '#8B5CF6' },
-    status: { icon: Home, color: '#F59E0B' },
+    message: { icon: MessageSquare, color: 'var(--text-secondary)' },
+    status: { icon: Home, color: 'var(--text-secondary)' },
 }
 
 const TABS = [

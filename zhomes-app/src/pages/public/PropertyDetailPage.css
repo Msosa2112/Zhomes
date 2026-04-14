@@ -1,4 +1,4 @@
-.cinematic-page {
+﻿.cinematic-page {
     position: relative;
     background: var(--bg-primary);
     min-height: 100vh;
@@ -138,7 +138,7 @@
 }
 
 .badge-exclusive {
-    background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+    background: linear-gradient(135deg, var(--text-secondary) 0%, #FDB931 100%);
     color: black;
 }
 
@@ -289,7 +289,7 @@
 }
 
 .btn-action.generating {
-    background: #3B82F6;
+    background: var(--text-secondary);
     color: white;
 }
 

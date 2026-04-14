@@ -1,4 +1,4 @@
-.crm-page {
+﻿.crm-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -70,8 +70,8 @@
 .crm-kpi strong { font-size: 1.2rem; font-weight: 900; }
 .crm-kpi span { font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; }
 .crm-kpi.hot { border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
-.crm-kpi.hot svg { color: #EF4444; }
-.crm-kpi.hot strong { color: #EF4444; }
+.crm-kpi.hot svg { color: var(--zhomes-red); }
+.crm-kpi.hot strong { color: var(--zhomes-red); }
 
 /* Controls */
 .crm-controls {
@@ -268,7 +268,7 @@
 }
 
 .crm-lead-card.priority-high {
-    border-left: 3px solid #EF4444;
+    border-left: 3px solid var(--zhomes-red);
 }
 
 .crm-lead-top {
@@ -341,7 +341,7 @@
     color: var(--text-tertiary);
 }
 
-.crm-days-ago.stale { color: #F59E0B; }
+.crm-days-ago.stale { color: var(--text-secondary); }
 
 /* List View */
 .crm-list-view {
@@ -590,7 +590,7 @@
 
 .crm-action-btn.danger {
     background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 /* Form */

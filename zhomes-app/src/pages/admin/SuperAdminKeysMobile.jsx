@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Key, Save, Eye, EyeOff, ShieldAlert, CheckCircle2, ChevronLeft, Activity } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import './SuperAdminKeysMobile.css'
@@ -67,7 +67,7 @@ export default function SuperAdminKeysMobile() {
             <div className="admin-header">
                 <button className="back-btn" onClick={() => navigate(-1)}><ChevronLeft size={24} /></button>
                 <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    <ShieldAlert size={20} color="#EF4444" />
+                    <ShieldAlert size={20} color="var(--zhomes-red)" />
                     <h2>Super Admin</h2>
                 </div>
             </div>

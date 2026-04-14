@@ -1,4 +1,4 @@
-/* ---- Realtor Documents Page — Folder-based ---- */
+﻿/* ---- Realtor Documents Page — Folder-based ---- */
 .rdoc-page {
     padding: 0;
 }
@@ -34,13 +34,13 @@
 }
 
 .rdoc-stat-pill.uploaded {
-    color: #3B82F6;
+    color: var(--text-secondary);
     border-color: rgba(59, 130, 246, 0.2);
     background: rgba(59, 130, 246, 0.04);
 }
 
 .rdoc-stat-pill.pending {
-    color: #F59E0B;
+    color: var(--text-secondary);
     border-color: rgba(245, 158, 11, 0.2);
     background: rgba(245, 158, 11, 0.04);
 }
@@ -100,7 +100,7 @@
 
 .rdoc-folder.open {
     box-shadow: var(--shadow-md);
-    border-color: rgba(59, 130, 246, 0.15);
+    border-color: var(--bg-secondary);
 }
 
 /* Folder header */

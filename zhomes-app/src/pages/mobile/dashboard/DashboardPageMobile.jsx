@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import {
   Brain, TrendingUp, Users, Target, Activity, AlertCircle,
   CheckCircle2, ChevronRight, X, Plus, Trash2, Save, PenTool,
@@ -322,7 +322,7 @@ export default function DashboardPageMobile() {
                     key={event.id}
                     className="m-pipe-row"
                     style={{
-                      background: passed ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)',
+                      background: passed ? 'var(--bg-secondary)' : 'rgba(239, 68, 68, 0.05)',
                       borderLeft: `3px solid ${passed ? '#10B981' : '#EF4444'}`
                     }}
                   >
@@ -372,8 +372,8 @@ export default function DashboardPageMobile() {
                   <div key={alert.id} className="m-alert" style={{ justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
                       {isDeadline
-                        ? <AlertTriangle size={16} color="#F59E0B" style={{ flexShrink: 0, marginTop: '2px' }} />
-                        : <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        ? <AlertTriangle size={16} color="var(--text-secondary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                        : <AlertCircle size={16} color="var(--zhomes-red)" style={{ flexShrink: 0, marginTop: '2px' }} />
                       }
                       <div>
                         <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)' }}>

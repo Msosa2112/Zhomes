@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
     FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X,
@@ -85,9 +85,9 @@ const DOCUMENTS = [
 
 const STATUS_MAP = {
     draft:   { label: 'Borrador',        color: '#6B7280', icon: Edit3 },
-    pending: { label: 'Pendiente Firma', color: '#F59E0B', icon: Clock },
+    pending: { label: 'Pendiente Firma', color: 'var(--text-secondary)', icon: Clock },
     signed:  { label: 'Firmado',         color: '#10B981', icon: CheckCircle2 },
-    expired: { label: 'Expirado',        color: '#EF4444', icon: AlertCircle },
+    expired: { label: 'Expirado',        color: 'var(--zhomes-red)', icon: AlertCircle },
 }
 
 export default function ESignaturesMobile() {
@@ -294,7 +294,7 @@ export default function ESignaturesMobile() {
                                             <span>{s.name}</span>
                                             {s.signed
                                                 ? <CheckCircle2 size={16} color="#10B981" />
-                                                : <Clock size={16} color="#F59E0B" />
+                                                : <Clock size={16} color="var(--text-secondary)" />
                                             }
                                         </div>
                                     ))}
@@ -343,7 +343,7 @@ export default function ESignaturesMobile() {
                         </div>
                         <div className="esign-modal-body">
                             <div className="esign-api-notice">
-                                <Shield size={24} color="#3B82F6" />
+                                <Shield size={24} color="var(--text-secondary)" />
                                 <h3>Integración E-Sign</h3>
                                 <p>Conecta DocuSign, DotLoop o HelloSign para gestionar contratos con validez legal nativa.</p>
                             </div>

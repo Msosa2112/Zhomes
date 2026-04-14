@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   MapPin, FileText, CheckCircle2, Clock, Upload, ArrowLeft,
   MoreHorizontal, Send, Brain, Sparkles, AlertTriangle, ArrowRight,
@@ -466,7 +466,7 @@ export default function DealRoomMobile() {
                         {metrics.docs_pending > 0 && (
                           <span style={{
                             fontSize: '11px', background: 'rgba(239,68,68,0.1)',
-                            color: '#EF4444', padding: '2px 8px', borderRadius: '20px'
+                            color: 'var(--zhomes-red)', padding: '2px 8px', borderRadius: '20px'
                           }}>
                             {metrics.docs_pending} docs pendientes
                           </span>
@@ -474,7 +474,7 @@ export default function DealRoomMobile() {
 
                         {isUrgent && (
                           <span style={{
-                            fontSize: '11px', background: 'rgba(245,158,11,0.1)',
+                            fontSize: '11px', background: 'var(--bg-secondary)',
                             color: '#f59e0b', padding: '2px 8px', borderRadius: '20px'
                           }}>
                              Cierra en {daysLeft}d

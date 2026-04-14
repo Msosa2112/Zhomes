@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════════
    MapPageMobile.css — ZHomes Map 2.0
    MapLibre + deck.gl + Airbnb Panel + AI Search
    ══════════════════════════════════════════════════════════════ */
@@ -169,7 +169,7 @@
   margin-left: auto;
 }
 .mobile-map-page.light .map-pill-icon { background: rgba(255,255,255,0.92); }
-.map-pill-icon.active-zhomes, .mobile-map-page.light .map-pill-icon.active-zhomes { border-color: #FFD700; background: #1a1a1a; }
+.map-pill-icon.active-zhomes, .mobile-map-page.light .map-pill-icon.active-zhomes { border-color: var(--text-secondary); background: #1a1a1a; }
 
 /* ══════════════════════════════════════════════════════════════
    MODE CONTROLS
@@ -243,7 +243,7 @@
 }
 .mobile-map-page.light .map-count-badge { background: rgba(255,255,255,0.93); color: #222; }
 .map-count-ai { background: rgba(227,30,36,0.15); color: #E31E24; padding: 1px 6px; border-radius: 8px; font-size: 10px; }
-.map-count-zh { background: #FFD700; color: #1a1a1a; padding: 1px 7px; border-radius: 8px; font-size: 10px; }
+.map-count-zh { background: var(--text-secondary); color: #1a1a1a; padding: 1px 7px; border-radius: 8px; font-size: 10px; }
 
 /* ══════════════════════════════════════════════════════════════
    PRICE PILL MARKERS
@@ -283,7 +283,7 @@
 }
 .map-cluster-bubble.zhomes {
   background: #1a1a1a;
-  border-color: #FFD700;
+  border-color: var(--text-secondary);
   box-shadow: 0 3px 12px rgba(0,0,0,0.45);
 }
 .map-cluster-bubble:active { transform: scale(0.9); }
@@ -389,7 +389,7 @@
 
 .map-bottom-card-badge {
   position: absolute; top: 8px; left: 8px;
-  background: rgba(0,0,0,0.72); color: #FFD700;
+  background: rgba(0,0,0,0.72); color: var(--text-secondary);
   font-size: 10px; font-weight: 700;
   padding: 3px 7px; border-radius: 8px;
   backdrop-filter: blur(4px);

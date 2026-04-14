@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+﻿import { useState, useRef } from 'react'
 import { FolderClosed, FolderOpen, FileText, CheckCircle2, ChevronDown, ChevronRight, Upload, Loader2, Eye, XCircle, Clock, User, Home } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
 import './BrokerDocumentsMobile.css'
@@ -146,8 +146,8 @@ export default function BrokerDocumentsMobile() {
 
     const statusIcon = (status) => {
         if (status === 'approved') return <CheckCircle2 size={16} color="#10B981" />
-        if (status === 'reviewed') return <Eye size={16} color="#3B82F6" />
-        return <Clock size={16} color="#F59E0B" />
+        if (status === 'reviewed') return <Eye size={16} color="var(--text-secondary)" />
+        return <Clock size={16} color="var(--text-secondary)" />
     }
 
     const statusBadge = (status) => {

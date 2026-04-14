@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { MapPin, Home, TrendingUp, Clock, DollarSign, Users, Search, Filter, Eye, ChevronRight, Target, Zap, Calendar, Mail, BarChart3, Building } from 'lucide-react'
 import './ProspectingMobile.css'
 
@@ -21,10 +21,10 @@ const OPPORTUNITIES = [
 ]
 
 const OPPORTUNITY_TYPES = {
-    long_hold: { label: 'Propietario 10+ años', color: '#3B82F6', icon: Clock },
-    vacant: { label: 'Vacante', color: '#F59E0B', icon: Building },
-    pre_foreclosure: { label: 'Pre-Foreclosure', color: '#EF4444', icon: Target },
-    absentee: { label: 'Dueño Ausente', color: '#8B5CF6', icon: Users },
+    long_hold: { label: 'Propietario 10+ años', color: 'var(--text-secondary)', icon: Clock },
+    vacant: { label: 'Vacante', color: 'var(--text-secondary)', icon: Building },
+    pre_foreclosure: { label: 'Pre-Foreclosure', color: 'var(--zhomes-red)', icon: Target },
+    absentee: { label: 'Dueño Ausente', color: 'var(--text-secondary)', icon: Users },
 }
 
 export default function ProspectingMobile() {
@@ -141,7 +141,7 @@ export default function ProspectingMobile() {
 
                     {/* AI Prediction Notice */}
                     <div className="prospect-ai-notice">
-                        <Zap size={20} color="#8B5CF6" />
+                        <Zap size={20} color="var(--text-secondary)" />
                         <div>
                             <strong>Predicción IA</strong>
                             <p>Estas oportunidades se generan analizando tiempo de tenencia, datos públicos y patrones del mercado. Conecta el Broker's Own Data para mejores predicciones.</p>

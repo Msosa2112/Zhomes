@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    CMA PROFESIONAL — ZHomes Premium Mobile UI
    ============================================ */
 
@@ -230,7 +230,7 @@
 }
 
 .cma-gps-ok  { font-size: 0.68rem !important; color: #10B981 !important; font-weight: 700 !important; margin-top: 2px !important; }
-.cma-gps-warn { font-size: 0.68rem !important; color: #F59E0B !important; font-weight: 700 !important; margin-top: 2px !important; }
+.cma-gps-warn { font-size: 0.68rem !important; color: var(--text-secondary) !important; font-weight: 700 !important; margin-top: 2px !important; }
 
 .cma-subject-price {
     position: absolute;
@@ -281,7 +281,7 @@
     border: 1px solid rgba(239,68,68,0.2);
     border-radius: 16px;
     padding: 16px;
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 .cma-error > div { flex: 1; }
@@ -488,7 +488,7 @@
 /* ── METHODOLOGY BOX ─────────────────────────── */
 .cma-method-box {
     background: rgba(59,130,246,0.05);
-    border: 1px solid rgba(59,130,246,0.15);
+    border: 1px solid var(--bg-secondary);
     border-radius: 16px;
     padding: 16px;
 }
@@ -497,7 +497,7 @@
     font-size: 0.8rem;
     font-weight: 900;
     margin: 0 0 10px;
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .cma-method-box ul {

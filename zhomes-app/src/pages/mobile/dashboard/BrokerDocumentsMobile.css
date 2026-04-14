@@ -1,4 +1,4 @@
-.mobile-rdoc-page {
+﻿.mobile-rdoc-page {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -228,10 +228,10 @@
 }
 
 .m-doc-action-btn.reject {
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 .m-doc-action-btn.reject:active {
-    background: rgba(59, 130, 246, 0.15);
+    background: var(--bg-secondary);
 }
 
 /* Status badges */
@@ -239,8 +239,8 @@
     font-size: 0.7rem;
     padding: 2px 8px;
     border-radius: 6px;
-    background: rgba(245, 158, 11, 0.1);
-    color: #F59E0B;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
     font-weight: 800;
 }
 
@@ -250,8 +250,8 @@
 }
 
 .m-doc-badge.reviewed {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
 }
 
 /* Realtor view */

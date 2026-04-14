@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { CheckCircle2, Clock, Upload, ChevronDown, ChevronUp, FileText, Eye, PartyPopper } from 'lucide-react'
 import TransactionTimeline from '../../components/shared/TransactionTimeline'
 import ClosingCelebration from '../../components/shared/ClosingCelebration'
@@ -16,7 +16,7 @@ const STATUS_FILTERS = [
 
 const DOC_STATUS_ICON = {
     approved: { icon: CheckCircle2, color: '#10B981', label: 'Aprobado' },
-    uploaded: { icon: Eye, color: '#3B82F6', label: 'En revisión' },
+    uploaded: { icon: Eye, color: 'var(--text-secondary)', label: 'En revisión' },
     pending: { icon: Clock, color: '#9CA3AF', label: 'Pendiente' },
 }
 

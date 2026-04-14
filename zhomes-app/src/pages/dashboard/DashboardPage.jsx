@@ -1,4 +1,4 @@
-import { TrendingUp, FileText, Users, AlertCircle, Clock, CheckCircle2, ArrowUpRight } from 'lucide-react'
+﻿import { TrendingUp, FileText, Users, AlertCircle, Clock, CheckCircle2, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import KanbanPipeline from '../../components/kanban/KanbanPipeline'
 import StackedAlerts from '../../components/shared/StackedAlerts'
@@ -30,7 +30,7 @@ export default function DashboardPage() {
             {/* KPI Cards */}
             <div className="kpi-grid">
                 <div className="kpi-card animate-fadeInUp">
-                    <div className="kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3B82F6' }}>
+                    <div className="kpi-icon" style={{ background: 'rgba(59, 130, 246, 0.15)', color: 'var(--text-secondary)' }}>
                         <FileText size={22} />
                     </div>
                     <div className="kpi-content">
@@ -40,7 +40,7 @@ export default function DashboardPage() {
                     <span className="kpi-trend up"><ArrowUpRight size={14} /> +3</span>
                 </div>
                 <div className="kpi-card animate-fadeInUp delay-1">
-                    <div className="kpi-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#F59E0B' }}>
+                    <div className="kpi-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--text-secondary)' }}>
                         <Clock size={22} />
                     </div>
                     <div className="kpi-content">

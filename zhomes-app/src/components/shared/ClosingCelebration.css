@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    CLOSING CELEBRATION — Cinematic Finale
    ============================================ */
 
@@ -76,7 +76,7 @@
 }
 
 .cc-intro-icon {
-    color: #F59E0B;
+    color: var(--text-secondary);
     animation: cc-key-float 2s ease-in-out infinite;
 }
 
@@ -313,7 +313,7 @@
 }
 
 .cc-star.active {
-    color: #F59E0B;
+    color: var(--text-secondary);
     animation: cc-star-pop 0.3s ease;
 }
 

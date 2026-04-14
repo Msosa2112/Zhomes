@@ -1,4 +1,4 @@
-.rt-leads-page {
+﻿.rt-leads-page {
     padding-top: 80px;
     padding-bottom: 90px;
     min-height: 100vh;
@@ -182,7 +182,7 @@
 }
 
 .rt-quick-action svg {
-    color: #3B82F6;
+    color: var(--text-secondary);
 }
 
 .rt-detail-section {
@@ -211,7 +211,7 @@
 }
 
 .rt-detail-item a {
-    color: #3B82F6;
+    color: var(--text-secondary);
     text-decoration: none;
 }
 

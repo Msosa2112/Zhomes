@@ -1,4 +1,4 @@
-.mobile-calc-page {
+﻿.mobile-calc-page {
     display: flex;
     flex-direction: column;
     background: var(--bg-primary);
@@ -88,11 +88,11 @@
 }
 
 .mc-dot.t {
-    background: #3B82F6;
+    background: var(--text-secondary);
 }
 
 .mc-dot.i {
-    background: #F59E0B;
+    background: var(--text-secondary);
 }
 
 .mc-inputs-card {
@@ -159,7 +159,7 @@
 }
 
 .mc-dot.pmi {
-    background: #8B5CF6;
+    background: var(--text-secondary);
 }
 
 .mc-input-group label {

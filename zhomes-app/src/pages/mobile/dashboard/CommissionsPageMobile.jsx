@@ -1,4 +1,4 @@
-import { DollarSign, TrendingUp, Clock, CheckCircle2, Download } from 'lucide-react'
+﻿import { DollarSign, TrendingUp, Clock, CheckCircle2, Download } from 'lucide-react'
 import './CommissionsPageMobile.css'
 
 const COMMISSIONS = [
@@ -10,8 +10,8 @@ const COMMISSIONS = [
 
 const statusMap = {
     paid: { label: 'Pagada', color: '#22C55E' },
-    approved: { label: 'Aprobada', color: '#3B82F6' },
-    docs_complete: { label: 'Completos', color: '#F59E0B' },
+    approved: { label: 'Aprobada', color: 'var(--text-secondary)' },
+    docs_complete: { label: 'Completos', color: 'var(--text-secondary)' },
 }
 
 export default function CommissionsPageMobile() {

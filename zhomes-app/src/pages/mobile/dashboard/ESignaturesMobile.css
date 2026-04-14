@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    E-SIGNATURES - ZHomes Premium Mobile UI
    ============================================ */
 
@@ -78,8 +78,8 @@
 .esign-stat span { font-size: 0.68rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; }
 
 .esign-stat.warn { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.04); }
-.esign-stat.warn svg { color: #F59E0B; }
-.esign-stat.warn strong { color: #F59E0B; }
+.esign-stat.warn svg { color: var(--text-secondary); }
+.esign-stat.warn strong { color: var(--text-secondary); }
 
 .esign-stat.success { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.04); }
 .esign-stat.success svg { color: #10B981; }
@@ -427,8 +427,8 @@
 }
 
 .esign-action-btn.primary { background: var(--zhomes-red); color: white; }
-.esign-action-btn.amber { background: #F59E0B; color: white; }
-.esign-action-btn.blue { background: #3B82F6; color: white; }
+.esign-action-btn.amber { background: var(--text-secondary); color: white; }
+.esign-action-btn.blue { background: var(--text-secondary); color: white; }
 .esign-action-btn.outline {
     background: transparent;
     color: var(--zhomes-red);
@@ -442,9 +442,9 @@
     align-items: center;
     gap: 10px;
     padding: 13px 16px;
-    background: rgba(245,158,11,0.1);
+    background: var(--bg-secondary);
     border-radius: 12px;
-    color: #F59E0B;
+    color: var(--text-secondary);
     font-size: 0.82rem;
     font-weight: 700;
 }
@@ -454,7 +454,7 @@
     text-align: center;
     padding: 24px;
     background: rgba(59,130,246,0.05);
-    border: 1px solid rgba(59,130,246,0.15);
+    border: 1px solid var(--bg-secondary);
     border-radius: 16px;
 }
 

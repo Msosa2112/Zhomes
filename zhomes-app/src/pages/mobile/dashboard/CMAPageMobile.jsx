@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
     Search, X, ChevronDown, MapPin, Home, Bed, Bath, Maximize,
@@ -14,9 +14,9 @@ const fmtK = (n) => n ? (n >= 1000000 ? `$${(n/1000000).toFixed(2)}M` : `$${(n/1
 const fmtPct = (n) => n !== null && n !== undefined ? `${n > 0 ? '+' : ''}${n.toFixed(1)}%` : '—'
 
 const MARKET_POSITION = {
-    underpriced: { label: 'Bajo el Mercado', color: '#10B981', Icon: TrendingDown, bg: 'rgba(16,185,129,0.1)', desc: 'El precio de listado está por debajo del valor de mercado' },
-    overpriced:  { label: 'Sobre el Mercado', color: '#EF4444', Icon: TrendingUp,   bg: 'rgba(239,68,68,0.1)',   desc: 'El precio de listado está por encima del valor de mercado' },
-    at_market:   { label: 'En el Mercado',    color: '#F59E0B', Icon: Minus,         bg: 'rgba(245,158,11,0.1)',  desc: 'El precio de listado está dentro del rango de mercado' },
+    underpriced: { label: 'Bajo el Mercado', color: '#10B981', Icon: TrendingDown, bg: 'var(--bg-secondary)', desc: 'El precio de listado está por debajo del valor de mercado' },
+    overpriced:  { label: 'Sobre el Mercado', color: 'var(--zhomes-red)', Icon: TrendingUp,   bg: 'rgba(228,31,37,0.08)',   desc: 'El precio de listado está por encima del valor de mercado' },
+    at_market:   { label: 'En el Mercado',    color: 'var(--text-secondary)', Icon: Minus,         bg: 'var(--bg-secondary)',  desc: 'El precio de listado está dentro del rango de mercado' },
     unknown:     { label: 'Sin comparar',     color: '#6B7280', Icon: Info,          bg: 'rgba(107,114,128,0.1)', desc: 'No hay precio de listado disponible' },
 }
 
@@ -217,9 +217,9 @@ export default function CMAPageMobile() {
                         {(() => {
                             const n = result.marketStats.compsUsed
                             const method = result.searchMethod
-                            const conf = n >= 5 ? { label: 'Alta Confianza', color: '#10B981', bg: 'rgba(16,185,129,0.1)' }
-                                       : n >= 3 ? { label: 'Media Confianza', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' }
-                                       :           { label: 'Baja Confianza', color: '#EF4444', bg: 'rgba(239,68,68,0.1)' }
+                            const conf = n >= 5 ? { label: 'Alta Confianza', color: '#10B981', bg: 'var(--bg-secondary)' }
+                                       : n >= 3 ? { label: 'Media Confianza', color: 'var(--text-secondary)', bg: 'var(--bg-secondary)' }
+                                       :           { label: 'Baja Confianza', color: 'var(--zhomes-red)', bg: 'rgba(228,31,37,0.08)' }
                             const methodLabel = method === 'subdivision' ? '· Subdivisión'
                                               : method === 'zip'         ? '· Por ZIP'
                                               : method?.startsWith('gps_') ? `· GPS ${method.replace('gps_','').replace('d',' días')}` : ''

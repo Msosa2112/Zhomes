@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { DollarSign, TrendingUp, TrendingDown, PieChart, Users, Calendar, Download, ChevronRight, ArrowUpRight, ArrowDownRight, Wallet, CreditCard, Receipt, Building } from 'lucide-react'
 import './AccountingMobile.css'
 
@@ -110,9 +110,9 @@ export default function AccountingMobile() {
                         <h3>Desglose de Gastos</h3>
                         <div className="acc-expense-list">
                             {[
-                                { cat: 'Oficina', amount: 2800, color: '#3B82F6', pct: 34 },
-                                { cat: 'Seguro E&O', amount: 450, color: '#8B5CF6', pct: 5 },
-                                { cat: 'MLS Fees', amount: 285, color: '#F59E0B', pct: 3 },
+                                { cat: 'Oficina', amount: 2800, color: 'var(--text-secondary)', pct: 34 },
+                                { cat: 'Seguro E&O', amount: 450, color: 'var(--text-secondary)', pct: 5 },
+                                { cat: 'MLS Fees', amount: 285, color: 'var(--text-secondary)', pct: 3 },
                                 { cat: 'Tecnología', amount: 150, color: '#10B981', pct: 2 },
                             ].map(exp => (
                                 <div key={exp.cat} className="acc-expense-row">
@@ -133,7 +133,7 @@ export default function AccountingMobile() {
                     {TRANSACTIONS.map((t, idx) => (
                         <div key={t.id} className="acc-tx-card animate-fadeInUp" style={{ animationDelay: `${idx * 0.04}s` }}>
                             <div className="acc-tx-icon" style={{ background: t.type === 'income' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
-                                {t.type === 'income' ? <ArrowUpRight size={16} color="#10B981" /> : <ArrowDownRight size={16} color="#EF4444" />}
+                                {t.type === 'income' ? <ArrowUpRight size={16} color="#10B981" /> : <ArrowDownRight size={16} color="var(--zhomes-red)" />}
                             </div>
                             <div className="acc-tx-info">
                                 <strong>{t.description}</strong>

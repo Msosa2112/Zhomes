@@ -1,4 +1,4 @@
-.rt-tasks-page {
+﻿.rt-tasks-page {
     padding-top: 80px;
     padding-bottom: 90px;
     min-height: 100vh;
@@ -145,7 +145,7 @@
 
 .rt-task-date.overdue {
     background: #FEF2F2;
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 .rt-form-group-inline {

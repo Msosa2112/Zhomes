@@ -1,4 +1,4 @@
-/* ─── PrequalToolMobile.css ──────────────────────────────────────────────── */
+﻿/* ─── PrequalToolMobile.css ──────────────────────────────────────────────── */
 
 .prequal-overlay {
     position: fixed;
@@ -397,7 +397,7 @@
 .prequal-dti-card.warn {
     background: rgba(239, 68, 68, 0.08);
     border-color: rgba(239, 68, 68, 0.3);
-    color: #EF4444;
+    color: var(--zhomes-red);
 }
 
 .prequal-dti-card div {
@@ -572,7 +572,7 @@
 
 .prequal-no-qualify h3 {
     font-size: 1.2rem;
-    color: #EF4444;
+    color: var(--zhomes-red);
     margin: 0;
 }
 
@@ -642,9 +642,9 @@
     width: 100%;
     padding: 14px 20px;
     border-radius: 12px;
-    border: 1.5px solid #8B5CF6;
+    border: 1.5px solid var(--text-secondary);
     background: rgba(139, 92, 246, 0.08);
-    color: #8B5CF6;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;

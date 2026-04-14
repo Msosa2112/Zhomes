@@ -1,4 +1,4 @@
-/* ---- Transactions Page ---- */
+﻿/* ---- Transactions Page ---- */
 .transactions-page {
     width: 100%;
     min-width: 0;
@@ -164,7 +164,7 @@
 .docs-fill {
     height: 100%;
     border-radius: var(--radius-full);
-    background: linear-gradient(90deg, #F59E0B, #10B981);
+    background: linear-gradient(90deg, var(--text-secondary), #10B981);
     transition: width 0.8s ease;
 }
 
