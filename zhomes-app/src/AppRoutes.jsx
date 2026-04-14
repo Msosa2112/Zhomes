@@ -123,7 +123,6 @@ export default function AppRoutes() {
             <Route element={<ProtectedRoute allowedRoles={['realtor', 'broker', 'admin']} />}>
                 {/* Standalone pages (no layout wrapper) */}
                 <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />
-                <Route path="/cma" element={<CMAPageMobile />} />
                 <Route element={<RealtorLayoutMobile />}>
                     <Route path="/realtor" element={<RealtorDashboardMobile />} />
                     <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
@@ -139,6 +138,7 @@ export default function AppRoutes() {
                     <Route path="/realtor/subir-vibe" element={<UploadVibeMobile />} />
                     <Route path="/realtor/deal" element={<DealRoomMobile />} />
                     <Route path="/realtor/deal/:id" element={<DealRoomMobile />} />
+                    <Route path="/cma" element={<CMAPageMobile />} />
                 </Route>
             </Route>
         </Routes>

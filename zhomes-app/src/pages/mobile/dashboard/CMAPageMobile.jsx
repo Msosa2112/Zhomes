@@ -1,9 +1,10 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import {
     Search, X, ChevronDown, MapPin, Home, Bed, Bath, Maximize,
     TrendingUp, TrendingDown, Minus, BarChart2, AlertCircle,
-    CheckCircle2, Clock, Loader2, Info, Download, Target
+    CheckCircle2, Clock, Loader2, Info, Download, Target, ArrowLeft
 } from 'lucide-react'
 import { useProperties } from '../../../context/PropertyContext'
 import { runCMA } from '../../../services/cmaService'
@@ -22,6 +23,7 @@ const MARKET_POSITION = {
 
 export default function CMAPageMobile() {
     const { properties } = useProperties()
+    const navigate = useNavigate()
 
     // ─── Search state ───────────────────────────────────────
     const [searchText, setSearchText] = useState('')
@@ -86,6 +88,12 @@ export default function CMAPageMobile() {
             {/* ── HEADER ── */}
             <div className="cma-header">
                 <div className="cma-header-top">
+                    <button
+                        onClick={() => navigate(-1)}
+                        style={{ background: 'none', border: 'none', padding: '4px 8px 4px 0', cursor: 'pointer', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.9rem', fontWeight: 600 }}
+                    >
+                        <ArrowLeft size={20} /> Volver
+                    </button>
                     <div>
                         <h1>Análisis CMA</h1>
                         <p>Valuación profesional con ventas reales del MLS</p>
