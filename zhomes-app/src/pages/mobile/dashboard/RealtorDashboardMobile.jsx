@@ -11,12 +11,12 @@ import './RealtorDashboardMobile.css'
 
 // ── Quick actions (3-col, 6 items) ───────────────────────────
 const QUICK_ACTIONS = [
-    { label: 'Citas',      icon: Calendar,    to: '/realtor/showings' },
+    { label: 'Citas',      icon: Calendar,    to: '/realtor/citas' },
     { label: 'Leads',      icon: Users,       to: '/realtor/leads' },
-    { label: 'CMA',        icon: LineChart,   to: '/realtor/cma' },
-    { label: 'Deal Room',  icon: Briefcase,   to: '/realtor/deal-room' },
-    { label: 'Firmas',     icon: PenTool,     to: '/realtor/esignatures' },
-    { label: 'Nueva Prop.', icon: Upload,     to: '/realtor/upload-vibe' },
+    { label: 'CMA',        icon: LineChart,   to: '/cma' },
+    { label: 'Deal Room',  icon: Briefcase,   to: '/realtor/deal' },
+    { label: 'Firmas',     icon: PenTool,     to: '/realtor/firmas' },
+    { label: 'Nueva Prop.', icon: Upload,     to: '/realtor/subir-vibe' },
 ]
 
 // ── Status label map ──────────────────────────────────────────
@@ -146,7 +146,7 @@ export default function RealtorDashboardMobile() {
 
             {/* ── 3. RESUMEN HOY ────────────────────────────── */}
             <div className="rdb-today-row">
-                <Link to="/realtor/showings" className="rdb-today-card">
+                <Link to="/realtor/citas" className="rdb-today-card">
                     <div className="rdb-today-icon">
                         <Calendar size={22} />
                     </div>
@@ -158,7 +158,7 @@ export default function RealtorDashboardMobile() {
                     </div>
                 </Link>
 
-                <Link to="/realtor/tasks" className="rdb-today-card">
+                <Link to="/realtor/deal" className="rdb-today-card">
                     <div className="rdb-today-icon">
                         <CheckCircle2 size={22} />
                     </div>
@@ -171,7 +171,7 @@ export default function RealtorDashboardMobile() {
                 </Link>
 
                 <Link to="/realtor/leads" className="rdb-today-card">
-                    <div className="rdb-today-icon">
+                    <div className="rdb-today-icon rdb-today-icon">
                         <Users size={22} />
                     </div>
                     <div>
@@ -199,13 +199,13 @@ export default function RealtorDashboardMobile() {
             <div className="rdb-section">
                 <div className="rdb-section-header">
                     <h2>Mis Deals</h2>
-                    <Link to="/realtor/deal-room" className="rdb-see-all">
+                    <Link to="/realtor/deal" className="rdb-see-all">
                         Ver todos <ArrowRight size={14} />
                     </Link>
                 </div>
 
                 {activeDeals.length === 0 ? (
-                    <div className="rdb-empty-state">
+                    <div className="rdb-empty-state" onClick={() => navigate('/realtor/deal')} style={{cursor:'pointer'}}>
                         <Briefcase size={32} />
                         <p>Sin deals activos aún</p>
                         <span>Cuando tengas transacciones en curso, aparecerán aquí</span>
@@ -215,7 +215,7 @@ export default function RealtorDashboardMobile() {
                         {activeDeals.map(deal => {
                             const st = DEAL_STATUS[deal.status] || DEAL_STATUS.active
                             return (
-                                <Link key={deal.id} to={`/realtor/deal-room/${deal.id}`} className="rdb-deal-card">
+                                <Link key={deal.id} to={`/realtor/deal`} className="rdb-deal-card">
                                     <div className="rdb-deal-info">
                                         <div className="rdb-deal-icon">
                                             <Home size={18} />
@@ -247,10 +247,11 @@ export default function RealtorDashboardMobile() {
                     <Link to="/realtor/leads" className="rdb-see-all">
                         Ver todos <ArrowRight size={14} />
                     </Link>
+                    
                 </div>
 
                 {recentLeads.length === 0 ? (
-                    <div className="rdb-empty-state">
+                    <div className="rdb-empty-state" onClick={() => navigate('/realtor/leads')} style={{cursor:'pointer'}}>
                         <Users size={32} />
                         <p>Sin leads aún</p>
                         <span>Tus nuevos leads aparecerán aquí</span>
@@ -258,7 +259,7 @@ export default function RealtorDashboardMobile() {
                 ) : (
                     <div className="rdb-leads-list">
                         {recentLeads.map(lead => (
-                            <div key={lead.id} className="rdb-lead-row">
+                            <div key={lead.id} className="rdb-lead-row" onClick={() => navigate('/realtor/leads')} style={{cursor:'pointer'}}>
                                 <div className="rdb-lead-avatar">
                                     {lead.name.charAt(0).toUpperCase()}
                                 </div>
@@ -288,7 +289,7 @@ export default function RealtorDashboardMobile() {
                 <div className="rdb-section rdb-section--last">
                     <div className="rdb-section-header">
                         <h2>Agenda de Hoy</h2>
-                        <Link to="/realtor/showings" className="rdb-see-all">
+                        <Link to="/realtor/citas" className="rdb-see-all">
                             Ver todas <ArrowRight size={14} />
                         </Link>
                     </div>
