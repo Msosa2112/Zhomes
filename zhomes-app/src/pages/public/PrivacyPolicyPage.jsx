@@ -1,7 +1,7 @@
 export default function PrivacyPolicyPage() {
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'system-ui, sans-serif', padding: '40px 20px', lineHeight: '1.6' }}>
-            <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ height: '100vh', width: '100vw', overflowY: 'auto', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'system-ui, sans-serif', padding: '40px 20px', lineHeight: '1.6' }}>
+            <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '60px' }}>
                 <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '24px', borderBottom: '2px solid #f3f4f6', paddingBottom: '16px' }}>Privacy Policy</h1>
                 <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '32px' }}>Last Updated: {new Date().toLocaleDateString()}</p>
 

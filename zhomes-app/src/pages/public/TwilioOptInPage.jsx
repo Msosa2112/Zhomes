@@ -5,8 +5,8 @@ export default function TwilioOptInPage() {
     const [submitted, setSubmitted] = useState(false)
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb', fontFamily: 'system-ui, sans-serif' }}>
-            <div style={{ maxWidth: '450px', width: '100%', padding: '32px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ height: '100vh', width: '100vw', overflowY: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb', fontFamily: 'system-ui, sans-serif' }}>
+            <div style={{ maxWidth: '450px', width: '100%', margin: '40px auto', padding: '32px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                     <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', margin: 0 }}>ZHomes Real Estate</h1>
                     <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '8px' }}>Contact an Agent</p>
