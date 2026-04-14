@@ -52,7 +52,8 @@
     "react-router": "^6.30.3",
     "react-router-dom": "^6.30.3",
     "recharts": "^3.7.0",
-    "supercluster": "^8.0.1"
+    "supercluster": "^8.0.1",
+    "twilio": "^5.13.1"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
