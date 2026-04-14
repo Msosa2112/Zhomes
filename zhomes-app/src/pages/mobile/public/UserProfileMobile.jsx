@@ -355,63 +355,6 @@ export default function UserProfileMobile() {
                     </div>
                 </div>
 
-                {/* Buying Power Dashboard */}
-                <div className="up-buying-power-card">
-                    <div className="up-bp-header">
-                        <div className="up-bp-title">
-                            <DollarSign size={20} color="#10b981" />
-                            <h3>Buying Power</h3>
-                        </div>
-                        <span className="up-bp-badge">Live</span>
-                    </div>
-
-                    <div className="up-bp-monthly">
-                        <span className="up-bp-amount">${monthlyPayment.toLocaleString()}</span>
-                        <span className="up-bp-label">/mes estimado</span>
-                    </div>
-
-                    <div className="up-bp-slider-group">
-                        <ZSlider
-                            label="Precio de Compra"
-                            value={budget}
-                            min={100000}
-                            max={1000000}
-                            step={5000}
-                            color="#10b981"
-                            onChange={setBudget}
-                            formatOptions={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }}
-                        />
-                    </div>
-
-                    <div className="up-bp-slider-group">
-                        <ZSlider
-                            label={`Enganche — $${downAmount.toLocaleString()}`}
-                            value={downPct}
-                            min={3}
-                            max={30}
-                            step={1}
-                            color="#10b981"
-                            onChange={setDownPct}
-                            formatOptions={{ style: 'percent', maximumFractionDigits: 0 }}
-                        />
-                    </div>
-
-                    <div className="up-bp-breakdown">
-                        <div className="up-bp-row">
-                            <span>Tasa actual (30-yr fixed)</span>
-                            <span className="up-bp-val">{interestRate}%</span>
-                        </div>
-                        <div className="up-bp-row">
-                            <span>Costos de cierre estimados</span>
-                            <span className="up-bp-val">${closingCosts.toLocaleString()}</span>
-                        </div>
-                        <div className="up-bp-row">
-                            <span>Efectivo necesario al cierre</span>
-                            <span className="up-bp-val green">${(downAmount + closingCosts).toLocaleString()}</span>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Pre-Calificación Card */}
                 <div
                     className="up-ai-card"

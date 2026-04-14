@@ -914,8 +914,8 @@
 
 .up-deal-hub-card.active {
     background: linear-gradient(145deg, #111827 0%, #1f2937 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    box-shadow: 0 12px 40px rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(228, 31, 37, 0.3);
+    box-shadow: 0 12px 40px rgba(228, 31, 37, 0.15);
 }
 
 .up-hub-glow {
@@ -924,7 +924,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
+    background: radial-gradient(circle at 50% 0%, rgba(228, 31, 37, 0.15) 0%, transparent 60%);
     pointer-events: none;
 }
 
@@ -946,11 +946,11 @@
     width: 48px;
     height: 48px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #e41f25 0%, #aa141a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(228, 31, 37, 0.4);
     flex-shrink: 0;
 }
 
@@ -991,7 +991,7 @@
     gap: 6px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #10b981;
+    color: var(--zhomes-red);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -999,15 +999,15 @@
 .pulsing-dot {
     width: 8px;
     height: 8px;
-    background-color: #10b981;
+    background-color: var(--zhomes-red);
     border-radius: 50%;
     animation: pulse-dot 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes pulse-dot {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(228, 31, 37, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(228, 31, 37, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(228, 31, 37, 0); }
 }
 
 .up-hub-stats {
@@ -1030,13 +1030,13 @@
 }
 
 .up-hub-stat svg {
-    color: #10b981;
+    color: var(--zhomes-red);
 }
 
 .up-hub-action-btn {
     width: 100%;
     padding: 16px;
-    background: #10b981;
+    background: var(--zhomes-red);
     color: white;
     border: none;
     border-radius: 14px;
@@ -1046,6 +1046,6 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 15px rgba(228, 31, 37, 0.3);
     cursor: pointer;
 }
