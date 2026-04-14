@@ -1,34 +1,38 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+config({ path: '.env' });
+
 import twilio from 'twilio';
 
 async function sendTest() {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const apiKey = process.env.TWILIO_API_KEY;
-  const apiSecret = process.env.TWILIO_API_SECRET;
-  
-  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
+  const myPersonalNumber = '+15026587853';
 
-  if (!accountSid || !apiKey || !apiSecret) {
+  if (!accountSid || !authToken || !twilioNumber) {
     console.error('Faltan credenciales en .env');
     process.exit(1);
   }
 
-  const client = twilio(apiKey, apiSecret, { accountSid });
-  const to = '+15026587853';
+  const client = twilio(accountSid, authToken);
 
-  console.log('Enviando mensaje de prueba a:', to);
-  
+  console.log('Enviando SMS de prueba a:', myPersonalNumber);
+  console.log('Usando número de Twilio:', twilioNumber);
+
   try {
     const message = await client.messages.create({
-      body: 'ZHomes: Este es un mensaje de prueba PING del sistema SMS. Confirmando conexión con la API de Twilio. Reply STOP to opt out.',
-      to,
-      messagingServiceSid,
+      body: '¡Hola Miguel! Este es un mensaje de prueba automático desde tu código ZHomes, usando tu nuevo número local de Twilio. ¿Llegó?',
+      from: twilioNumber,
+      to: myPersonalNumber
     });
     
-    console.log('¡Éxito! Mensaje enviado. SID:', message.sid);
-    console.log('Estado:', message.status);
-  } catch(e) {
-    console.error('Error enviando SMS:', e.message);
+    console.log('\n✅ ¡Mensaje enviado con éxito a la red de Twilio!');
+    console.log('Message SID (ID de seguimiento):', message.sid);
+    console.log('Status en Twilio:', message.status);
+    
+  } catch (error) {
+    console.error('\n❌ Error enviando mensaje:');
+    console.error(error.message);
   }
 }
 

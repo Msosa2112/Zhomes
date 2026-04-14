@@ -253,6 +253,54 @@ export default function UserProfileMobile() {
             </header>
 
             <main className="up-content">
+                {/* 🌟 DEAL ROOM HUB OMNIPRESENTE 🌟 */}
+                {activeTransaction ? (
+                    <div className="up-deal-hub-card active" onClick={() => navigate(`/mi-transaccion/${activeTransaction.id}`)}>
+                        <div className="up-hub-glow"></div>
+                        <div className="up-hub-content">
+                            <div className="up-hub-header">
+                                <div className="up-hub-icon">
+                                    <Shield size={24} color="#fff" />
+                                </div>
+                                <div className="up-hub-title">
+                                    <span className="up-hub-badge-live"> <span className="pulsing-dot"></span> Transacción en Curso</span>
+                                    <h3>{activeTransaction.address}</h3>
+                                </div>
+                            </div>
+                            <div className="up-hub-stats">
+                                <div className="up-hub-stat">
+                                    <CheckCircle2 size={16} />
+                                    <span>{transactionDocs.filter(d => d.status === 'approved').length} de {transactionDocs.length} Docs Listos</span>
+                                </div>
+                                <div className="up-hub-stat">
+                                    <Clock size={16} />
+                                    <span>
+                                    {(() => {
+                                        if (!activeTransaction.closing_date) return 'Cierre sin fecha'
+                                        const d = Math.ceil((new Date(activeTransaction.closing_date) - new Date()) / 86400000)
+                                        return `A ${d} días del cierre`
+                                    })()}
+                                    </span>
+                                </div>
+                            </div>
+                            <button className="up-hub-action-btn">
+                                Entrar al Deal Room <ArrowRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="up-deal-hub-card empty">
+                        <div className="up-hub-header">
+                            <div className="up-hub-icon empty">
+                                <Shield size={24} color="var(--text-tertiary)" />
+                            </div>
+                            <div className="up-hub-title">
+                                <h3>Sin Transacción Activa</h3>
+                                <p>Tu equipo legal está listo. Contacta a tu agente cuando inicies una compra.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Journey Tracker */}
                 <div className="up-journey-card">
@@ -363,45 +411,6 @@ export default function UserProfileMobile() {
                         </div>
                     </div>
                 </div>
-
-                {/* TC Transaction / Deal Room OR Offer Vault */}
-                {activeTransaction ? (
-                    <div className="up-vault-card" onClick={() => navigate(`/mi-transaccion/${activeTransaction.id}`)}>
-                        <div className="up-vault-header">
-                            <Shield size={20} color={'#10b981'} />
-                            <h3>{activeTransaction.address}</h3>
-                            <span className="up-vault-status complete">Activa </span>
-                        </div>
-                        <p className="up-vault-desc">Tu transacción en curso. Haz clic para ver progreso, documentos y chatear con nuestro equipo legal.</p>
-                        <div className="up-vault-slots" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <div className={`up-vault-slot done`}>
-                                <CheckCircle2 size={14} color="#10b981"/> 
-                                {transactionDocs.filter(d => d.status === 'approved').length} de {transactionDocs.length} documentos listos
-                            </div>
-                            <div className="up-vault-slot done" style={{ background: 'transparent' }}>
-                                <Clock size={14} />
-                                {(() => {
-                                    if (!activeTransaction.closing_date) return 'Cierre sin fecha'
-                                    const d = Math.ceil((new Date(activeTransaction.closing_date) - new Date()) / 86400000)
-                                    return `Cierra en ${d} días`
-                                })()}
-                            </div>
-                        </div>
-                        <div className="up-vault-cta" style={{ background: '#10b981' }}>
-                            Entrar al Deal Room <ChevronRight size={16} />
-                        </div>
-                    </div>
-                ) : (
-                    <div className="up-vault-card" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
-                        <div className="up-vault-header">
-                            <Shield size={20} color={'var(--text-tertiary)'} />
-                            <h3 style={{ color: 'var(--text-secondary)' }}>Sin transacciones activas</h3>
-                        </div>
-                        <p className="up-vault-desc" style={{ color: 'var(--text-tertiary)' }}>
-                            Aún no tienes ningún proceso de compra o venta en curso. Continúa explorando propiedades o comunícate con tu agente para iniciar una oferta.
-                        </p>
-                    </div>
-                )}
 
                 {/* Pre-Calificación Card */}
                 <div
