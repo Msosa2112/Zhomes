@@ -302,44 +302,72 @@ export default function UserProfileMobile() {
                     </div>
                 )}
 
-                {/* Journey Tracker */}
-                <div className="up-journey-card">
-                    <div className="up-journey-header">
-                        <h3><Compass size={20} color="var(--zhomes-red)" /> Mi Progreso Inmobiliario</h3>
-                        <span style={{fontSize:'0.8rem', color:'var(--zhomes-red)', fontWeight:600}}>Fase 1 de 5</span>
-                    </div>
+                {/* Journey Tracker Dinámico */}
+                {(() => {
+                    let journeyPhase = 1;
+                    let journeyWidth = '0%';
                     
-                    <div className="up-journey-tracker">
-                        <div className="up-journey-line">
-                            <div className="up-journey-progress" style={{width: '0%'}}></div>
+                    if (activeTransaction) {
+                        if (activeTransaction.status === 'closed') {
+                            journeyPhase = 5;
+                            journeyWidth = '100%';
+                        } else if (['under_contract', 'inspection', 'appraisal', 'pre_close'].includes(activeTransaction.status)) {
+                            journeyPhase = 4;
+                            journeyWidth = '75%';
+                        } else {
+                            // 'listed' or other active mode before contract
+                            journeyPhase = 3;
+                            journeyWidth = '50%';
+                        }
+                    } else if (savedPrequal) {
+                        journeyPhase = 2;
+                        journeyWidth = '25%';
+                    }
+
+                    return (
+                        <div className="up-journey-card">
+                            <div className="up-journey-header">
+                                <h3><Compass size={20} color="var(--zhomes-red)" /> Mi Progreso Inmobiliario</h3>
+                                <span style={{fontSize:'0.8rem', color:'var(--zhomes-red)', fontWeight:600}}>Fase {journeyPhase} de 5</span>
+                            </div>
+                            
+                            <div className="up-journey-tracker">
+                                <div className="up-journey-line">
+                                    <div className="up-journey-progress" style={{width: journeyWidth}}></div>
+                                </div>
+                                
+                                <div className={`up-journey-step ${journeyPhase >= 1 ? (journeyPhase === 1 ? 'active' : 'completed') : ''}`}>
+                                    <div className="up-journey-icon"><Search size={20} /></div>
+                                    <span className="up-journey-label">Explorando</span>
+                                </div>
+                                <div className={`up-journey-step ${journeyPhase >= 2 ? (journeyPhase === 2 ? 'active' : 'completed') : ''}`}>
+                                    <div className="up-journey-icon"><FileCheck size={20} /></div>
+                                    <span className="up-journey-label">Aprobado</span>
+                                </div>
+                                <div className={`up-journey-step ${journeyPhase >= 3 ? (journeyPhase === 3 ? 'active' : 'completed') : ''}`}>
+                                    <div className="up-journey-icon"><MapPin size={20} /></div>
+                                    <span className="up-journey-label">En Oferta</span>
+                                </div>
+                                <div className={`up-journey-step ${journeyPhase >= 4 ? (journeyPhase === 4 ? 'active' : 'completed') : ''}`}>
+                                    <div className="up-journey-icon"><Key size={20} /></div>
+                                    <span className="up-journey-label">Contrato</span>
+                                </div>
+                                <div className={`up-journey-step ${journeyPhase >= 5 ? (journeyPhase === 5 ? 'active' : 'completed') : ''}`}>
+                                    <div className="up-journey-icon"><Home size={20} /></div>
+                                    <span className="up-journey-label">Cierre</span>
+                                </div>
+                            </div>
+                            
+                            <div className="up-journey-message">
+                                {journeyPhase === 1 && <span><strong>¡Estás en el camino correcto!</strong> Continúa guardando tus propiedades favoritas para que el algoritmo entienda tus gustos. Haz clic en 'Pre-Calificación Estimada' para dar el siguiente paso.</span>}
+                                {journeyPhase === 2 && <span><strong>¡Ya tienes números!</strong> Tienes una pre-calificación guardada. Empieza a agendar tours físicos en tus propiedades favoritas usando nuestro sistema.</span>}
+                                {journeyPhase === 3 && <span><strong>¡Tu oferta está activa!</strong> Nuestro equipo está gestionando la propuesta. Mantente atento.</span>}
+                                {journeyPhase === 4 && <span><strong>¡Bajo Contrato!</strong> Entra al <strong>Deal Room Hub</strong> de arriba para subir los documentos restantes y monitorear tu progreso hasta el cierre.</span>}
+                                {journeyPhase === 5 && <span><strong>¡Felicidades!</strong> La transacción se ha completado oficialmente.</span>}
+                            </div>
                         </div>
-                        
-                        <div className="up-journey-step active">
-                            <div className="up-journey-icon"><Search size={20} /></div>
-                            <span className="up-journey-label">Explorando</span>
-                        </div>
-                        <div className="up-journey-step">
-                            <div className="up-journey-icon"><FileCheck size={20} /></div>
-                            <span className="up-journey-label">Aprobado</span>
-                        </div>
-                        <div className="up-journey-step">
-                            <div className="up-journey-icon"><MapPin size={20} /></div>
-                            <span className="up-journey-label">En Oferta</span>
-                        </div>
-                        <div className="up-journey-step">
-                            <div className="up-journey-icon"><Key size={20} /></div>
-                            <span className="up-journey-label">Contrato</span>
-                        </div>
-                        <div className="up-journey-step">
-                            <div className="up-journey-icon"><Home size={20} /></div>
-                            <span className="up-journey-label">Cierre</span>
-                        </div>
-                    </div>
-                    
-                    <div className="up-journey-message">
-                        <strong>¡Estás en el camino correcto!</strong> Continúa guardando tus propiedades favoritas para que el algoritmo entienda tus gustos. Toca aquí para ver opciones de financiamiento y pre-aprobarte.
-                    </div>
-                </div>
+                    );
+                })()}
 
                 {/* Match Preferences Card */}
                 <div className="up-ai-card" style={{background: 'var(--bg-primary)', borderColor: 'var(--border-color)', boxShadow: 'none'}} onClick={() => setShowMatchModal(true)}>
