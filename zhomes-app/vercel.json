@@ -1,6 +1,5 @@
 {
   "outputDirectory": "dist",
-  "ignoreCommand": "exit 1",
   "crons": [
     {
       "path": "/api/qstash-trigger",
