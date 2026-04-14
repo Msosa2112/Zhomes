@@ -56,6 +56,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 
 /* Desktop/Standalone Routes */
 import TwilioOptInPage from './pages/public/TwilioOptInPage'
+import PrivacyPolicyPage from './pages/public/PrivacyPolicyPage'
 
 export default function AppRoutes() {
     const location = useLocation()
@@ -64,6 +65,7 @@ export default function AppRoutes() {
         <Routes>
             {/* Desktop standalone page for Twilio Reviewers */}
             <Route path="/contact-agent" element={<TwilioOptInPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
             {/* Rutas públicas */}
             <Route element={<PublicLayoutMobile />}>
