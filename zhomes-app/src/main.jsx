@@ -15,13 +15,16 @@ import '@ionic/react/css/flex-utils.css'
 import '@ionic/react/css/display.css'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary';
 
 setupIonicReact()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )
