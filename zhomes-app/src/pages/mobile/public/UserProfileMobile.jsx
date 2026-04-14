@@ -51,15 +51,8 @@ export default function UserProfileMobile() {
     const downAmount = Math.round(budget * downPct / 100)
     const closingCosts = Math.round(budget * 0.03)
 
-    // Offer Vault State
-    const [showVaultModal, setShowVaultModal] = useState(false)
+    // Offer Vault State (Archived for TC pivot)
     const [showPrequalModal, setShowPrequalModal] = useState(false)
-    const [vaultDocs, setVaultDocs] = useState({
-        preApproval: null,
-        govId: null,
-        proofOfFunds: null
-    })
-    const vaultComplete = Object.values(vaultDocs).every(Boolean)
 
     // Edit Profile State
     const [showEditProfile, setShowEditProfile] = useState(false)
@@ -399,33 +392,14 @@ export default function UserProfileMobile() {
                         </div>
                     </div>
                 ) : (
-                    <div className="up-vault-card" onClick={() => setShowVaultModal(true)}>
+                    <div className="up-vault-card" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                         <div className="up-vault-header">
-                            <Shield size={20} color={vaultComplete ? '#10b981' : '#8B5CF6'} />
-                            <h3>Bóveda de Ofertas</h3>
-                            {vaultComplete
-                                ? <span className="up-vault-status complete">Listo </span>
-                                : <span className="up-vault-status pending">{Object.values(vaultDocs).filter(Boolean).length}/3</span>
-                            }
+                            <Shield size={20} color={'var(--text-tertiary)'} />
+                            <h3 style={{ color: 'var(--text-secondary)' }}>Sin transacciones activas</h3>
                         </div>
-                        <p className="up-vault-desc">Sube tus documentos una vez y haz ofertas con un solo toque.</p>
-                        <div className="up-vault-slots">
-                            <div className={`up-vault-slot ${vaultDocs.preApproval ? 'done' : ''}`}>
-                                {vaultDocs.preApproval ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                                Pre-aprobación
-                            </div>
-                            <div className={`up-vault-slot ${vaultDocs.govId ? 'done' : ''}`}>
-                                {vaultDocs.govId ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                                ID Oficial
-                            </div>
-                            <div className={`up-vault-slot ${vaultDocs.proofOfFunds ? 'done' : ''}`}>
-                                {vaultDocs.proofOfFunds ? <CheckCircle2 size={14} /> : <Lock size={14} />}
-                                Prueba de Fondos
-                            </div>
-                        </div>
-                        <div className="up-vault-cta">
-                            {vaultComplete ? 'Ver documentos' : 'Completar Bóveda'} <ChevronRight size={16} />
-                        </div>
+                        <p className="up-vault-desc" style={{ color: 'var(--text-tertiary)' }}>
+                            Aún no tienes ningún proceso de compra o venta en curso. Continúa explorando propiedades o comunícate con tu agente para iniciar una oferta.
+                        </p>
                     </div>
                 )}
 
@@ -588,58 +562,7 @@ export default function UserProfileMobile() {
             </main>
         </div>
 
-            {/* Offer Vault Modal */}
-            {showVaultModal && (
-                <div className="up-modal-overlay" onClick={() => setShowVaultModal(false)}>
-                    <div className="up-modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="up-modal-header">
-                            <h2><Shield size={24} color="#8B5CF6" /> Bóveda de Ofertas</h2>
-                            <button className="up-modal-close" onClick={() => setShowVaultModal(false)}>
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                            Guarda tus documentos clave una sola vez. Cuando encuentres una casa, haremos la oferta al instante.
-                        </p>
-
-                        {[{ key: 'preApproval', label: 'Pre-aprobación Bancaria', desc: 'Carta de tu banco o lender' },
-                          { key: 'govId', label: 'Identificación Oficial', desc: 'Pasaporte o licencia de manejar' },
-                          { key: 'proofOfFunds', label: 'Prueba de Fondos', desc: 'Estado de cuenta bancario' }
-                        ].map(({ key, label, desc }) => (
-                            <div key={key} className="up-vault-upload-slot">
-                                <div className="up-vault-upload-info">
-                                    {vaultDocs[key]
-                                        ? <CheckCircle2 size={22} color="#10b981" />
-                                        : <UploadCloud size={22} color="var(--text-tertiary)" />
-                                    }
-                                    <div>
-                                        <div className="up-vault-upload-label">{label}</div>
-                                        <div className="up-vault-upload-desc">{vaultDocs[key] ? vaultDocs[key] : desc}</div>
-                                    </div>
-                                </div>
-                                <label className="up-vault-upload-btn">
-                                    <input type="file" accept=".pdf,.jpg,.png" style={{ display: 'none' }}
-                                        onChange={e => {
-                                            if (e.target.files[0]) {
-                                                setVaultDocs(prev => ({ ...prev, [key]: e.target.files[0].name }));
-                                            }
-                                        }}
-                                    />
-                                    {vaultDocs[key] ? 'Cambiar' : 'Subir'}
-                                </label>
-                            </div>
-                        ))}
-
-                        <button
-                            className="up-btn flat"
-                            style={{ width: '100%', marginTop: '20px', background: '#8B5CF6', color: 'white', opacity: vaultComplete ? 1 : 0.6 }}
-                            onClick={() => setShowVaultModal(false)}
-                        >
-                            {vaultComplete ? ' Bóveda Completa — ¡Lista para ofertas!' : `Guardado (${Object.values(vaultDocs).filter(Boolean).length}/3)`}
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/* Offer Vault Modal Removed */}
 
             {/* Match Modal */}
             {showMatchModal && (
