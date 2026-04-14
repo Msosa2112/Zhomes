@@ -358,6 +358,12 @@ export default async function handler(req, res) {
         emailContent = tmpl_client_closing_soon(data); break
       case 'client_status_update':
         emailContent = tmpl_client_status_update(data); break
+      case 'custom':
+        emailContent = {
+          subject: data.subject || 'Notificación ZHomes',
+          html: `<div style="${baseStyle}"><div style="${containerStyle}"><div style="${headerStyle}">${logo()}</div><div style="${bodyStyle}"><h2 style="color:white;margin:16px 0 8px;">${data.title || 'Atención'}</h2><p style="color:#aaa;">${data.message}</p></div>${footer()}</div></div>`
+        }; 
+        break;
       default:
         return res.status(400).json({ error: `Tipo de email desconocido: ${type}` })
     }
