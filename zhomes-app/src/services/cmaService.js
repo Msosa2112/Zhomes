@@ -165,55 +165,147 @@ function applyMarketTimeAdj(closePrice, daysAgo) {
 // FUNCIÓN PRINCIPAL: runCMA
 // ─────────────────────────────────────────────────────────────────────────────
 export async function runCMA(subject) {
-    if (!subject?.lat || !subject?.lng) {
-        throw new Error('La propiedad sujeto no tiene coordenadas GPS. No se puede calcular CMA.')
+    const now = new Date()
+
+    let soldComps = []
+    let searchMethod = 'gps' // for transparency in the result
+
+    // ─── TIER 1: GPS — Radio creciente, tiempo creciente ──────────────────
+    // Eje 1: radio 1.5mi → 3mi → 5mi
+    // Eje 2: ventana 180d → 365d → 730d (ajuste de mercado compensa antigüedad)
+    const radiusCascade   = [1.5, 3.0, 5.0]
+    const windowCascade   = [180, 365, 730]
+
+    if (subject.lat && subject.lng) {
+        outerLoop:
+        for (const days of windowCascade) {
+            const cutoffDate = new Date(now - days * 24 * 60 * 60 * 1000)
+            const cutoffISO  = cutoffDate.toISOString().split('T')[0]
+
+            for (const radiusMiles of radiusCascade) {
+                const box = getBoundingBox(subject.lat, subject.lng, radiusMiles)
+
+                const { data, error } = await supabase
+                    .from('mls_properties')
+                    .select('id, address, city, zip, subdivision, price, close_price, sqft, beds, baths, year_built, lat, lng, close_date, status, garage_yn, pool_features, basement, primary_photo, property_subtype, list_agent_name')
+                    .in('status', ['Closed'])
+                    .not('close_price', 'is', null)
+                    .not('lat', 'is', null)
+                    .not('lng', 'is', null)
+                    .gte('lat', box.minLat)
+                    .lte('lat', box.maxLat)
+                    .gte('lng', box.minLng)
+                    .lte('lng', box.maxLng)
+                    .gte('close_date', cutoffISO)
+                    .neq('id', subject.id)
+                    .order('close_date', { ascending: false })
+                    .limit(100)
+
+                if (error) throw new Error('Error consultando comparables: ' + error.message)
+
+                const sqftTolerance = days <= 180 ? 0.25 : 0.35  // más holgado si datos viejos
+                const minSqft = subject.sqft ? subject.sqft * (1 - sqftTolerance) : 0
+                const maxSqft = subject.sqft ? subject.sqft * (1 + sqftTolerance) : Infinity
+
+                soldComps = (data || [])
+                    .map(c => {
+                        const dist = haversineDistance(subject.lat, subject.lng, c.lat, c.lng)
+                        return { ...c, _distMiles: dist }
+                    })
+                    .filter(c =>
+                        c._distMiles <= radiusMiles &&
+                        (!subject.sqft || (c.sqft >= minSqft && c.sqft <= maxSqft)) &&
+                        Math.abs((c.beds || 0) - (subject.beds || 0)) <= 2
+                    )
+                    .sort((a, b) => a._distMiles - b._distMiles)
+
+                if (soldComps.length >= 3) {
+                    searchMethod = days > 180 ? `gps_${days}d` : 'gps'
+                    break outerLoop
+                }
+            }
+        }
     }
 
-    const now = new Date()
-    const cutoffDate = new Date(now - 180 * 24 * 60 * 60 * 1000)   // 180 días atrás
-    const cutoffISO = cutoffDate.toISOString().split('T')[0]
+    // ─── TIER 2: Misma Subdivisión ─────────────────────────────────────────
+    // Alta confiabilidad: misma subdivisión = mismo micro-mercado
+    if (soldComps.length < 3 && subject.subdivision) {
+        searchMethod = 'subdivision'
+        const cutoffISO = new Date(now - 730 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-    // 1. Intenta radio de 1.5 millas primero, expande si hay pocos comps
-    let soldComps = []
-    for (const radiusMiles of [1.5, 3.0, 5.0]) {
-        const box = getBoundingBox(subject.lat, subject.lng, radiusMiles)
-
-        const { data, error } = await supabase
+        const { data: subData } = await supabase
             .from('mls_properties')
-            .select('id, address, city, price, close_price, sqft, beds, baths, year_built, lat, lng, close_date, status, garage_yn, pool_features, basement, primary_photo, property_subtype, list_agent_name')
+            .select('id, address, city, zip, subdivision, price, close_price, sqft, beds, baths, year_built, lat, lng, close_date, status, garage_yn, pool_features, basement, primary_photo, property_subtype, list_agent_name')
             .in('status', ['Closed'])
             .not('close_price', 'is', null)
-            .not('lat', 'is', null)
-            .not('lng', 'is', null)
-            .gte('lat', box.minLat)
-            .lte('lat', box.maxLat)
-            .gte('lng', box.minLng)
-            .lte('lng', box.maxLng)
+            .eq('subdivision', subject.subdivision)
             .gte('close_date', cutoffISO)
-            .neq('id', subject.id)   // excluir el sujeto si ya está cerrado
+            .neq('id', subject.id)
             .order('close_date', { ascending: false })
-            .limit(100)
+            .limit(30)
 
-        if (error) throw new Error('Error consultando comparables: ' + error.message)
+        const minSqft = subject.sqft ? subject.sqft * 0.65 : 0
+        const maxSqft = subject.sqft ? subject.sqft * 1.35 : Infinity
 
-        // Filtro Haversine exacto + sqft ±25%
-        const sqftTolerance = 0.25
-        const minSqft = subject.sqft ? subject.sqft * (1 - sqftTolerance) : 0
-        const maxSqft = subject.sqft ? subject.sqft * (1 + sqftTolerance) : Infinity
-
-        soldComps = (data || [])
-            .map(c => {
-                const dist = haversineDistance(subject.lat, subject.lng, c.lat, c.lng)
-                return { ...c, _distMiles: dist }
-            })
+        const subdivComps = (subData || [])
             .filter(c =>
-                c._distMiles <= radiusMiles &&
                 (!subject.sqft || (c.sqft >= minSqft && c.sqft <= maxSqft)) &&
                 Math.abs((c.beds || 0) - (subject.beds || 0)) <= 2
             )
-            .sort((a, b) => a._distMiles - b._distMiles)
+            .map(c => ({
+                ...c,
+                _distMiles: c.lat && c.lng && subject.lat && subject.lng
+                    ? haversineDistance(subject.lat, subject.lng, c.lat, c.lng)
+                    : 0.5  // distancia estimada dentro de la subdivisión
+            }))
 
-        if (soldComps.length >= 3) break   // Bueno, suficientes comps
+        if (subdivComps.length > 0) {
+            soldComps = [...soldComps, ...subdivComps]
+                .filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i)  // deduplicar
+                .sort((a, b) => {
+                    const dateA = new Date(a.close_date).getTime()
+                    const dateB = new Date(b.close_date).getTime()
+                    return dateB - dateA  // más recientes primero
+                })
+        }
+    }
+
+    // ─── TIER 3: Mismo ZIP + specs similares ──────────────────────────────
+    if (soldComps.length < 2 && subject.zip) {
+        searchMethod = 'zip'
+        const cutoffISO = new Date(now - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+        const { data: zipData } = await supabase
+            .from('mls_properties')
+            .select('id, address, city, zip, subdivision, price, close_price, sqft, beds, baths, year_built, lat, lng, close_date, status, garage_yn, pool_features, basement, primary_photo, property_subtype, list_agent_name')
+            .in('status', ['Closed'])
+            .not('close_price', 'is', null)
+            .eq('zip', subject.zip)
+            .gte('close_date', cutoffISO)
+            .neq('id', subject.id)
+            .order('close_date', { ascending: false })
+            .limit(50)
+
+        const minSqft = subject.sqft ? subject.sqft * 0.6 : 0
+        const maxSqft = subject.sqft ? subject.sqft * 1.4 : Infinity
+
+        const zipComps = (zipData || [])
+            .filter(c =>
+                (!subject.sqft || (c.sqft >= minSqft && c.sqft <= maxSqft)) &&
+                Math.abs((c.beds || 0) - (subject.beds || 0)) <= 2
+            )
+            .map(c => ({
+                ...c,
+                _distMiles: c.lat && c.lng && subject.lat && subject.lng
+                    ? haversineDistance(subject.lat, subject.lng, c.lat, c.lng)
+                    : 1.5
+            }))
+
+        if (zipComps.length > 0) {
+            soldComps = [...soldComps, ...zipComps]
+                .filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i)
+                .sort((a, b) => new Date(b.close_date) - new Date(a.close_date))
+        }
     }
 
     if (soldComps.length === 0) {
@@ -329,6 +421,7 @@ export async function runCMA(subject) {
             compsUsed: processedComps.length,
         },
         adjustmentConstants: ADJUSTMENTS,
+        searchMethod,
         generatedAt: now.toISOString(),
     }
 }

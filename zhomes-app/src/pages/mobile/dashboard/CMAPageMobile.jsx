@@ -212,6 +212,25 @@ export default function CMAPageMobile() {
                                 </div>
                             )
                         })()}
+
+                        {/* Confidence + method badge */}
+                        {(() => {
+                            const n = result.marketStats.compsUsed
+                            const method = result.searchMethod
+                            const conf = n >= 5 ? { label: 'Alta Confianza', color: '#10B981', bg: 'rgba(16,185,129,0.1)' }
+                                       : n >= 3 ? { label: 'Media Confianza', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' }
+                                       :           { label: 'Baja Confianza', color: '#EF4444', bg: 'rgba(239,68,68,0.1)' }
+                            const methodLabel = method === 'subdivision' ? '· Subdivisión'
+                                              : method === 'zip'         ? '· Por ZIP'
+                                              : method?.startsWith('gps_') ? `· GPS ${method.replace('gps_','').replace('d',' días')}` : ''
+                            return (
+                                <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center', marginTop:4 }}>
+                                    <span style={{ fontSize:'0.7rem', fontWeight:800, padding:'4px 12px', borderRadius:20, background: conf.bg, color: conf.color }}>
+                                        {conf.label} · {n} comp{n !== 1 ? 's' : ''} {methodLabel}
+                                    </span>
+                                </div>
+                            )
+                        })()}
                     </div>
 
                     {/* ── MARKET STATS ── */}
