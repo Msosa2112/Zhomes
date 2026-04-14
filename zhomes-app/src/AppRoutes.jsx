@@ -123,6 +123,8 @@ export default function AppRoutes() {
 
             {/* Portal Realtor Wrapper */}
             <Route element={<ProtectedRoute allowedRoles={['realtor', 'broker', 'admin']} />}>
+                {/* Standalone pages (no layout wrapper) */}
+                <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />
                 <Route element={<RealtorLayoutMobile />}>
                     <Route path="/realtor" element={<RealtorDashboardMobile />} />
                     <Route path="/realtor/transacciones" element={<RealtorTransactionsMobile />} />
@@ -130,7 +132,6 @@ export default function AppRoutes() {
                     <Route path="/realtor/firmas" element={<ESignaturesMobile />} />
                     <Route path="/realtor/mensajes" element={<RealtorMessagesMobile />} />
                     <Route path="/realtor/perfil" element={<RealtorProfile />} />
-                    <Route path="/realtor/crear-propiedad" element={<CreatePropertyPage />} />
                     <Route path="/realtor/citas" element={<RealtorShowingsMobile />} />
                     <Route path="/realtor/leads" element={<RealtorLeadsMobile />} />
                     <Route path="/realtor/open-houses" element={<RealtorOpenHousesMobile />} />
