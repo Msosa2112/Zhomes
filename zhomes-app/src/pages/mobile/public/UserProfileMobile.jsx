@@ -6,6 +6,7 @@ import { useProperties } from '../../../context/PropertyContext'
 import PrequalToolMobile from '../../../components/public/PrequalToolMobile'
 import ZSlider from '../../../components/ui/ZSlider'
 import AddressAutocomplete from '../../../components/shared/AddressAutocomplete'
+import ZLoader from '../../../components/shared/ZLoader'
 import { useAgent } from '../../../context/AgentContext'
 import './UserProfileMobile.css'
 
@@ -229,7 +230,7 @@ export default function UserProfileMobile() {
     }
 
     if (loading) {
-        return <div className="up-loading">Cargando tu perfil...</div>
+        return <ZLoader message="Cargando tu perfil..." />
     }
 
     const userName = user?.user_metadata?.full_name || 'Usuario ZHomes'
