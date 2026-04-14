@@ -154,10 +154,8 @@ export default function NotificationCenter({ isOpen, onClose }) {
     if (!isOpen) return null
 
     return (
-        <>
-            <div className="notif-overlay" onClick={onClose}></div>
-            <div className={`notif-panel ${isOpen ? 'open' : ''}`}>
-                {/* Header */}
+        <div className={`notif-popup ${isOpen ? 'open' : ''}`}>
+            {/* Header */}
                 <div className="notif-header">
                     <div className="notif-header-left">
                         <Bell size={20} />
@@ -271,6 +269,6 @@ export default function NotificationCenter({ isOpen, onClose }) {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }

@@ -1,48 +1,32 @@
-/* ---- Notification Center — Slide-over Panel ---- */
+/* ---- Notification Center — Floating Widget ---- */
 
-/* Overlay */
-.notif-overlay {
+/* Widget Container */
+.notif-popup {
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(2px);
-    z-index: 900;
-    animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-/* Panel */
-.notif-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 420px;
-    max-width: 90vw;
-    height: 100vh;
+    top: 60px;
+    right: 16px;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 100px);
     background: var(--bg-secondary);
-    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
-    z-index: 1500;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
     display: flex;
     flex-direction: column;
-    animation: slideIn 0.3s ease;
+    animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
 }
 
-@keyframes slideIn {
+@keyframes popIn {
     from {
-        transform: translateX(100%);
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
     }
-
     to {
-        transform: translateX(0);
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
@@ -237,10 +221,12 @@
     gap: var(--space-3);
     padding: var(--space-4);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--space-2);
     cursor: pointer;
+    background: var(--bg-primary); /* Solid background to hide cards underneath */
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Slight shadow to separate stacked cards */
     transition: all 0.2s ease;
-    border: 1px solid transparent;
+    margin-bottom: 0;
 }
 
 .notif-item:hover {
@@ -248,13 +234,12 @@
 }
 
 .notif-item.unread {
-    background: rgba(227, 30, 36, 0.04);
-    border-color: rgba(227, 30, 36, 0.08);
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--zhomes-red);
 }
 
 .notif-item.unread.type-urgent {
-    background: rgba(239, 68, 68, 0.03);
-    border-color: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #EF4444;
 }
 
 /* Icon */
@@ -354,8 +339,7 @@
 
 /* Responsive */
 @media (max-width: 480px) {
-    .notif-panel {
-        width: 100vw;
-        max-width: 100vw;
+    .notif-popup {
+        width: calc(100vw - 32px);
     }
 }
