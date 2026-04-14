@@ -111,8 +111,6 @@ export default function AppRoutes() {
                     <Route path="/terminal" element={<BrokerTerminal />} />
                     <Route path="/crm" element={<CRMPageMobile />} />
                     <Route path="/visitas" element={<ShowingScheduleMobile />} />
-
-                    <Route path="/cma" element={<CMAPageMobile />} />
                     <Route path="/mercado" element={<MarketReportsMobile />} />
                     <Route path="/dashboard/perfil" element={<BrokerProfile />} />
                 </Route>
