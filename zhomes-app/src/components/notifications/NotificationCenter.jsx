@@ -269,6 +269,6 @@ export default function NotificationCenter({ isOpen, onClose }) {
                     )}
                 </div>
             </div>
-        </div>
     )
 }
+
