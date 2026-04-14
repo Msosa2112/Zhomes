@@ -5,6 +5,7 @@ import { useProperties } from '../../../context/PropertyContext'
 import { MapPin, Heart, ExternalLink, ArrowLeft } from 'lucide-react'
 import { motion } from 'motion/react'
 import './SharedCollectionPageMobile.css'
+import ZLoader from '../../../components/shared/ZLoader'
 
 export default function SharedCollectionPageMobile() {
     const { userId } = useParams()
@@ -65,7 +66,7 @@ export default function SharedCollectionPageMobile() {
         }
     }, [userId, globalProperties])
 
-    if (loading) return <div className="shared-centered">Cargando colección...</div>
+    if (loading) return <ZLoader message="Cargando colección..." />;
     if (error) return <div className="shared-centered error">{error}</div>
 
     return (

@@ -1,3 +1,4 @@
+import ZLoader from '../../../components/shared/ZLoader'
 import { Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2, AlertCircle, Upload, Flame, Target, Trophy, Star, LogOut, Activity, X, MessageSquare, Calendar, Users, MapPin, Building2, Award, LineChart, PenTool } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
@@ -76,7 +77,7 @@ export default function RealtorDashboardMobile() {
     }
 
     if (loading && propsLoading) {
-        return <div className="mobile-dash-page" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100dvh'}}>Cargando CRM...</div>
+        return <ZLoader message="Cargando CRM..." />
     }
 
     const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Agente'

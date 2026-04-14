@@ -13,6 +13,9 @@ import { useAgent } from '../../../context/AgentContext'
 import { HomeScoreService } from '../../../services/homeScoreService'
 import { MortgageService } from '../../../services/mortgageService'
 import RealtorRevealModal from '../../../components/public/RealtorRevealModal'
+import PropertyHighlightsMobile from '../../../components/public/PropertyHighlightsMobile'
+import PropertyScores from '../../../components/public/PropertyScores'
+import ZLoader from '../../../components/shared/ZLoader'
 import PhotoViewerMobile from '../../../components/public/PhotoViewerMobile'
 import NeighborhoodIntel from '../../../components/public/NeighborhoodIntel'
 import NeighborhoodMap from '../../../components/public/NeighborhoodMap'
@@ -181,7 +184,7 @@ export default function PropertyDetailPageMobile() {
         }
     }
 
-    if (loading) return <div style={{padding:'4rem 2rem', textAlign:'center', color:'#888'}}>Cargando detalles...</div>;
+    if (loading) return <ZLoader message="Cargando detalles..." />;
     if (!property) return null
 
     const formatPriceK = (price) => {

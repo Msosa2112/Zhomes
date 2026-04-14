@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { MOCK_PROPERTIES } from '../../../data/mockData'
 import './CoShoppingMobile.css'
+import ZLoader from '../../../components/shared/ZLoader'
 
 export default function CoShoppingMobile() {
     const navigate = useNavigate()
@@ -118,7 +119,7 @@ export default function CoShoppingMobile() {
         setMutualMatches([])
     }
 
-    if (loading) return <div className="co-loading">Cargando Modo Parejas...</div>
+    if (loading) return <ZLoader message="Cargando Modo Parejas..." />;
 
     return (
         <div className="co-page animate-fadeInUp">
