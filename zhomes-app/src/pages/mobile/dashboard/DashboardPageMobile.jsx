@@ -10,12 +10,12 @@ import { supabase } from '../../../lib/supabaseClient'
 import { TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
 import './DashboardPageMobile.css'
 
-// ── Pipeline statuses a mostrar ───────────────────────────────────────────────
+// ── Pipeline statuses ─────────────────────────────────────────────────────────
 const PIPELINE_STAGES = [
-  { status: 'under_contract', label: 'Bajo Contrato', color: '#8B5CF6' },
-  { status: 'inspection',     label: 'Inspección',    color: '#F59E0B' },
-  { status: 'appraisal',      label: 'Tasación',      color: '#3B82F6' },
-  { status: 'pre_close',      label: 'Pre-Cierre',    color: '#10B981' },
+  { status: 'under_contract', label: 'Bajo Contrato' },
+  { status: 'inspection',     label: 'Inspección' },
+  { status: 'appraisal',      label: 'Tasación' },
+  { status: 'pre_close',      label: 'Pre-Cierre' },
 ]
 
 export default function DashboardPageMobile() {
@@ -212,19 +212,23 @@ export default function DashboardPageMobile() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mobile-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', paddingBottom: '16px' }}>
-          <Link to="/equipo" className="m-quick-btn">
-            <div className="mq-icon" style={{ background: 'rgba(59,130,246,0.1)' }}><Users size={22} color="#3B82F6" /></div>
+        {/* Quick Actions — icono como protagonista */}
+        <div className="rdb-quick-grid">
+          <Link to="/equipo" className="rdb-quick-btn">
+            <div className="rdb-quick-icon"><Users size={22} /></div>
             <span>Equipo</span>
           </Link>
-          <Link to="/crm" className="m-quick-btn">
-            <div className="mq-icon" style={{ background: 'rgba(245,158,11,0.1)' }}><Briefcase size={22} color="#F59E0B" /></div>
+          <Link to="/crm" className="rdb-quick-btn">
+            <div className="rdb-quick-icon"><Briefcase size={22} /></div>
             <span>CRM</span>
           </Link>
-          <Link to="/dashboard/transactions" className="m-quick-btn">
-            <div className="mq-icon" style={{ background: 'rgba(139,92,246,0.1)' }}><FileText size={22} color="#8B5CF6" /></div>
+          <Link to="/dashboard/transactions" className="rdb-quick-btn">
+            <div className="rdb-quick-icon"><FileText size={22} /></div>
             <span>TC Deals</span>
+          </Link>
+          <Link to="/dashboard/deal" className="rdb-quick-btn">
+            <div className="rdb-quick-icon"><Briefcase size={22} /></div>
+            <span>Deal Room</span>
           </Link>
         </div>
 
@@ -232,27 +236,27 @@ export default function DashboardPageMobile() {
         <div className="m-ai-widget" onClick={() => setShowRules(true)} style={{ cursor: 'pointer' }}>
           <div className="mai-head" style={{ justifyContent: 'space-between' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Brain size={18} /> ZhomesAI Compliance
+              <Brain size={18} /> Reglas de Compliance IA
             </span>
             <ChevronRight size={18} />
           </div>
-          <p>Tu asistente de revisión tiene <strong>{rules.length} reglas activas</strong> para auditar contratos. Toca para entrenarlo.</p>
+          <p>{rules.length} reglas activas para auditar contratos. Toca para administrar.</p>
         </div>
 
         {/* KPIs Reales */}
         <div className="m-kpi-scroller">
           <div className="mk-card">
-            <TrendingUp size={20} className="kblue" />
+            <TrendingUp size={20} />
             <span>Volumen</span>
             <strong>{pipelineLoading ? '...' : kpis.volume || '$0'}</strong>
           </div>
           <div className="mk-card">
-            <Target size={20} className="kgreen" />
+            <Target size={20} />
             <span>Cierres</span>
             <strong>{pipelineLoading ? '...' : kpis.closings}</strong>
           </div>
           <div className="mk-card">
-            <Activity size={20} className="kviolet" />
+            <Activity size={20} />
             <span>Activos</span>
             <strong>{pipelineLoading ? '...' : kpis.active}</strong>
           </div>
@@ -277,7 +281,7 @@ export default function DashboardPageMobile() {
                 <div key={stage.status} className="m-pipe-row">
                   <span className="pname">{stage.label}</span>
                   <div className="pbar">
-                    <div style={{ width: stage.width, background: stage.color, transition: 'width 0.6s ease' }} />
+                    <div style={{ width: stage.width, background: 'var(--zhomes-red)', transition: 'width 0.6s ease' }} />
                   </div>
                   <span className="pcount">{stage.count} deals</span>
                 </div>

@@ -1,134 +1,257 @@
-/* Custom styles for Realtor Mobile Dashboard extending base concepts */
+/* ============================================
+   REALTOR DASHBOARD — ZHomes Premium Mobile
+   Paleta: neutral + rojo semántico + verde éxito
+   ============================================ */
 
-/* XP Row */
-.m-xp-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-subtle);
-    margin-bottom: 12px;
+/* ── QUICK ACTIONS GRID ───────────────────── */
+.rdb-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 0 20px 20px;
 }
 
-.m-xp-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+.rdb-quick-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.rdb-quick-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: 800;
-    color: white;
+    color: var(--text-primary);
+    transition: background 0.18s, transform 0.15s;
+}
+
+.rdb-quick-btn:active .rdb-quick-icon {
+    background: var(--bg-secondary);
+    transform: scale(0.95);
+}
+
+/* Active state — highlight current route */
+.rdb-quick-btn.active .rdb-quick-icon {
+    background: rgba(228, 31, 37, 0.08);
+    border-color: rgba(228, 31, 37, 0.25);
+    color: var(--zhomes-red);
+}
+
+.rdb-quick-btn span {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* ── KPI CARDS ───────────────────────────── */
+.m-kpi-scroller {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.m-kpi-scroller::-webkit-scrollbar { display: none; }
+
+.mk-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px 18px;
+    min-width: 80px;
     flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.mk-card svg { opacity: 0.7; }
+
+.mk-card span {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-tertiary);
+}
+
+.mk-card strong {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--text-primary);
+}
+
+/* ── SECTIONS ────────────────────────────── */
+.m-dash-section {
+    padding: 0 20px;
+    margin-bottom: 28px;
+}
+
+.m-dash-section h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+}
+
+.m-dash-section h3 svg {
+    opacity: 0.6;
+}
+
+/* ── ALERTS ──────────────────────────────── */
+.m-alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.m-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.m-alert p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+/* ── HEADER ──────────────────────────────── */
+.mobile-dash-header {
+    padding: 80px 20px 20px;
+}
+
+.mobile-dash-header h2 {
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+}
+
+.mobile-dash-header p {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    margin: 0 0 20px;
+}
+
+/* ── XP PROGRESS ─────────────────────────── */
+.m-xp-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.m-xp-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--zhomes-red);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 900;
+    flex-shrink: 0;
 }
 
 .m-xp-info {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    min-width: 0;
 }
 
 .m-xp-info strong {
-    font-size: 14px;
-    color: var(--text-primary);
-}
-
-.m-xp-info span {
-    font-size: 11px;
-    color: var(--text-tertiary);
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 800;
+    margin-bottom: 8px;
 }
 
 .m-xp-bar-container {
     height: 6px;
-    background: var(--bg-tertiary);
+    background: var(--bg-secondary);
     border-radius: 4px;
     overflow: hidden;
-    margin-top: 2px;
+    margin-bottom: 6px;
 }
 
 .m-xp-fill {
     height: 100%;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: var(--zhomes-red);
     border-radius: 4px;
+    transition: width 0.6s ease;
 }
 
-/* Streak Row */
-.m-streak-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
-    border-radius: var(--radius-lg);
-    border: 1px solid rgba(245, 158, 11, 0.2);
+.m-xp-info span {
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
 }
 
-.m-streak-icon {
-    font-size: 32px;
-}
-
-.m-streak-data {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.m-streak-data strong {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--text-primary);
-}
-
-.m-streak-data span {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-/* Challenges List */
-.m-challenges-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.m-challenge-item {
+/* ── TOP PERFORMERS ──────────────────────── */
+.rdb-performer-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 12px 14px;
 }
 
-.m-challenge-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+.rdb-rank {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--text-secondary);
     flex-shrink: 0;
 }
 
-.m-challenge-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+.rdb-rank.gold   { background: rgba(228, 31, 37, 0.1); color: var(--zhomes-red); }
+.rdb-rank.silver { background: var(--bg-secondary); color: var(--text-secondary); }
 
-.m-challenge-text strong {
-    font-size: 13px;
-    color: var(--text-primary);
-}
-
-.m-challenge-desc {
-    font-size: 11px;
-    color: var(--text-secondary);
+/* ── BADGE ───────────────────────────────── */
+.m-badge-red {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--zhomes-red);
+    color: white;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    margin-left: 8px;
+    line-height: 1.4;
 }
