@@ -91,11 +91,14 @@ export default async function handler(req, res) {
         .from('tc_transactions')
         .select(`
           *,
-          tc_documents(* ORDER BY sort_order ASC),
-          tc_messages(* ORDER BY created_at ASC),
-          tc_events(* ORDER BY created_at DESC)
+          tc_documents(*),
+          tc_messages(*),
+          tc_events(*)
         `)
         .eq('id', req.query.id)
+        .order('sort_order', { foreignTable: 'tc_documents', ascending: true })
+        .order('created_at', { foreignTable: 'tc_messages', ascending: true })
+        .order('created_at', { foreignTable: 'tc_events', ascending: false })
         .single();
 
       if (error) throw error;
