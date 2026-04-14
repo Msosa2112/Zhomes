@@ -164,7 +164,13 @@ export default function CreatePropertyPage() {
     return (
         <div className="create-property-page animate-fadeIn mobile-page">
             <div className="create-header">
-                <button className="create-back" onClick={() => navigate(-1)}>
+                <button type="button" className="create-back" onClick={() => {
+                    if (window.history.length > 2) {
+                        navigate(-1)
+                    } else {
+                        navigate('/realtor')
+                    }
+                }}>
                     <ChevronLeft size={24} />
                 </button>
                 <h1>Nueva Propiedad</h1>
