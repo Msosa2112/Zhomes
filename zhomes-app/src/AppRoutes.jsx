@@ -54,11 +54,17 @@ import UploadVibeMobile from './pages/mobile/dashboard/UploadVibeMobile'
 import PageTransition from './components/layout/PageTransition'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 
+/* Desktop/Standalone Routes */
+import TwilioOptInPage from './pages/public/TwilioOptInPage'
+
 export default function AppRoutes() {
     const location = useLocation()
 
     return (
         <Routes>
+            {/* Desktop standalone page for Twilio Reviewers */}
+            <Route path="/contact-agent" element={<TwilioOptInPage />} />
+
             {/* Rutas públicas */}
             <Route element={<PublicLayoutMobile />}>
                 <Route path="/" element={<LandingPageMobile />} />
