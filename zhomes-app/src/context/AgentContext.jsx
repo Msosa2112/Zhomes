@@ -18,7 +18,7 @@ export function AgentProvider({ children }) {
         try {
             const { data } = await supabase
                 .from('zhomes_agents')
-                .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url, video')
+                .select('id, full_name, first_name, last_name, email, phone, bio, status, photo_url')
                 .eq('id', agentId)
                 .maybeSingle();
 
