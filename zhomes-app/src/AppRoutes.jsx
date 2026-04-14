@@ -47,6 +47,7 @@ import RealtorLeadsMobile from './pages/mobile/dashboard/RealtorLeadsMobile'
 import RealtorOpenHousesMobile from './pages/mobile/dashboard/RealtorOpenHousesMobile'
 import RealtorTasksMobile from './pages/mobile/dashboard/RealtorTasksMobile'
 import RealtorClientsMobile from './pages/mobile/dashboard/RealtorClientsMobile'
+import NotificationsPageMobile from './pages/mobile/dashboard/NotificationsPageMobile'
 import RealtorProfile from './pages/realtor/RealtorProfile'
 import CreatePropertyPage from './pages/realtor/CreatePropertyPage'
 import UploadVibeMobile from './pages/mobile/dashboard/UploadVibeMobile'
@@ -138,6 +139,7 @@ export default function AppRoutes() {
                     <Route path="/realtor/subir-vibe" element={<UploadVibeMobile />} />
                     <Route path="/realtor/deal" element={<DealRoomMobile />} />
                     <Route path="/realtor/deal/:id" element={<DealRoomMobile />} />
+                    <Route path="/realtor/notificaciones" element={<NotificationsPageMobile />} />
                     <Route path="/cma" element={<CMAPageMobile />} />
                 </Route>
             </Route>
