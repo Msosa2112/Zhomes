@@ -1,190 +1,318 @@
-import ZLoader from '../../../components/shared/ZLoader'
+import { useState, useEffect, useCallback } from 'react'
 import {
-    Brain, TrendingUp, DollarSign, Clock, FileText, CheckCircle2,
-    AlertCircle, Upload, Flame, Trophy, Star, LogOut, Activity,
-    X, Calendar, Users, MapPin, Building2, Award, LineChart,
-    PenTool, Briefcase, Bell, ChevronRight, Loader2
+    Calendar, Users, CheckCircle2, AlertCircle, Briefcase,
+    PenTool, LineChart, Upload, ChevronRight, Home,
+    Phone, Clock, Bell, Loader2, Plus, FileText,
+    MessageSquare, ArrowRight, X, TrendingUp
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabaseClient'
-import { useProperties } from '../../../context/PropertyContext'
 import './RealtorDashboardMobile.css'
 
-const XP = { current: 2450, level: 7, levelName: 'Rising Star', nextAt: 3000, prevAt: 2000 }
+// ── Quick actions (3-col, 6 items) ───────────────────────────
+const QUICK_ACTIONS = [
+    { label: 'Citas',      icon: Calendar,    to: '/realtor/showings' },
+    { label: 'Leads',      icon: Users,       to: '/realtor/leads' },
+    { label: 'CMA',        icon: LineChart,   to: '/realtor/cma' },
+    { label: 'Deal Room',  icon: Briefcase,   to: '/realtor/deal-room' },
+    { label: 'Firmas',     icon: PenTool,     to: '/realtor/esignatures' },
+    { label: 'Nueva Prop.', icon: Upload,     to: '/realtor/upload-vibe' },
+]
+
+// ── Status label map ──────────────────────────────────────────
+const DEAL_STATUS = {
+    active:         { label: 'Activo',           dot: 'var(--text-secondary)' },
+    under_contract: { label: 'Bajo Contrato',     dot: '#F59E0B' },
+    pending:        { label: 'Pendiente',         dot: '#F59E0B' },
+    pre_closing:    { label: 'Pre-Cierre',        dot: '#10B981' },
+    closed:         { label: 'Cerrado',           dot: '#10B981' },
+    cancelled:      { label: 'Cancelado',         dot: 'var(--zhomes-red)' },
+}
 
 export default function RealtorDashboardMobile() {
     const navigate = useNavigate()
-    const { zhomesListings, zhomesAgents, zhomesOffice, properties, offMarketListings, agentStats, loading: propsLoading } = useProperties()
-    const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (session?.user) setUser(session.user)
-            setLoading(false)
+    // ── State ─────────────────────────────────────────────────
+    const [user, setUser]             = useState(null)
+    const [loading, setLoading]       = useState(true)
+    const [todayCitas, setTodayCitas] = useState([])
+    const [pendingTasks, setPendingTasks] = useState(0)
+    const [activeDeals, setActiveDeals]   = useState([])
+    const [recentLeads, setRecentLeads]   = useState([])
+    const [alerts, setAlerts]             = useState([])
+
+    // ── Load data ─────────────────────────────────────────────
+    const load = useCallback(async () => {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.user) { setLoading(false); return }
+
+        const email = session.user.email
+        const meta  = session.user.user_metadata || {}
+        setUser({
+            name:  meta.first_name || meta.full_name?.split(' ')[0] || 'Agente',
+            email,
+        })
+
+        // Parallel fetches
+        const today      = new Date().toISOString().split('T')[0]
+        const todayStart = `${today}T00:00:00`
+        const todayEnd   = `${today}T23:59:59`
+
+        const [showingsRes, leadsRes, dealsRes] = await Promise.all([
+            // Today's showings/citas
+            supabase
+                .from('showings')
+                .select('id, property_address, showing_date, client_name, status')
+                .eq('agent_email', email)
+                .gte('showing_date', todayStart)
+                .lte('showing_date', todayEnd)
+                .order('showing_date'),
+
+            // Recent leads (last 3)
+            supabase
+                .from('realtor_leads')
+                .select('id, name, phone, type, source, status, created_at')
+                .eq('agent_email', email)
+                .order('created_at', { ascending: false })
+                .limit(3),
+
+            // Active transactions (deal room)
+            supabase
+                .from('tc_transactions')
+                .select('id, address, price, status, buyer_name, seller_name, closing_date')
+                .eq('realtor_email', email)
+                .not('status', 'eq', 'closed')
+                .not('status', 'eq', 'cancelled')
+                .order('created_at', { ascending: false })
+                .limit(3),
+        ])
+
+        setTodayCitas(showingsRes.data || [])
+        setRecentLeads(leadsRes.data || [])
+        setActiveDeals(dealsRes.data || [])
+
+        // Build alerts from overdue/urgent data
+        const urgentAlerts = []
+        if ((dealsRes.data || []).some(d => d.status === 'pre_closing')) {
+            urgentAlerts.push({ id: 'preclosing', text: 'Tienes transacciones en Pre-Cierre — revisa documentos pendientes', type: 'warning' })
         }
-        fetchDashboardData()
+
+        setAlerts(urgentAlerts)
+        setLoading(false)
     }, [])
 
-    if (loading && propsLoading) return <ZLoader message="Cargando..." />
+    useEffect(() => { load() }, [load])
 
-    const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Agente'
-    const activeListings   = zhomesListings.length
-    const totalAgents      = zhomesAgents.length
-    const totalMlsProps    = properties.length
-    const totalClosedDeals = agentStats.reduce((s, a) => s + a.totalClosed, 0)
-    const totalVolume      = agentStats.reduce((s, a) => s + a.totalVolume, 0)
-    const totalOffMarket   = (offMarketListings || []).length
-    const xpPct = Math.round(((XP.current - XP.prevAt) / (XP.nextAt - XP.prevAt)) * 100)
+    // ── Greeting ──────────────────────────────────────────────
+    const hour = new Date().getHours()
+    const greeting = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches'
+    const todayLabel = new Date().toLocaleDateString('es-US', { weekday: 'long', day: 'numeric', month: 'long' })
 
-    const ALERTS = [
-        { type: 'error',   Icon: AlertCircle,  text: 'Faltan 3 documentos para 8708 Denise Dr', time: 'Hace 2 horas' },
-        { type: 'success', Icon: CheckCircle2, text: 'Oferta aceptada para 8708 Denise Dr',      time: 'Hace 1 día' },
-    ]
-
-    // ── Quick Actions — iconos como protagonistas ──────────────────────────────
-    const QUICK = [
-        { to: '/realtor/citas',          Icon: Calendar,   label: 'Citas' },
-        { to: '/realtor/leads',          Icon: Users,      label: 'Leads' },
-        { to: '/realtor/tareas',         Icon: CheckCircle2, label: 'Tareas' },
-        { to: '/realtor/open-houses',    Icon: MapPin,     label: 'Open House' },
-        { to: '/realtor/crear-propiedad',Icon: Upload,     label: 'Nueva Prop.' },
-        { to: '/realtor/deal',           Icon: Briefcase,  label: 'Deal Room' },
-        { to: '/realtor/firmas',         Icon: PenTool,    label: 'Firmas' },
-        { to: '/cma',                    Icon: LineChart,  label: 'CMA' },
-    ]
+    // ── Loading ───────────────────────────────────────────────
+    if (loading) {
+        return (
+            <div className="rdb-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+                <Loader2 size={28} style={{ animation: 'spin 1s linear infinite', color: 'var(--text-secondary)' }} />
+            </div>
+        )
+    }
 
     return (
-        <>
-        <div className="mobile-dash-page">
+        <div className="rdb-page">
 
-            {/* ── HEADER ─────────────────────────────────────────── */}
-            <div className="mobile-dash-header">
+            {/* ── 1. HEADER ─────────────────────────────────── */}
+            <div className="rdb-header">
                 <div>
-                    <h2>Hola, {userName}</h2>
-                    <p>Centro de Mando en vivo.</p>
+                    <h1>{greeting}{user?.name ? `, ${user.name}` : ''}</h1>
+                    <p className="rdb-date">{todayLabel}</p>
                 </div>
+                <button className="rdb-notif-btn" onClick={() => navigate('/realtor/notifications')}>
+                    <Bell size={20} />
+                    {alerts.length > 0 && <span className="rdb-notif-dot" />}
+                </button>
             </div>
 
-            {/* ── QUICK ACTIONS — icono + label, paleta neutra ───── */}
-            <div className="rdb-quick-grid">
-                {QUICK.map(({ to, Icon, label }) => (
-                    <Link key={to} to={to} className="rdb-quick-btn">
-                        <div className="rdb-quick-icon">
-                            <Icon size={22} />
-                        </div>
-                        <span>{label}</span>
-                    </Link>
-                ))}
-            </div>
-
-            {/* ── KPIs ───────────────────────────────────────────── */}
-            <div className="m-kpi-scroller">
-                <div className="mk-card">
-                    <FileText size={20} />
-                    <span>Activas</span>
-                    <strong>{activeListings}</strong>
-                </div>
-                <div className="mk-card">
-                    <Trophy size={20} />
-                    <span>Cierres</span>
-                    <strong>{totalClosedDeals}</strong>
-                </div>
-                <div className="mk-card">
-                    <DollarSign size={20} />
-                    <span>Volumen</span>
-                    <strong>${totalVolume >= 1000000 ? (totalVolume / 1000000).toFixed(1) + 'M' : (totalVolume / 1000).toFixed(0) + 'K'}</strong>
-                </div>
-                <div className="mk-card">
-                    <Users size={20} />
-                    <span>Agentes</span>
-                    <strong>{totalAgents}</strong>
-                </div>
-                <div className="mk-card">
-                    <Building2 size={20} />
-                    <span>Exclusivas</span>
-                    <strong>{totalOffMarket}</strong>
-                </div>
-            </div>
-
-            {/* ── PROGRESO ───────────────────────────────────────── */}
-            <div className="m-dash-section">
-                <h3><Flame size={16} style={{ marginRight: 6 }} />Mi Progreso</h3>
-                <div className="m-xp-row">
-                    <div className="m-xp-badge">{XP.level}</div>
-                    <div className="m-xp-info">
-                        <strong>Nivel {XP.level} — {XP.levelName}</strong>
-                        <div className="m-xp-bar-container">
-                            <div className="m-xp-fill" style={{ width: `${xpPct}%` }} />
-                        </div>
-                        <span>Faltan {XP.nextAt - XP.current} XP para el nivel {XP.level + 1}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── PROPIEDADES ZHOMES ──────────────────────────────── */}
-            <div className="m-dash-section">
-                <h3><Building2 size={16} style={{ marginRight: 6 }} />Propiedades ZHomes</h3>
-                <div className="m-alerts-list">
-                    {zhomesListings.map((prop, idx) => (
-                        <div className="m-alert" key={idx}>
-                            <img src={prop.image} alt="" style={{ width: 56, height: 56, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-                            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                                <strong style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prop.address}</strong>
-                                <span style={{ fontSize: 12, color: 'var(--zhomes-red)', fontWeight: 700 }}>${prop.price?.toLocaleString()}</span>
-                                <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{prop.beds}bd / {prop.baths}ba / {prop.sqft?.toLocaleString()} sqft</span>
-                            </div>
-                        </div>
-                    ))}
-                    {zhomesListings.length === 0 && <p style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>No hay listados activos.</p>}
-                </div>
-            </div>
-
-            {/* ── TOP PERFORMERS ──────────────────────────────────── */}
-            {agentStats.filter(a => a.totalClosed > 0).length > 0 && (
-            <div className="m-dash-section">
-                <h3><Award size={16} style={{ marginRight: 6 }} />Top Performers</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {agentStats.filter(a => a.totalClosed > 0).map((agent, idx) => (
-                        <div key={idx} className="rdb-performer-row">
-                            <div className={`rdb-rank ${idx === 0 ? 'gold' : idx === 1 ? 'silver' : ''}`}>{idx + 1}</div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <strong style={{ fontSize: 13, display: 'block' }}>{agent.name}</strong>
-                                <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{agent.totalClosed} cierres · Promedio ${agent.avgPrice >= 1000000 ? (agent.avgPrice / 1000000).toFixed(2) + 'M' : (agent.avgPrice / 1000).toFixed(0) + 'K'}</span>
-                            </div>
-                            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                <strong style={{ fontSize: 14, color: 'var(--zhomes-red)', display: 'block' }}>${agent.totalVolume >= 1000000 ? (agent.totalVolume / 1000000).toFixed(2) + 'M' : (agent.totalVolume / 1000).toFixed(0) + 'K'}</strong>
-                                <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>volumen</span>
-                            </div>
+            {/* ── 2. ALERTAS URGENTES (solo si hay) ─────────── */}
+            {alerts.length > 0 && (
+                <div className="rdb-alerts">
+                    {alerts.map(alert => (
+                        <div key={alert.id} className={`rdb-alert rdb-alert--${alert.type}`}>
+                            <AlertCircle size={16} />
+                            <span>{alert.text}</span>
                         </div>
                     ))}
                 </div>
-            </div>
             )}
 
-            {/* ── ALERTAS ──────────────────────────────────────────── */}
-            <div className="m-dash-section" style={{ marginBottom: 30 }}>
-                <h3>Alertas <span className="m-badge-red">{ALERTS.length}</span></h3>
-                <div className="m-alerts-list">
-                    {ALERTS.map((al, idx) => (
-                        <div className="m-alert" key={idx}>
-                            <al.Icon
-                                size={16}
-                                color={al.type === 'error' ? 'var(--zhomes-red)' : '#10B981'}
-                                style={{ flexShrink: 0 }}
-                            />
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                <p>{al.text}</p>
-                                <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{al.time}</span>
+            {/* ── 3. RESUMEN HOY ────────────────────────────── */}
+            <div className="rdb-today-row">
+                <Link to="/realtor/showings" className="rdb-today-card">
+                    <div className="rdb-today-icon">
+                        <Calendar size={22} />
+                    </div>
+                    <div>
+                        <span className="rdb-today-num">{todayCitas.length}</span>
+                        <span className="rdb-today-label">
+                            {todayCitas.length === 1 ? 'Cita hoy' : 'Citas hoy'}
+                        </span>
+                    </div>
+                </Link>
+
+                <Link to="/realtor/tasks" className="rdb-today-card">
+                    <div className="rdb-today-icon">
+                        <CheckCircle2 size={22} />
+                    </div>
+                    <div>
+                        <span className="rdb-today-num">{activeDeals.length}</span>
+                        <span className="rdb-today-label">
+                            {activeDeals.length === 1 ? 'Deal activo' : 'Deals activos'}
+                        </span>
+                    </div>
+                </Link>
+
+                <Link to="/realtor/leads" className="rdb-today-card">
+                    <div className="rdb-today-icon">
+                        <Users size={22} />
+                    </div>
+                    <div>
+                        <span className="rdb-today-num">{recentLeads.length}</span>
+                        <span className="rdb-today-label">Leads recientes</span>
+                    </div>
+                </Link>
+            </div>
+
+            {/* ── 4. ACCIONES RÁPIDAS (3-col) ───────────────── */}
+            <div className="rdb-section">
+                <div className="rdb-quick-grid rdb-quick-grid--3col">
+                    {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+                        <Link key={to} to={to} className="rdb-quick-btn">
+                            <div className="rdb-quick-icon">
+                                <Icon size={22} />
                             </div>
-                        </div>
+                            <span>{label}</span>
+                        </Link>
                     ))}
                 </div>
             </div>
 
+            {/* ── 5. MIS DEALS ACTIVOS ──────────────────────── */}
+            <div className="rdb-section">
+                <div className="rdb-section-header">
+                    <h2>Mis Deals</h2>
+                    <Link to="/realtor/deal-room" className="rdb-see-all">
+                        Ver todos <ArrowRight size={14} />
+                    </Link>
+                </div>
+
+                {activeDeals.length === 0 ? (
+                    <div className="rdb-empty-state">
+                        <Briefcase size={32} />
+                        <p>Sin deals activos aún</p>
+                        <span>Cuando tengas transacciones en curso, aparecerán aquí</span>
+                    </div>
+                ) : (
+                    <div className="rdb-deals-list">
+                        {activeDeals.map(deal => {
+                            const st = DEAL_STATUS[deal.status] || DEAL_STATUS.active
+                            return (
+                                <Link key={deal.id} to={`/realtor/deal-room/${deal.id}`} className="rdb-deal-card">
+                                    <div className="rdb-deal-info">
+                                        <div className="rdb-deal-icon">
+                                            <Home size={18} />
+                                        </div>
+                                        <div className="rdb-deal-text">
+                                            <h3>{deal.address || 'Dirección pendiente'}</h3>
+                                            <p>
+                                                {deal.price ? `$${Number(deal.price).toLocaleString()}` : '—'}
+                                                {deal.closing_date ? ` · Cierre ${new Date(deal.closing_date).toLocaleDateString('es-US', { month: 'short', day: 'numeric' })}` : ''}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="rdb-deal-status">
+                                        <span className="rdb-status-dot" style={{ background: st.dot }} />
+                                        <span>{st.label}</span>
+                                        <ChevronRight size={14} />
+                                    </div>
+                                </Link>
+                            )
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* ── 6. ÚLTIMOS LEADS ──────────────────────────── */}
+            <div className="rdb-section">
+                <div className="rdb-section-header">
+                    <h2>Leads Recientes</h2>
+                    <Link to="/realtor/leads" className="rdb-see-all">
+                        Ver todos <ArrowRight size={14} />
+                    </Link>
+                </div>
+
+                {recentLeads.length === 0 ? (
+                    <div className="rdb-empty-state">
+                        <Users size={32} />
+                        <p>Sin leads aún</p>
+                        <span>Tus nuevos leads aparecerán aquí</span>
+                    </div>
+                ) : (
+                    <div className="rdb-leads-list">
+                        {recentLeads.map(lead => (
+                            <div key={lead.id} className="rdb-lead-row">
+                                <div className="rdb-lead-avatar">
+                                    {lead.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="rdb-lead-info">
+                                    <h3>{lead.name}</h3>
+                                    <p>
+                                        {lead.type === 'buyer' ? 'Comprador' : lead.type === 'seller' ? 'Vendedor' : 'Ambos'}
+                                        {lead.source ? ` · ${lead.source}` : ''}
+                                    </p>
+                                </div>
+                                <div className="rdb-lead-actions">
+                                    {lead.phone && (
+                                        <a href={`tel:${lead.phone}`} className="rdb-lead-call" onClick={e => e.stopPropagation()}>
+                                            <Phone size={16} />
+                                        </a>
+                                    )}
+                                    <ChevronRight size={16} color="var(--text-secondary)" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* ── 7. CITAS DE HOY (si hay) ──────────────────── */}
+            {todayCitas.length > 0 && (
+                <div className="rdb-section rdb-section--last">
+                    <div className="rdb-section-header">
+                        <h2>Agenda de Hoy</h2>
+                        <Link to="/realtor/showings" className="rdb-see-all">
+                            Ver todas <ArrowRight size={14} />
+                        </Link>
+                    </div>
+                    <div className="rdb-citas-list">
+                        {todayCitas.map(cita => (
+                            <div key={cita.id} className="rdb-cita-row">
+                                <div className="rdb-cita-time">
+                                    <Clock size={14} />
+                                    <span>
+                                        {cita.showing_date
+                                            ? new Date(cita.showing_date).toLocaleTimeString('es-US', { hour: '2-digit', minute: '2-digit' })
+                                            : '—'}
+                                    </span>
+                                </div>
+                                <div className="rdb-cita-detail">
+                                    <h3>{cita.property_address || 'Propiedad'}</h3>
+                                    {cita.client_name && <p>{cita.client_name}</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
         </div>
-        </>
     )
 }

@@ -1,29 +1,198 @@
-/* ============================================
-   REALTOR DASHBOARD — ZHomes Premium Mobile
-   Paleta: neutral + rojo semántico + verde éxito
-   ============================================ */
+/* ═══════════════════════════════════════════════
+   REALTOR DASHBOARD MOBILE — Focused Design
+   ═══════════════════════════════════════════════ */
 
-/* ── QUICK ACTIONS GRID ───────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.rdb-page {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1.25rem 1rem 120px;
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* ── 1. HEADER ──────────────────────────────── */
+.rdb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 1.25rem;
+}
+
+.rdb-header h1 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin: 0 0 3px;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.rdb-date {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.rdb-notif-btn {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.rdb-notif-dot {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 8px;
+    height: 8px;
+    background: var(--zhomes-red);
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+}
+
+/* ── 2. ALERTAS ─────────────────────────────── */
+.rdb-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+}
+
+.rdb-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.rdb-alert--warning {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    color: #92400E;
+}
+
+.rdb-alert--danger {
+    background: rgba(228, 31, 37, 0.07);
+    border: 1px solid rgba(228, 31, 37, 0.2);
+    color: var(--zhomes-red);
+}
+
+/* ── 3. RESUMEN HOY ─────────────────────────── */
+.rdb-today-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.rdb-today-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background 0.15s;
+}
+
+.rdb-today-card:active {
+    background: var(--bg-secondary);
+}
+
+.rdb-today-icon {
+    color: var(--text-secondary);
+}
+
+.rdb-today-num {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.rdb-today-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+}
+
+/* ── 4. SECCIONES ───────────────────────────── */
+.rdb-section {
+    margin-bottom: 1.75rem;
+}
+
+.rdb-section--last {
+    margin-bottom: 0;
+}
+
+.rdb-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.rdb-section-header h2 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.rdb-see-all {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+/* ── QUICK ACTIONS — 3 columns ──────────────── */
 .rdb-quick-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 0 20px 20px;
+    gap: 12px;
+}
+
+.rdb-quick-grid--3col {
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .rdb-quick-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     text-decoration: none;
     color: var(--text-primary);
 }
 
 .rdb-quick-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     display: flex;
@@ -35,223 +204,244 @@
 
 .rdb-quick-btn:active .rdb-quick-icon {
     background: var(--bg-secondary);
-    transform: scale(0.95);
-}
-
-/* Active state — highlight current route */
-.rdb-quick-btn.active .rdb-quick-icon {
-    background: rgba(228, 31, 37, 0.08);
-    border-color: rgba(228, 31, 37, 0.25);
-    color: var(--zhomes-red);
+    transform: scale(0.93);
 }
 
 .rdb-quick-btn span {
-    font-size: 0.68rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     color: var(--text-secondary);
     text-align: center;
     line-height: 1.2;
 }
 
-/* ── KPI CARDS ───────────────────────────── */
-.m-kpi-scroller {
-    display: flex;
-    gap: 10px;
-    padding: 0 20px 20px;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.m-kpi-scroller::-webkit-scrollbar { display: none; }
-
-.mk-card {
+/* ── DEALS LIST ─────────────────────────────── */
+.rdb-deals-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 14px;
-    padding: 14px 18px;
-    min-width: 80px;
-    flex-shrink: 0;
-    text-align: center;
-    color: var(--text-secondary);
+    gap: 8px;
 }
 
-.mk-card svg { opacity: 0.7; }
-
-.mk-card span {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--text-tertiary);
-}
-
-.mk-card strong {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: var(--text-primary);
-}
-
-/* ── SECTIONS ────────────────────────────── */
-.m-dash-section {
-    padding: 0 20px;
-    margin-bottom: 28px;
-}
-
-.m-dash-section h3 {
-    font-size: 0.95rem;
-    font-weight: 800;
-    margin: 0 0 14px;
+.rdb-deal-card {
     display: flex;
     align-items: center;
-    color: var(--text-primary);
-}
-
-.m-dash-section h3 svg {
-    opacity: 0.6;
-}
-
-/* ── ALERTS ──────────────────────────────── */
-.m-alerts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.m-alert {
-    display: flex;
-    align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
+    padding: 14px;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: 14px;
-    padding: 14px;
-}
-
-.m-alert p {
-    margin: 0;
-    font-size: 0.82rem;
+    text-decoration: none;
     color: var(--text-primary);
-    line-height: 1.4;
+    transition: background 0.15s;
 }
 
-/* ── HEADER ──────────────────────────────── */
-.mobile-dash-header {
-    padding: 80px 20px 20px;
+.rdb-deal-card:active {
+    background: var(--bg-secondary);
 }
 
-.mobile-dash-header h2 {
-    font-size: 1.75rem;
-    font-weight: 900;
-    margin: 0 0 4px;
-    letter-spacing: -0.5px;
-}
-
-.mobile-dash-header p {
-    font-size: 0.82rem;
-    color: var(--text-tertiary);
-    margin: 0 0 20px;
-}
-
-/* ── XP PROGRESS ─────────────────────────── */
-.m-xp-row {
+.rdb-deal-info {
     display: flex;
     align-items: center;
-    gap: 14px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-    padding: 16px;
-}
-
-.m-xp-badge {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--zhomes-red);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: 900;
-    flex-shrink: 0;
-}
-
-.m-xp-info {
+    gap: 12px;
     flex: 1;
     min-width: 0;
 }
 
-.m-xp-info strong {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
-
-.m-xp-bar-container {
-    height: 6px;
+.rdb-deal-icon {
+    width: 38px;
+    height: 38px;
     background: var(--bg-secondary);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 6px;
-}
-
-.m-xp-fill {
-    height: 100%;
-    background: var(--zhomes-red);
-    border-radius: 4px;
-    transition: width 0.6s ease;
-}
-
-.m-xp-info span {
-    font-size: 0.68rem;
-    color: var(--text-tertiary);
-}
-
-/* ── TOP PERFORMERS ──────────────────────── */
-.rdb-performer-row {
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.rdb-deal-text {
+    min-width: 0;
+}
+
+.rdb-deal-text h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin: 0 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-primary);
+}
+
+.rdb-deal-text p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.rdb-deal-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.rdb-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── LEADS LIST ─────────────────────────────── */
+.rdb-leads-list {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: 14px;
-    padding: 12px 14px;
+    overflow: hidden;
 }
 
-.rdb-rank {
-    width: 32px;
-    height: 32px;
+.rdb-lead-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.rdb-lead-row:last-child {
+    border-bottom: none;
+}
+
+.rdb-lead-avatar {
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: var(--bg-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 900;
-    font-size: 14px;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: var(--text-secondary);
     flex-shrink: 0;
 }
 
-.rdb-rank.gold   { background: rgba(228, 31, 37, 0.1); color: var(--zhomes-red); }
-.rdb-rank.silver { background: var(--bg-secondary); color: var(--text-secondary); }
+.rdb-lead-info {
+    flex: 1;
+    min-width: 0;
+}
 
-/* ── BADGE ───────────────────────────────── */
-.m-badge-red {
-    display: inline-flex;
+.rdb-lead-info h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: var(--text-primary);
+}
+
+.rdb-lead-info p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.rdb-lead-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rdb-lead-call {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--zhomes-red);
-    color: white;
-    border-radius: 10px;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 2px 7px;
-    margin-left: 8px;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+/* ── CITAS DE HOY ───────────────────────────── */
+.rdb-citas-list {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.rdb-cita-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.rdb-cita-row:last-child {
+    border-bottom: none;
+}
+
+.rdb-cita-time {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    width: 70px;
+}
+
+.rdb-cita-detail {
+    flex: 1;
+    min-width: 0;
+}
+
+.rdb-cita-detail h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rdb-cita-detail p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ── EMPTY STATES ───────────────────────────── */
+.rdb-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 28px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.rdb-empty-state p {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.rdb-empty-state span {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
     line-height: 1.4;
 }
