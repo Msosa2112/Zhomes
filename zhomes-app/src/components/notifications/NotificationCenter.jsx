@@ -101,26 +101,47 @@ const typeColors = {
     completed: '#10B981',
 }
 
-const SPRING = {
+const transition = {
     type: 'spring',
     stiffness: 300,
     damping: 26,
 }
 
+const getCardVariants = (i) => ({
+    collapsed: {
+        marginTop: i === 0 ? 0 : -55,
+        scaleX: 1 - i * 0.05,
+    },
+    expanded: {
+        marginTop: i === 0 ? 0 : 8,
+        scaleX: 1,
+    },
+})
+
+const textSwitchTransition = {
+    duration: 0.22,
+    ease: 'easeInOut',
+}
+
+const notificationTextVariants = {
+    collapsed: { opacity: 1, y: 0, pointerEvents: 'auto' },
+    expanded: { opacity: 0, y: -16, pointerEvents: 'none' },
+}
+
+const viewAllTextVariants = {
+    collapsed: { opacity: 0, y: 16, pointerEvents: 'none' },
+    expanded: { opacity: 1, y: 0, pointerEvents: 'auto' },
+}
+
 export default function NotificationCenter({ isOpen, onClose }) {
     const [filter, setFilter] = useState('all')
     const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
-    const [isExpanded, setIsExpanded] = useState(false)
-    const cardsRef = useRef(null)
-    const [collapsedH, setCollapsedH] = useState(140)
-    const [fullH, setFullH] = useState(800)
 
     const filtered = filter === 'all'
         ? notifications
         : notifications.filter(n => n.type === filter)
 
     const unreadCount = notifications.filter(n => !n.read).length
-    const extraCount = Math.max(0, filtered.length - 1)
 
     const markAsRead = (id) => {
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
@@ -129,18 +150,6 @@ export default function NotificationCenter({ isOpen, onClose }) {
     const markAllRead = () => {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })))
     }
-
-    // Measure first card + full scroll height
-    useEffect(() => {
-        if (cardsRef.current && isOpen) {
-            const el = cardsRef.current
-            const cards = el.children
-            if (cards.length > 0) {
-                setCollapsedH(cards[0].offsetHeight)
-                setFullH(el.scrollHeight)
-            }
-        }
-    }, [filtered, isOpen])
 
     if (!isOpen) return null
 
@@ -190,28 +199,25 @@ export default function NotificationCenter({ isOpen, onClose }) {
                             <p>No hay notificaciones</p>
                         </div>
                     ) : (
-                        <div
+                        <motion.div
                             className="notif-stack-container"
-                            onMouseEnter={() => setIsExpanded(true)}
-                            onMouseLeave={() => setIsExpanded(false)}
+                            initial="collapsed"
+                            whileHover="expanded"
                         >
-                            {/* Deck wrapper — first card + peek strips behind */}
-                            <div className="notif-stack-deck">
-                                {/* Real cards — clipped to first card height when collapsed */}
-                                <motion.div
-                                    className="notif-stack-cards"
-                                    ref={cardsRef}
-                                    animate={{ height: isExpanded ? fullH : collapsedH }}
-                                    transition={SPRING}
-                                    style={{ position: 'relative', zIndex: 3 }}
-                                >
+                            <div className="notif-stack-deck" style={{ paddingBottom: '12px' }}>
+                                <div>
                                     {filtered.map((n, i) => (
                                         <motion.div
                                             key={n.id}
                                             className={`notif-item ${n.read ? 'read' : 'unread'} type-${n.type}`}
                                             onClick={() => markAsRead(n.id)}
-                                            transition={SPRING}
-                                            style={{ position: 'relative', zIndex: filtered.length - i }}
+                                            variants={getCardVariants(i)}
+                                            transition={transition}
+                                            style={{
+                                                position: 'relative',
+                                                zIndex: filtered.length - i,
+                                                transformOrigin: 'top center'
+                                            }}
                                         >
                                             <div className="notif-icon-wrap" style={{ color: typeColors[n.type], background: `${typeColors[n.type]}10` }}>
                                                 <n.icon size={18} />
@@ -234,33 +240,7 @@ export default function NotificationCenter({ isOpen, onClose }) {
                                             </div>
                                         </motion.div>
                                     ))}
-                                </motion.div>
-
-                                {/* Peek strips — thin shadow bars behind the first card */}
-                                {extraCount >= 1 && (
-                                    <motion.div
-                                        className="notif-peek-strip"
-                                        animate={{
-                                            scaleX: isExpanded ? 1 : 0.94,
-                                            opacity: isExpanded ? 0 : 1,
-                                            y: isExpanded ? 10 : 0,
-                                        }}
-                                        transition={SPRING}
-                                        style={{ zIndex: 2 }}
-                                    />
-                                )}
-                                {extraCount >= 2 && (
-                                    <motion.div
-                                        className="notif-peek-strip notif-peek-strip-2"
-                                        animate={{
-                                            scaleX: isExpanded ? 1 : 0.88,
-                                            opacity: isExpanded ? 0 : 0.7,
-                                            y: isExpanded ? 10 : 0,
-                                        }}
-                                        transition={SPRING}
-                                        style={{ zIndex: 1 }}
-                                    />
-                                )}
+                                </div>
                             </div>
 
                             {/* Footer — count badge + toggle text */}
@@ -268,24 +248,26 @@ export default function NotificationCenter({ isOpen, onClose }) {
                                 <div className="notif-stack-count">
                                     {filtered.length}
                                 </div>
-                                <span className="notif-stack-text-wrap">
+                                <span className="notif-stack-text-wrap" style={{ display: 'grid' }}>
                                     <motion.span
                                         className="notif-stack-text notif-stack-label"
-                                        animate={{ opacity: isExpanded ? 0 : 1, y: isExpanded ? -14 : 0 }}
-                                        transition={{ duration: 0.22, ease: 'easeInOut' }}
+                                        variants={notificationTextVariants}
+                                        transition={textSwitchTransition}
+                                        style={{ gridRow: 1, gridColumn: 1 }}
                                     >
                                         Notificaciones
                                     </motion.span>
                                     <motion.span
                                         className="notif-stack-text notif-stack-viewall"
-                                        animate={{ opacity: isExpanded ? 1 : 0, y: isExpanded ? 0 : 14 }}
-                                        transition={{ duration: 0.22, ease: 'easeInOut' }}
+                                        variants={viewAllTextVariants}
+                                        transition={textSwitchTransition}
+                                        style={{ gridRow: 1, gridColumn: 1 }}
                                     >
                                         Ver todas <ArrowUpRight size={14} />
                                     </motion.span>
                                 </span>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
                 </div>
             </div>

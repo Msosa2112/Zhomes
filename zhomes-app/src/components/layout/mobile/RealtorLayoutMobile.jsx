@@ -1,16 +1,18 @@
 import { useState, useRef } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, Users, PlusCircle, Briefcase, Sun, Moon, Calendar, ClipboardList, Video, LineChart } from 'lucide-react'
+import { Home, FileText, CheckCircle2, MessageSquare, Menu, X, User, Users, PlusCircle, Briefcase, Sun, Moon, Calendar, ClipboardList, Video, LineChart, Bell } from 'lucide-react'
 import { IonPage, IonHeader, IonToolbar, IonContent, IonFooter, IonTabBar, IonTabButton } from '@ionic/react'
 import { useTheme } from '../../../context/ThemeContext'
 import { supabase } from '../../../lib/supabaseClient'
-import './DashboardLayoutMobile.css' // Reusing the identical layout styles
+import NotificationCenter from '../../notifications/NotificationCenter'
+import './DashboardLayoutMobile.css'
 
 export default function RealtorLayoutMobile() {
     const loc = useLocation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
     const [menuOpen, setMenuOpen] = useState(false)
+    const [notifOpen, setNotifOpen] = useState(false)
     const [showHeader, setShowHeader] = useState(true)
     const lastScrollY = useRef(0)
 
@@ -70,6 +72,9 @@ export default function RealtorLayoutMobile() {
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                 </button>
                             )}
+                            <button className="m-theme-toggle" onClick={() => setNotifOpen(true)} style={{ background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', padding: '8px', position: 'relative' }}>
+                                <Bell size={18} color="white" />
+                            </button>
                             <button className="m-theme-toggle" onClick={toggleTheme} style={{ background: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', padding: '8px' }}>
                                 {theme === 'light' ? <Moon size={18} color="white" /> : <Sun size={18} color="white" />}
                             </button>
@@ -105,6 +110,8 @@ export default function RealtorLayoutMobile() {
                     </div>
                 </div>
             )}
+
+            <NotificationCenter isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
 
             <nav className="mobile-floating-nav" style={{ zIndex: 1000 }}>
                 {navs.map(n => {

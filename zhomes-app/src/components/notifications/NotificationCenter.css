@@ -171,29 +171,6 @@
     position: relative;
 }
 
-.notif-stack-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow: hidden;
-}
-
-/* Peek strips — thin shadow bars that look like cards behind */
-.notif-peek-strip {
-    height: 10px;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-top: none;
-    margin: 0 auto;
-    width: 100%;
-    transform-origin: center top;
-}
-
-.notif-peek-strip-2 {
-    margin-top: -2px;
-}
-
 /* Stack footer */
 .notif-stack-footer {
     display: flex;
