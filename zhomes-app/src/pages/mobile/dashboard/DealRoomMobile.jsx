@@ -3,14 +3,14 @@ import {
   MapPin, FileText, CheckCircle2, Clock, Upload, ArrowLeft,
   MoreHorizontal, Send, Brain, Sparkles, AlertTriangle, ArrowRight,
   Loader2, ChevronRight, XCircle, RefreshCw, Plus, Calendar,
-  AlertCircle, ChevronDown
+  AlertCircle, ChevronDown, Bot
 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { DOCUMENT_CATEGORIES, DOCUMENT_STATUSES, TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
 import './DealRoomMobile.css'
 
-const TABS = ['Docs', 'Chat', 'Detalles', 'AI']
+const TABS = ['Checklist Interno', 'Chat', 'Detalles', 'AI']
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const formatPrice = (p) => {
@@ -36,12 +36,14 @@ export default function DealRoomMobile() {
   const [deals, setDeals]           = useState([])
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState(null)
+  const [userRole, setUserRole]     = useState('client')
 
   // Estado de deal seleccionado
   const [selectedDeal, setSelectedDeal]   = useState(null)
   const [dealDocs, setDealDocs]           = useState([])
   const [dealMessages, setDealMessages]   = useState([])
-  const [tab, setTab]                     = useState('Docs')
+  const [tab, setTab]                     = useState('Chat') // Default a Chat por el cliente
+  const [showAttachMenu, setShowAttachMenu] = useState(false)
 
   // Chat
   const [newMessage, setNewMessage]   = useState('')
@@ -57,6 +59,10 @@ export default function DealRoomMobile() {
   const [isGeneratingBrief, setIsGeneratingBrief] = useState(false)
   const [briefData, setBriefData]                 = useState(null)
 
+  const isClient = userRole === 'client'
+  const isRealtor = userRole === 'realtor'
+  const isBroker = userRole === 'broker'
+
   const { id: urlDealId } = useParams()
 
   // ── Cargar lista de deals ───────────────────────────────────────────────────
@@ -67,6 +73,8 @@ export default function DealRoomMobile() {
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token
       if (!token) throw new Error('No autenticado')
+
+      setUserRole(session.user?.user_metadata?.role || 'client')
 
       const res = await fetch('/api/tc-transactions', {
         headers: { Authorization: `Bearer ${token}` }
@@ -95,6 +103,10 @@ export default function DealRoomMobile() {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token
+
+      if (session?.user) {
+        setUserRole(session.user.user_metadata?.role || 'client')
+      }
 
       const res = await fetch(`/api/tc-transactions?id=${dealId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -137,7 +149,8 @@ export default function DealRoomMobile() {
 
   // ── Handlers ────────────────────────────────────────────────────────────────
   const handleSelectDeal = (deal) => {
-    setTab('Docs')
+    // Si es cliente, su única vista es el Chat
+    setTab(userRole === 'client' ? 'Chat' : 'Checklist Interno')
     setBriefData(null)
     loadDealDetail(deal.id)
   }
@@ -149,6 +162,47 @@ export default function DealRoomMobile() {
       setDealMessages([])
     } else {
       navigate(-1)
+    }
+  }
+
+  // Toggle AI QA mode for a doc (Broker)
+  const toggleAiQa = async (docId, newVal) => {
+    try {
+      setDealDocs((prev) => prev.map((d) => (d.id === docId ? { ...d, ai_qa_enabled: newVal } : d)))
+      await supabase.from('tc_documents').update({ ai_qa_enabled: newVal }).eq('id', docId)
+    } catch (err) {
+      console.error('[DealRoom] Error toggling AI QA', err)
+      alert("Error actualizando AI Config.")
+    }
+  }
+
+  // Cambiar status de un documento (Realtor/Broker)
+  const updateDocStatus = async (docId, newStatus) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      const docName = dealDocs.find((d) => d.id === docId)?.name || 'Documento'
+
+      const { error } = await supabase
+        .from('tc_documents')
+        .update({ status: newStatus })
+        .eq('id', docId)
+        
+      if (error) throw error
+
+      setDealDocs((prev) =>
+        prev.map((d) => (d.id === docId ? { ...d, status: newStatus } : d))
+      )
+
+      await supabase.from('tc_events').insert({
+        transaction_id: selectedDeal.id,
+        event_type:     'document_status_changed',
+        description:    `"${docName}" revisado a ${newStatus} por ${user?.user_metadata?.full_name || 'Agente'}`,
+        is_alert:       false,
+      })
+
+    } catch (err) {
+      console.error('[DealRoom] Error actualizando estado:', err)
+      alert("Error al actualizar el documento.")
     }
   }
 
@@ -181,6 +235,7 @@ export default function DealRoomMobile() {
   // Trigger upload para un documento específico
   const handleTriggerUpload = (docId) => {
     setPendingDocId(docId)
+    setShowAttachMenu(false) // Cerrar menú
     fileInputRef.current?.click()
   }
 
@@ -516,20 +571,22 @@ export default function DealRoomMobile() {
         </div>
       </div>
 
-      <div className="mdr-tabs-wrapper">
-        <div className="mdr-tabs">
-          {TABS.map((t) => (
-            <button key={t} className={`mdr-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
-              {t}
-            </button>
-          ))}
+      {!isClient && (
+        <div className="mdr-tabs-wrapper">
+          <div className="mdr-tabs">
+            {TABS.map((t) => (
+              <button key={t} className={`mdr-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mdr-content">
 
         {/* ── TAB: DOCS ─────────────────────────────────────────────── */}
-        {tab === 'Docs' && (
+        {tab === 'Checklist Interno' && (
           <div className="mdr-docs-view animate-fadeInUp">
             {/* Resumen de progreso */}
             {dealDocs.length > 0 && (() => {
@@ -578,46 +635,110 @@ export default function DealRoomMobile() {
                     const statusInfo = DOCUMENT_STATUSES[d.status] || DOCUMENT_STATUSES.pending
                     const isUploading = uploadingDoc === d.id
 
+                    // Lógica de Renderizado por Roles
+                    const isClient = userRole === 'client'
+                    const isRealtor = userRole === 'realtor'
+                    const isBroker = userRole === 'broker'
+
+                    // Cliente: solo sube. (Aunque el cliente ya no ve esta pestaña, por seguridad lo dejamos)
+                    const canUpload = (d.status === 'pending' || d.status === 'rejected') && (isClient || isRealtor)
+                    
+                    // Realtor: aprueba docs o manda a compliance
+                    const canReview = d.status === 'uploaded' && (isRealtor || isBroker)
+                    
+                    // Broker: da Clear to Close a docs en reviewing
+                    const canClearToClose = d.status === 'reviewing' && (isBroker || isRealtor) // Realtor tmb en caso de emergencia
+
                     return (
-                      <div key={d.id} className="mdr-doc-card">
-                        <div className="mdr-doc-icon"><FileText size={18} /></div>
-                        <div className="mdr-doc-info">
-                          <div className="mdr-doc-name">
-                            {d.name}
-                            {!d.required && (
-                              <span style={{ marginLeft: '6px', fontSize: '10px', color: 'var(--text-tertiary)', fontWeight: '400' }}>
-                                (opcional)
-                              </span>
-                            )}
+                      <div key={d.id} className="mdr-doc-card" style={{ flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                          <div className="mdr-doc-icon"><FileText size={18} /></div>
+                          <div className="mdr-doc-info" style={{ flex: 1 }}>
+                            <div className="mdr-doc-name">
+                              {d.name}
+                              {!d.required && (
+                                <span style={{ marginLeft: '6px', fontSize: '10px', color: 'var(--text-tertiary)', fontWeight: '400' }}>
+                                  (opc)
+                                </span>
+                              )}
+                              {isBroker && d.ai_guidelines && (
+                                <button 
+                                  onClick={() => toggleAiQa(d.id, !d.ai_qa_enabled)}
+                                  title="Toggle AI Auto-QA"
+                                  style={{ 
+                                    marginLeft: '8px', 
+                                    padding: '2px 6px', 
+                                    fontSize: '9px', 
+                                    borderRadius: '4px', 
+                                    background: d.ai_qa_enabled ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-elevated)', 
+                                    color: d.ai_qa_enabled ? '#10b981' : 'var(--text-tertiary)', 
+                                    border: `1px solid ${d.ai_qa_enabled ? '#10b981' : 'var(--border-subtle)'}`, 
+                                    cursor: 'pointer' 
+                                  }}
+                                >
+                                  {d.ai_qa_enabled ? 'AI ON' : 'AI OFF'}
+                                </button>
+                              )}
+                            </div>
+                            <div style={{
+                              fontSize: '11px', fontWeight: '600', marginTop: '2px',
+                              color: statusInfo.color,
+                            }}>
+                              {d.status === 'approved' && <><CheckCircle2 size={11} style={{ marginRight: '3px' }} />Aprobado</>}
+                              {d.status === 'uploaded' && <><Clock size={11} style={{ marginRight: '3px' }} />En Revisión</>}
+                              {d.status === 'reviewing' && <><Clock size={11} style={{ marginRight: '3px' }} />En Compliance</>}
+                              {d.status === 'pending' && 'Pendiente — falta subir'}
+                              {d.status === 'rejected' && (
+                                <><XCircle size={11} style={{ marginRight: '3px' }} />Rechazado{d.rejection_reason ? ` — ${d.rejection_reason}` : ''}</>
+                              )}
+                            </div>
                           </div>
-                          <div style={{
-                            fontSize: '11px', fontWeight: '600', marginTop: '2px',
-                            color: statusInfo.color,
-                          }}>
-                            {d.status === 'approved' && <><CheckCircle2 size={11} style={{ marginRight: '3px' }} />Aprobado</>}
-                            {d.status === 'uploaded' && <><Clock size={11} style={{ marginRight: '3px' }} />En Revisión</>}
-                            {d.status === 'reviewing' && <><Clock size={11} style={{ marginRight: '3px' }} />Revisando con IA</>}
-                            {d.status === 'pending' && 'Pendiente — falta subir'}
-                            {d.status === 'rejected' && (
-                              <><XCircle size={11} style={{ marginRight: '3px' }} />Rechazado{d.rejection_reason ? ` — ${d.rejection_reason}` : ''}</>
-                            )}
-                          </div>
+                          
+                          {canUpload && (
+                            <button
+                              className="mdr-doc-action"
+                              onClick={() => handleTriggerUpload(d.id)}
+                              disabled={isUploading}
+                              style={{ opacity: isUploading ? 0.6 : 1 }}
+                            >
+                              {isUploading ? <Loader2 size={14} className="ai-loading-icon" /> : <Upload size={14} />}
+                              {isUploading ? ' Subiendo...' : ' Subir'}
+                            </button>
+                          )}
+  
+                          {canReview && (
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                              <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>✓ Aprobar</button>
+                              <button onClick={() => updateDocStatus(d.id, 'reviewing')} style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>A Compliance</button>
+                            </div>
+                          )}
+  
+                          {canClearToClose && (
+                            <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}>Clear to Close</button>
+                          )}
+  
+                          {d.status === 'uploaded' && d.file_name && !canReview && !canClearToClose && (
+                            <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', flexShrink: 0 }}>
+                              {d.file_name.slice(0, 12)}...
+                            </span>
+                          )}
                         </div>
-                        {(d.status === 'pending' || d.status === 'rejected') && (
-                          <button
-                            className="mdr-doc-action"
-                            onClick={() => handleTriggerUpload(d.id)}
-                            disabled={isUploading}
-                            style={{ opacity: isUploading ? 0.6 : 1 }}
-                          >
-                            {isUploading ? <Loader2 size={14} className="ai-loading-icon" /> : <Upload size={14} />}
-                            {isUploading ? ' Subiendo...' : ' Subir'}
-                          </button>
-                        )}
-                        {d.status === 'uploaded' && d.file_name && (
-                          <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', flexShrink: 0 }}>
-                            {d.file_name.slice(0, 12)}...
-                          </span>
+
+                        {d.ai_feedback && (
+                          <div style={{ 
+                            width: '100%', 
+                            marginTop: '10px', 
+                            padding: '10px', 
+                            background: d.status === 'rejected' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)', 
+                            borderRadius: '8px', 
+                            fontSize: '12px', 
+                            color: d.status === 'rejected' ? '#b91c1c' : '#1d4ed8' 
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: 'bold' }}>
+                              <Bot size={14} /> <span>ZHomes AI</span>
+                            </div>
+                            <span style={{ lineHeight: '1.4' }}>{d.ai_feedback}</span>
+                          </div>
                         )}
                       </div>
                     )
@@ -671,6 +792,11 @@ export default function DealRoomMobile() {
             </div>
 
             <div className="mdr-chat-input-area">
+              <button className="mdr-chat-attach-btn" onClick={() => setShowAttachMenu(true)} style={{
+                background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0
+              }}>
+                <Plus size={22} />
+              </button>
               <input
                 type="text"
                 placeholder="Escribe un mensaje..."
@@ -682,6 +808,53 @@ export default function DealRoomMobile() {
               <button onClick={handleSendMessage} disabled={sendingMsg || !newMessage.trim()}>
                 {sendingMsg ? <Loader2 size={18} className="ai-loading-icon" /> : <Send size={18} />}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── MENÚ EMERGENTE (ACTION SHEET) PARA SUBIR ARCHIVOS DESDE EL CHAT ── */}
+        {showAttachMenu && (
+          <div className="mdr-attach-overlay" onClick={() => setShowAttachMenu(false)}>
+            <div className="mdr-attach-menu" onClick={e => e.stopPropagation()}>
+              <div className="mdr-attach-header">
+                <span>Adjuntar Documento</span>
+                <button onClick={() => setShowAttachMenu(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-tertiary)' }}><ArrowLeft size={20} /></button>
+              </div>
+              <div className="mdr-attach-list">
+                {(() => {
+                  const pendingDocsForUser = dealDocs.filter(d => 
+                    (d.status === 'pending' || d.status === 'rejected') && 
+                    ((isClient && d.required) || (!isClient))
+                  )
+
+                  if (pendingDocsForUser.length === 0) {
+                    return (
+                      <div className="mdr-attach-empty">
+                        <CheckCircle2 size={32} color="#10b981" style={{ marginBottom: '12px' }} />
+                        <p>No tienes ningún documento pendiente por subir en este momento.</p>
+                      </div>
+                    )
+                  }
+
+                  return pendingDocsForUser.map(d => (
+                    <div key={d.id} className="mdr-attach-option" onClick={() => handleTriggerUpload(d.id)}>
+                      <div style={{
+                        width: '40px', height: '40px', borderRadius: '10px', background: 'var(--bg-secondary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--zhomes-red)'
+                      }}>
+                        <FileText size={20} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{d.name}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                          Requerido para la Transacción
+                        </div>
+                      </div>
+                      <ChevronRight size={18} color="var(--text-tertiary)" />
+                    </div>
+                  ))
+                })()}
+              </div>
             </div>
           </div>
         )}

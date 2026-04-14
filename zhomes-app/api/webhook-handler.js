@@ -115,6 +115,21 @@ export default async function handler(req, res) {
                   );
               }
 
+              // REGLA 4: AI QA Dispatcher
+              if (isNewUpload && record.ai_qa_enabled) {
+                  console.log(`[Webhook] Dispatching AI Auto-QA para Doc ${record.id}`);
+                  // Nota: Hacemos fetch asíncrono, si Vercel lo mata, cambiaremos a await o Edge function.
+                  // Pero la subida se marcó como prioritaria
+                  await fetch(`${baseUrl}/api/ai-qa`, {
+                      method: 'POST',
+                      headers: { 
+                          'Content-Type': 'application/json',
+                          'Authorization': 'Bearer zhomes_internal_webhook_secret_123'
+                      },
+                      body: JSON.stringify({ document_id: record.id })
+                  }).catch(err => console.error('[AI Dispatch Error]', err));
+              }
+
               return res.status(200).json({ success: true, processed: 'tc_documents' });
           }
       }

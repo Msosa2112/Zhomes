@@ -12,8 +12,8 @@ export const TC_DOCUMENT_TEMPLATES = {
   // ── COMPRA DE PROPIEDAD ──────────────────────────────────────────
   purchase: [
     // Financiamiento
-    { name: 'Pre-Approval Letter',          category: 'financial',  required: true,  sort_order: 1,  notes: 'Carta de pre-aprobación del lender' },
-    { name: 'Proof of Funds',               category: 'financial',  required: false, sort_order: 2,  notes: 'Si es compra en efectivo' },
+    { name: 'Pre-Approval Letter',          category: 'financial',  required: true,  sort_order: 1,  notes: 'Carta de pre-aprobación del lender', ai_qa_enabled: true, ai_guidelines: 'Verifica que el nombre coincida con el cliente, el monto aprobado esté visible y la carta tenga fecha reciente (menos de 90 días).' },
+    { name: 'Proof of Funds',               category: 'financial',  required: false, sort_order: 2,  notes: 'Si es compra en efectivo', ai_qa_enabled: true, ai_guidelines: 'Verifica que el estado de cuenta muestre fondos suficientes y el nombre coincida.' },
 
     // Contrato
     { name: 'Contrato de Compra-Venta',     category: 'contract',   required: true,  sort_order: 3,  notes: 'Purchase Agreement firmado por ambas partes' },
@@ -68,7 +68,7 @@ export const TC_DOCUMENT_TEMPLATES = {
     { name: 'Rental Application',           category: 'financial',  required: true,  sort_order: 2,  notes: 'Solicitud del inquilino' },
     { name: 'Credit / Background Check',    category: 'financial',  required: true,  sort_order: 3,  notes: 'Verificación de crédito e historial' },
     { name: 'Proof of Income',              category: 'financial',  required: true,  sort_order: 4,  notes: 'Últimos 2 pay stubs o tax returns' },
-    { name: 'Photo ID',                     category: 'contract',   required: true,  sort_order: 5,  notes: 'Identificación del inquilino' },
+    { name: 'Photo ID',                     category: 'contract',   required: true,  sort_order: 5,  notes: 'Identificación del inquilino', ai_qa_enabled: true, ai_guidelines: 'Verifica que sea una identificación gubernamental oficial, que no esté vencida, y que el rostro y nombre sean legibles y claros.' },
     { name: 'Security Deposit Receipt',     category: 'financial',  required: true,  sort_order: 6,  notes: 'Recibo del depósito de seguridad' },
     { name: 'Move-In Inspection Report',    category: 'inspection', required: true,  sort_order: 7,  notes: 'Condición inicial de la propiedad' },
     { name: 'Lead Paint Disclosure',        category: 'contract',   required: true,  sort_order: 8,  notes: 'Si construida antes de 1978' },
@@ -89,13 +89,15 @@ export function generateChecklist(transactionId, transactionType = 'purchase') {
   const template = TC_DOCUMENT_TEMPLATES[transactionType] || TC_DOCUMENT_TEMPLATES.purchase;
   
   return template.map((doc) => ({
-    transaction_id: transactionId,
-    name:           doc.name,
-    category:       doc.category,
-    status:         'pending',
-    required:       doc.required,
-    sort_order:     doc.sort_order,
-    notes:          doc.notes ?? null,
+    transaction_id:  transactionId,
+    name:            doc.name,
+    category:        doc.category,
+    status:          'pending',
+    required:        doc.required,
+    sort_order:      doc.sort_order,
+    notes:           doc.notes ?? null,
+    ai_qa_enabled:   doc.ai_qa_enabled ?? false,
+    ai_guidelines:   doc.ai_guidelines ?? null,
   }));
 }
 
