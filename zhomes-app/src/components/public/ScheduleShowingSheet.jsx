@@ -47,6 +47,7 @@ export default function ScheduleShowingSheet({ propertyId, activeAgent, onClose 
     
     const [selectedDate, setSelectedDate] = useState(days[0].value)
     const [selectedTime, setSelectedTime] = useState('')
+    const [smsConsent, setSmsConsent] = useState(false)
     
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
@@ -58,7 +59,7 @@ export default function ScheduleShowingSheet({ propertyId, activeAgent, onClose 
     }, [])
 
     const handleConfirm = async () => {
-        if (!selectedDate || !selectedTime) return;
+        if (!selectedDate || !selectedTime || !smsConsent) return;
         
         setIsSubmitting(true)
         
@@ -137,9 +138,22 @@ export default function ScheduleShowingSheet({ propertyId, activeAgent, onClose 
                                 ))}
                             </div>
 
+                            <div style={{ marginTop: '20px', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                                <input 
+                                    type="checkbox" 
+                                    id="smsConsent"
+                                    checked={smsConsent}
+                                    onChange={(e) => setSmsConsent(e.target.checked)}
+                                    style={{ marginTop: '4px', transform: 'scale(1.2)' }}
+                                />
+                                <label htmlFor="smsConsent" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.4' }}>
+                                    By submitting this request, you agree to receive SMS communications from ZHomes Real Estate LLC. Reply STOP to opt out. Message/data rates may apply. <a href="https://zhomes.us/#privacy" style={{ color: '#E31E24', textDecoration: 'underline' }}>Privacy Policy</a>
+                                </label>
+                            </div>
+
                             <button 
                                 className="sss-submit-btn" 
-                                disabled={!selectedDate || !selectedTime || isSubmitting}
+                                disabled={!selectedDate || !selectedTime || !smsConsent || isSubmitting}
                                 onClick={handleConfirm}
                             >
                                 {isSubmitting ? 'Enviando...' : `Solicitar Visita ${selectedTime ? 'a las ' + selectedTime : ''}`}
