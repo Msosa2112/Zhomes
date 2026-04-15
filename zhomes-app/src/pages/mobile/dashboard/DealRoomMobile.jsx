@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   MapPin, FileText, CheckCircle2, Clock, Upload, ArrowLeft,
   MoreHorizontal, Send, Brain, Sparkles, AlertTriangle, ArrowRight,
@@ -627,7 +627,7 @@ export default function DealRoomMobile() {
               {docsByCategory.map(({ cat, label, icon, color, docs }) => (
                 <div key={cat} style={{ marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 16px 8px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '8px' }}>
-                    <span>{icon}</span>
+                    {icon && <span>{icon}</span>}
                     <span style={{ fontSize: '12px', fontWeight: '700', color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
                   </div>
 
