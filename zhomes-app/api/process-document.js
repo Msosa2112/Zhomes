@@ -51,19 +51,39 @@ export default async function handler(req, res) {
     const buffer = Buffer.from(arrayBuffer);
 
     let text = "";
-    if (fileName.toLowerCase().endsWith(".pdf")) {
-      const parsed = await pdfParse(buffer);
-      text = parsed.text;
-    } else {
-      text = buffer.toString("utf-8"); // Assume plaintext/XML for non-pdf if applicable
-    }
-
-    if (!text || text.trim().length === 0) {
-      return res.status(400).json({ error: "Could not extract readable text from document" });
+    try {
+      if (fileName.toLowerCase().endsWith(".pdf")) {
+        const parsed = await pdfParse(buffer);
+        text = parsed.text || "";
+      } else {
+        text = buffer.toString("utf-8"); // Assume plaintext/XML for non-pdf if applicable
+      }
+    } catch (parseError) {
+      console.warn("PDF parsing failed (corrupt or scanned):", parseError);
+      text = "";
     }
 
     // Clean up excessive whitespace
     text = text.replace(/\n+/g, '\n').replace(/\s{2,}/g, ' ');
+
+    if (!text || text.trim().length < 50) {
+      console.log(`Document ${fileName} has no readable text. Falling back to manual review status.`);
+      if (documentId) {
+        // Fallback to manual review if the AI cannot read the text
+        await supabase
+          .from('tc_documents')
+          .update({ 
+            ai_feedback: "El documento es una imagen escaneada o un archivo protegido que la Inteligencia Artificial no pudo procesar automáticamente. Se requiere verificación humana.",
+            status: 'reviewing'
+          })
+          .eq('id', documentId);
+      }
+      return res.status(200).json({ 
+        success: true, 
+        message: "No readable text extracted. Document flagged for manual review.",
+        status: "reviewing"
+      });
+    }
 
     // 2. Setup the deal_document record in database
     const { data: docData, error: docError } = await supabase
