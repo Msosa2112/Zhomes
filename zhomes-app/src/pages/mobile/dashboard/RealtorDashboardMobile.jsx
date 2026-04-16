@@ -41,6 +41,11 @@ export default function RealtorDashboardMobile() {
     const [activeDeals, setActiveDeals]   = useState([])
     const [recentLeads, setRecentLeads]   = useState([])
     const [alerts, setAlerts]             = useState([])
+    
+    // ── New Deal State ─────────────────────────────────────────
+    const [showNewDealModal, setShowNewDealModal] = useState(false)
+    const [newDealForm, setNewDealForm]           = useState({ address: '', price: '', clientEmail: '', type: 'buyer' })
+    const [isCreatingDeal, setIsCreatingDeal]     = useState(false)
 
     // ── Load data ─────────────────────────────────────────────
     const load = useCallback(async () => {
@@ -103,6 +108,36 @@ export default function RealtorDashboardMobile() {
     }, [])
 
     useEffect(() => { load() }, [load])
+
+    // ── Create Deal ───────────────────────────────────────────
+    const handleCreateDeal = async (e) => {
+        e.preventDefault()
+        if (!newDealForm.address || !newDealForm.clientEmail) return
+        setIsCreatingDeal(true)
+
+        try {
+            const { error } = await supabase.from('tc_transactions').insert({
+                address: newDealForm.address,
+                price: parseFloat(newDealForm.price) || 0,
+                client_email: newDealForm.clientEmail.trim(),
+                realtor_email: user.email,
+                status: 'active',
+                buyer_name: newDealForm.type === 'buyer' ? 'Pendiente' : null,
+                seller_name: newDealForm.type === 'seller' ? 'Pendiente' : null,
+            })
+
+            if (error) throw error
+            
+            setShowNewDealModal(false)
+            setNewDealForm({ address: '', price: '', clientEmail: '', type: 'buyer' })
+            load() // refresh deals
+        } catch (err) {
+            console.error(err)
+            alert("Error al crear el deal.")
+        } finally {
+            setIsCreatingDeal(false)
+        }
+    }
 
     // ── Greeting ──────────────────────────────────────────────
     const hour = new Date().getHours()
@@ -196,9 +231,22 @@ export default function RealtorDashboardMobile() {
             <div className="rdb-section">
                 <div className="rdb-section-header">
                     <h2>Mis Deals</h2>
-                    <Link to="/realtor/deal" className="rdb-see-all">
-                        Ver todos <ArrowRight size={14} />
-                    </Link>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <button 
+                            className="rdb-create-deal-btn" 
+                            style={{ 
+                                background: 'var(--zhomes-red)', color: 'white', border: 'none', 
+                                padding: '6px 12px', borderRadius: '12px', fontSize: '13px', 
+                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
+                            }}
+                            onClick={() => setShowNewDealModal(true)}
+                        >
+                            + Nuevo Deal
+                        </button>
+                        <Link to="/realtor/deal" className="rdb-see-all">
+                            Ver todos <ArrowRight size={14} />
+                        </Link>
+                    </div>
                 </div>
 
                 {activeDeals.length === 0 ? (
@@ -312,6 +360,64 @@ export default function RealtorDashboardMobile() {
             )}
 
             <AICopilotWidget />
+
+            {/* ── MODAL: NUEVO DEAL ─────────────────────────── */}
+            {showNewDealModal && (
+                <div className="rdb-modal-overlay">
+                    <div className="rdb-modal-content">
+                        <button className="rdb-modal-close" onClick={() => setShowNewDealModal(false)}>
+                            <X size={20} />
+                        </button>
+                        <h2>Iniciar Nueva Transacción</h2>
+                        <p>Completa los detalles básicos para abrir un nuevo Deal Room.</p>
+                        
+                        <form onSubmit={handleCreateDeal} className="rdb-modal-form">
+                            <div className="rdb-form-group">
+                                <label>Dirección de la Propiedad</label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    placeholder="Ej: 123 Main St, Springfield" 
+                                    value={newDealForm.address}
+                                    onChange={e => setNewDealForm({...newDealForm, address: e.target.value})}
+                                />
+                            </div>
+                            <div className="rdb-form-group">
+                                <label>Precio Aproximado ($)</label>
+                                <input 
+                                    type="number" 
+                                    placeholder="350000" 
+                                    value={newDealForm.price}
+                                    onChange={e => setNewDealForm({...newDealForm, price: e.target.value})}
+                                />
+                            </div>
+                            <div className="rdb-form-group">
+                                <label>Email del Cliente</label>
+                                <input 
+                                    type="email" 
+                                    required
+                                    placeholder="cliente@email.com" 
+                                    value={newDealForm.clientEmail}
+                                    onChange={e => setNewDealForm({...newDealForm, clientEmail: e.target.value})}
+                                />
+                            </div>
+                            <div className="rdb-form-group">
+                                <label>Representas al...</label>
+                                <select 
+                                    value={newDealForm.type}
+                                    onChange={e => setNewDealForm({...newDealForm, type: e.target.value})}
+                                >
+                                    <option value="buyer">Comprador (Buyer)</option>
+                                    <option value="seller">Vendedor (Seller)</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="rdb-modal-submit" disabled={isCreatingDeal}>
+                                {isCreatingDeal ? <Loader2 size={18} className="animate-spin" /> : 'Crear Deal'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
 
         </div>
     )
