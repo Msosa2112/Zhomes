@@ -21,10 +21,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { fileBase64, fileName, transactionId } = req.body;
+    const { filePath, fileName, transactionId, documentId } = req.body;
     
-    if (!fileBase64 || !fileName || !transactionId) {
-      return res.status(400).json({ error: "Missing required fields (fileBase64, fileName, transactionId)" });
+    if (!filePath || !fileName || !transactionId) {
+      return res.status(400).json({ error: "Missing required fields (filePath, fileName, transactionId)" });
     }
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -39,15 +39,25 @@ export default async function handler(req, res) {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 1. Text Extraction
+    // 1. Download file from Supabase Storage and Text Extraction
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from('tc_documents')
+      .download(filePath);
+      
+    if (downloadError) {
+      console.error("Supabase storage download error:", downloadError);
+      return res.status(500).json({ error: "Could not download file from storage", details: downloadError.message });
+    }
+
+    const arrayBuffer = await fileData.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     let text = "";
-    const buffer = Buffer.from(fileBase64, "base64");
-    
     if (fileName.toLowerCase().endsWith(".pdf")) {
       const parsed = await pdfParse(buffer);
       text = parsed.text;
     } else {
-      text = buffer.toString("utf-8"); // Assume plaintext for non-pdf
+      text = buffer.toString("utf-8"); // Assume plaintext/XML for non-pdf if applicable
     }
 
     if (!text || text.trim().length === 0) {
@@ -116,7 +126,6 @@ export default async function handler(req, res) {
 
     // 5. Proactive AI Extraction (Extracción Automática de Fechas y Dinero)
     let extractedSummary = null;
-    const documentId = req.body.documentId; // passed from frontend if available
     if (documentId) {
       try {
         const summaryResponse = await openai.chat.completions.create({
@@ -153,6 +162,40 @@ export default async function handler(req, res) {
           description:    `Documento aprobado automáticamente por ZHomes AI`,
           is_alert:       false,
         });
+
+        // 6. Trigger Automático de Resend Email
+        if (process.env.RESEND_API_KEY) {
+          try {
+            // Send autonomous email logic
+            await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: 'ZHomes TC <tc@zhomesapp.com>',
+                to: 'msosave@gmail.com', // Replace with real client email in future
+                subject: `Documento Aprobado: ${fileName}`,
+                html: `
+                  <div style="font-family: sans-serif; color: #333;">
+                    <h2>¡Excelente noticia!</h2>
+                    <p>Tu documento <strong>${fileName}</strong> ha sido recibido y aprobado automáticamente por nuestro sistema inteligente.</p>
+                    <div style="background-color: #f4f4f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                      <h4 style="margin-top: 0;">Resumen del Documento:</h4>
+                      <p style="white-space: pre-wrap;">${extractedSummary}</p>
+                    </div>
+                    <p>Si tienes alguna duda, puedes responder dentro de la plataforma.</p>
+                    <p>Saludos,<br/>El Equipo de <strong>ZHomes AI</strong></p>
+                  </div>
+                `
+              })
+            });
+            console.log("Resend email sent successfully.");
+          } catch (emailErr) {
+            console.error("Error sending automated email:", emailErr);
+          }
+        }
           
       } catch (summaryErr) {
         console.error("No se pudo generar extraer el reumen de IA:", summaryErr);

@@ -341,21 +341,16 @@ export default function DealRoomMobile() {
       )
 
       // 6. Proactive Backend Vector Processing (Background)
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Data = reader.result.split(',')[1];
-        fetch('/api/process-document', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileBase64: base64Data,
-            fileName: file.name,
-            transactionId: selectedDeal.id,
-            documentId: pendingDocId
-          })
-        }).catch(err => console.error("Error trigger AI process:", err));
-      };
-      reader.readAsDataURL(file);
+      fetch('/api/process-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filePath: path,
+          fileName: file.name,
+          transactionId: selectedDeal.id,
+          documentId: pendingDocId
+        })
+      }).catch(err => console.error("Error trigger AI process:", err));
 
     } catch (err) {
       console.error('[DealRoom] Error subiendo documento:', err)
