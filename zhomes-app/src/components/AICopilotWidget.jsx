@@ -1,15 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Share, Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import { Bot, X, Send, Share, Loader2, Maximize2, Minimize2, Home } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 import './AICopilotWidget.css'; // Import the new CSS
 
 export default function AICopilotWidget({ transactionId, onForwardToClient }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false); // fullscreen mode
+  const [activeTxId, setActiveTxId] = useState(transactionId);
+  const [availableDeals, setAvailableDeals] = useState([]);
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'assistant',
-      text: 'Soy tu copiloto de ZHomes AI. Conozco todos los documentos y contexto de este trato. ¿En qué te puedo ayudar hoy?'
+      text: transactionId
+        ? 'Soy tu copiloto de ZHomes AI. Conozco todos los documentos y contexto de este trato. ¿En qué te puedo ayudar hoy?'
+        : 'Soy tu copiloto de ZHomes AI. ¿Sobre qué transacción quieres consultar hoy?'
     }
   ]);
   const [input, setInput] = useState('');
@@ -22,8 +27,30 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    if (!transactionId && isOpen && availableDeals.length === 0) {
+      const fetchDeals = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        const email = session.user.email;
+        const role = session.user.user_metadata?.role || 'realtor';
+
+        let query = supabase.from('tc_transactions').select('id, address').not('status', 'in', '("closed","cancelled")').order('created_at', { ascending: false });
+        if (role === 'realtor') {
+            query = query.eq('realtor_email', email);
+        }
+        
+        const { data } = await query;
+        if (data) setAvailableDeals(data);
+      };
+      fetchDeals();
+    } else if (transactionId) {
+      setActiveTxId(transactionId);
+    }
+  }, [transactionId, isOpen, availableDeals.length]);
+
   const handleSend = async () => {
-    if (!input.trim() || !transactionId) return;
+    if (!input.trim() || !activeTxId) return;
 
     const userText = input.trim();
     setInput('');
@@ -39,7 +66,7 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'deal_query',
-          data: { query: userText, transactionId }
+          data: { query: userText, transactionId: activeTxId }
         })
       });
 
@@ -113,13 +140,35 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
             </div>
             
             {/* Si es respuesta de máquina, mostramos botón de transferir */}
-            {m.role === 'assistant' && m.id !== 'welcome' && (
+            {m.role === 'assistant' && m.id !== 'welcome' && onForwardToClient && (
               <button
                 className="ai-forward-btn"
                 onClick={() => handleForward(m.text)}
               >
                 <Share size={12} /> Reenviar a Cliente
               </button>
+            )}
+
+            {m.id === 'welcome' && !activeTxId && availableDeals.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px', width: '100%' }}>
+                    {availableDeals.map(deal => (
+                        <button 
+                            key={deal.id} 
+                            className="ai-deal-btn"
+                            onClick={() => {
+                                setActiveTxId(deal.id);
+                                const selectionMsg = { id: Date.now().toString(), role: 'user', text: `Quiero consultar sobre: ${deal.address}` };
+                                setMessages(prev => [...prev, selectionMsg]);
+                                
+                                setTimeout(() => {
+                                    setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', text: `Perfecto. Ya tengo el contexto de ${deal.address}. ¿Qué necesitas saber?` }]);
+                                }, 600);
+                            }}
+                        >
+                            <Home size={14} /> {deal.address}
+                        </button>
+                    ))}
+                </div>
             )}
           </div>
         ))}

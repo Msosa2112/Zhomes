@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
+import AICopilotWidget from '../../../components/AICopilotWidget'
 import './RealtorDashboardMobile.css'
 
 // ── Quick actions (3-col, 6 items) ───────────────────────────
@@ -309,6 +310,8 @@ export default function RealtorDashboardMobile() {
                     </div>
                 </div>
             )}
+
+            <AICopilotWidget />
 
         </div>
     )

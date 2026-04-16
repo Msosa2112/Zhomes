@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Brain, TrendingUp, Users, Target, Activity, AlertCircle,
   CheckCircle2, ChevronRight, X, Plus, Trash2, Save, PenTool,
@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
+import AICopilotWidget from '../../../components/AICopilotWidget'
 import './DashboardPageMobile.css'
 
 // ── Pipeline statuses ─────────────────────────────────────────────────────────
@@ -482,6 +483,7 @@ export default function DashboardPageMobile() {
           </div>
         </div>
       )}
+      <AICopilotWidget />
     </>
   )
 }
