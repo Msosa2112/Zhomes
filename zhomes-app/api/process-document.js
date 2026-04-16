@@ -1,12 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
+// import { createRequire } from "module";
+// const require = createRequire(import.meta.url);
+// const pdfParse = require("pdf-parse");
 
 // Optimize runtime limit for this serverless function (max for Hobby is 10s usually, but Pro allows up to 60s)
 export const config = {
-  maxDuration: 60,
+  maxDuration: 10, // Max for Hobby tier
 };
 
 export default async function handler(req, res) {
@@ -54,8 +54,8 @@ export default async function handler(req, res) {
 
     let text = "";
     if (fileName.toLowerCase().endsWith(".pdf")) {
-      const parsed = await pdfParse(buffer);
-      text = parsed.text;
+      // Temporarily disabled pdf-parse to test Vercel 500 error
+      text = "[PDF_CONTENT_MOCK] - PDF parsing is disabled temporarily for debugging.";
     } else {
       text = buffer.toString("utf-8"); // Assume plaintext/XML for non-pdf if applicable
     }
