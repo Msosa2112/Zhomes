@@ -55,6 +55,7 @@ export default function RealtorDashboardMobile() {
         const email = session.user.email
         const meta  = session.user.user_metadata || {}
         setUser({
+            id: session.user.id,
             name:  meta.first_name || meta.full_name?.split(' ')[0] || 'Agente',
             email,
         })
@@ -85,8 +86,8 @@ export default function RealtorDashboardMobile() {
             // Active transactions (deal room)
             supabase
                 .from('tc_transactions')
-                .select('id, address, price, status, buyer_name, seller_name, closing_date')
-                .eq('realtor_email', email)
+                .select('id, address, price, status, client_name, closing_date')
+                .eq('realtor_id', session.user.id)
                 .not('status', 'eq', 'closed')
                 .not('status', 'eq', 'cancelled')
                 .order('created_at', { ascending: false })
@@ -120,10 +121,10 @@ export default function RealtorDashboardMobile() {
                 address: newDealForm.address,
                 price: parseFloat(newDealForm.price) || 0,
                 client_email: newDealForm.clientEmail.trim(),
-                realtor_email: user.email,
-                status: 'active',
-                buyer_name: newDealForm.type === 'buyer' ? 'Pendiente' : null,
-                seller_name: newDealForm.type === 'seller' ? 'Pendiente' : null,
+                realtor_id: user.id,
+                status: 'under_contract',
+                client_name: 'Pendiente',
+                transaction_type: newDealForm.type === 'buyer' ? 'purchase' : 'sale',
             })
 
             if (error) throw error
