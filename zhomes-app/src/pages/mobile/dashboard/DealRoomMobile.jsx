@@ -340,18 +340,24 @@ export default function DealRoomMobile() {
         )
       )
 
-      // 6. Proactive Backend Vector Processing (Background)
-      fetch('/api/process-document', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filePath: path,
-          fileName: file.name,
-          transactionId: selectedDeal.id,
-          documentId: pendingDocId
-        })
-      }).catch(err => console.error("Error trigger AI process:", err));
+      // 6. Synchronous Backend Vector Processing (AI Analysis Waiter UI)
+      try {
+        await fetch('/api/process-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filePath: path,
+            fileName: file.name,
+            transactionId: selectedDeal.id,
+            documentId: pendingDocId
+          })
+        });
+      } catch (err) {
+        console.error("Error trigger AI process:", err);
+      }
 
+      // 7. Automatically reflect the new AI-approved status
+      await loadDealDetail(selectedDeal.id);
     } catch (err) {
       console.error('[DealRoom] Error subiendo documento:', err)
       alert("Error subiendo documento: " + err.message)
