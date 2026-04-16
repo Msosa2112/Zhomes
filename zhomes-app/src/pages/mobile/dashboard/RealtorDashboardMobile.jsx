@@ -46,6 +46,8 @@ export default function RealtorDashboardMobile() {
     const [showNewDealModal, setShowNewDealModal] = useState(false)
     const [newDealForm, setNewDealForm]           = useState({ address: '', price: '', clientEmail: '', type: 'buyer' })
     const [isCreatingDeal, setIsCreatingDeal]     = useState(false)
+    const [clientFavorites, setClientFavorites]   = useState([])
+    const [isFetchingFavorites, setIsFetchingFavorites] = useState(false)
 
     // ── Load data ─────────────────────────────────────────────
     const load = useCallback(async () => {
@@ -369,6 +371,75 @@ export default function RealtorDashboardMobile() {
                         
                         <form onSubmit={handleCreateDeal} className="rdb-modal-form">
                             <div className="rdb-form-group">
+                                <label>Email del Cliente</label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input 
+                                        type="email" 
+                                        required
+                                        placeholder="cliente@email.com" 
+                                        value={newDealForm.clientEmail}
+                                        onChange={e => setNewDealForm({...newDealForm, clientEmail: e.target.value})}
+                                        style={{ flex: 1 }}
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={async () => {
+                                            if (!newDealForm.clientEmail) return;
+                                            setIsFetchingFavorites(true);
+                                            try {
+                                                const res = await fetch(`/api/get-client-favorites?email=${encodeURIComponent(newDealForm.clientEmail.trim())}`);
+                                                const json = await res.json();
+                                                if (json.favorites && json.favorites.length > 0) {
+                                                    setClientFavorites(json.favorites);
+                                                } else {
+                                                    alert("No se encontraron favoritos o el correo no existe.");
+                                                    setClientFavorites([]);
+                                                }
+                                            } catch (e) {
+                                                console.error(e);
+                                                alert("Error al buscar favoritos.");
+                                            } finally {
+                                                setIsFetchingFavorites(false);
+                                            }
+                                        }}
+                                        disabled={isFetchingFavorites}
+                                        style={{
+                                            padding: '0 12px',
+                                            background: 'var(--zhomes-red)',
+                                            color: '#fff',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            fontWeight: '600'
+                                        }}
+                                    >
+                                        {isFetchingFavorites ? '...' : 'Favoritos'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {clientFavorites.length > 0 && (
+                                <div className="rdb-form-group">
+                                    <label>Seleccionar Propiedad Favorita (Opcional)</label>
+                                    <select 
+                                        onChange={(e) => {
+                                            const idx = e.target.value;
+                                            if(idx === "") return;
+                                            const fav = clientFavorites[idx];
+                                            setNewDealForm({...newDealForm, address: fav.address, price: fav.price || ''});
+                                        }}
+                                    >
+                                        <option value="">-- Elige una casa --</option>
+                                        {clientFavorites.map((fav, idx) => (
+                                            <option key={fav.id || idx} value={idx}>
+                                                {fav.address} (${fav.price ? fav.price.toLocaleString() : 'N/A'})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            <div className="rdb-form-group">
                                 <label>Dirección de la Propiedad</label>
                                 <input 
                                     type="text" 
@@ -385,16 +456,6 @@ export default function RealtorDashboardMobile() {
                                     placeholder="350000" 
                                     value={newDealForm.price}
                                     onChange={e => setNewDealForm({...newDealForm, price: e.target.value})}
-                                />
-                            </div>
-                            <div className="rdb-form-group">
-                                <label>Email del Cliente</label>
-                                <input 
-                                    type="email" 
-                                    required
-                                    placeholder="cliente@email.com" 
-                                    value={newDealForm.clientEmail}
-                                    onChange={e => setNewDealForm({...newDealForm, clientEmail: e.target.value})}
                                 />
                             </div>
                             <div className="rdb-form-group">
