@@ -142,90 +142,119 @@ export default async function handler(req, res) {
       }
     }
 
-    // 5. Proactive AI Extraction (Extracción Automática de Fechas y Dinero)
-    let extractedSummary = null;
+    // 5. Proactive AI Extraction and Validation
+    let aiResult = { status: 'approved', feedback: 'Document processed' };
     if (documentId) {
       try {
         const summaryResponse = await openai.chat.completions.create({
           model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
           messages: [
-            { role: "system", content: "Eres la IA asistente de una agencia de Bienes Raíces (ZHomes AI). Analiza el siguiente documento de tu cliente. Extrae todas las fechas de pago, límites de inspección, montos en dinero (earnest money, precio de compra, etc.) y cualquier factor de riesgo crítico. Resume en viñetas simples y amables, listas para reenviar al cliente." },
+            { 
+              role: "system", 
+              content: "Eres la IA asistente de una agencia de Bienes Raíces (ZHomes AI) auditando documentos.\nEvalúa el texto del documento para determinar si es relevante para una transacción inmobiliaria (contratos, discloures, facturas de escrow, etc.).\nSi ES VÁLIDO o parece legítimo: decide 'approved', luego extrae fechas límite, dinero y riesgos, resumiendo en viñetas simples y amables.\nSi ES MALA BASURA o totalmente irrelevante (ej: recetas, poemas, imágenes sin sentido): decide 'rejected' y explica por qué.\n\nDevuelve ESTRICTAMENTE JSON con la siguiente estructura:\n{\n  \"status\": \"approved\" | \"rejected\",\n  \"feedback\": \"Resumen amable (si es aprobado) o razón del rechazo de forma formal.\"\n}" 
+            },
             { role: "user", content: `A continuación el texto del documento:\n\n${text.slice(0, 60000)}` }
           ]
         });
-        extractedSummary = summaryResponse.choices[0].message.content;
 
-        // Guardamos este resumen brillante preparado y APROBAMOS el documento automáticamente
-        await supabase
-          .from('tc_documents')
-          .update({ 
-            ai_feedback: extractedSummary,
-            status: 'approved'
-          })
-          .eq('id', documentId);
+        const jsonContent = summaryResponse.choices[0].message.content;
+        aiResult = JSON.parse(jsonContent);
+
+        const finalStatus = aiResult.status === 'rejected' ? 'rejected' : 'approved';
+
+        if (finalStatus === 'approved') {
+          // Aprobamos el documento automáticamente
+          await supabase
+            .from('tc_documents')
+            .update({ 
+              ai_feedback: aiResult.feedback,
+              status: 'approved'
+            })
+            .eq('id', documentId);
+            
+          // Mensaje automático al chat informando de la aprobación
+          await supabase.from('tc_messages').insert({
+            transaction_id: transactionId,
+            sender_name:    'ZHomes AI',
+            sender_role:    'system',
+            content:        `✨ Verificado y Aprobado Automáticamente:\n\n${aiResult.feedback}`,
+            message_type:   'document_update',
+          });
           
-        // Inyectamos un mensaje automático al chat informando de la aprobación
-        await supabase.from('tc_messages').insert({
-          transaction_id: transactionId,
-          sender_name:    'ZHomes AI',
-          sender_role:    'system',
-          content:        `✨ Verificado y Aprobado Automáticamente:\n\n${extractedSummary}`,
-          message_type:   'document_update',
-        });
-        
-        // Lo dejamos en el log interno
-        await supabase.from('tc_events').insert({
-          transaction_id: transactionId,
-          event_type:     'document_reviewed',
-          description:    `Documento aprobado automáticamente por ZHomes AI`,
-          is_alert:       false,
-        });
+          await supabase.from('tc_events').insert({
+            transaction_id: transactionId,
+            event_type:     'document_reviewed',
+            description:    `Documento aprobado automáticamente por ZHomes AI`,
+            is_alert:       false,
+          });
 
-        // 6. Trigger Automático de Resend Email
-        if (process.env.RESEND_API_KEY) {
-          try {
-            // Send autonomous email logic
-            await fetch('https://api.resend.com/emails', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                from: 'ZHomes TC <tc@zhomesapp.com>',
-                to: 'msosave@gmail.com', // Replace with real client email in future
-                subject: `Documento Aprobado: ${fileName}`,
-                html: `
-                  <div style="font-family: sans-serif; color: #333;">
-                    <h2>¡Excelente noticia!</h2>
-                    <p>Tu documento <strong>${fileName}</strong> ha sido recibido y aprobado automáticamente por nuestro sistema inteligente.</p>
-                    <div style="background-color: #f4f4f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                      <h4 style="margin-top: 0;">Resumen del Documento:</h4>
-                      <p style="white-space: pre-wrap;">${extractedSummary}</p>
+          // Trigger Automático de Resend Email
+          if (process.env.RESEND_API_KEY) {
+            try {
+              await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  from: 'ZHomes TC <tc@zhomesapp.com>',
+                  to: 'msosave@gmail.com',
+                  subject: `Documento Aprobado: ${fileName}`,
+                  html: `
+                    <div style="font-family: sans-serif; color: #333;">
+                      <h2>¡Excelente noticia!</h2>
+                      <p>Nuestro equipo y sistema de Inteligencia Artificial han procesado y aprobado exitosamente tu documento:</p>
+                      <p><strong>${fileName}</strong></p>
+                      <p><strong>Notas de nuestro sistema:</strong></p>
+                      <div>${aiResult.feedback.replace(/\n/g, '<br />')}</div>
+                      <br />
+                      <p>Puedes acceder a tu panel en <a href="https://zhomesapp.com/tc-room">ZHomes Deal Room</a>.</p>
                     </div>
-                    <p>Si tienes alguna duda, puedes responder dentro de la plataforma.</p>
-                    <p>Saludos,<br/>El Equipo de <strong>ZHomes AI</strong></p>
-                  </div>
-                `
-              })
-            });
-            console.log("Resend email sent successfully.");
-          } catch (emailErr) {
-            console.error("Error sending automated email:", emailErr);
+                  `
+                })
+              });
+              console.log("Resend automated email sent successfully.");
+            } catch (emailErr) {
+              console.error("Resend API failed inside process-document:", emailErr);
+            }
           }
-        }
+        } else {
+          // Documento rechazado por la IA (Basura o irrelevante)
+          await supabase
+            .from('tc_documents')
+            .update({ 
+              rejection_reason: aiResult.feedback,
+              status: 'rejected'
+            })
+            .eq('id', documentId);
+            
+          await supabase.from('tc_messages').insert({
+            transaction_id: transactionId,
+            sender_name:    'ZHomes AI',
+            sender_role:    'system',
+            content:        `⚠️ Documento Rechazado:\n\n${aiResult.feedback}`,
+            message_type:   'document_update',
+          });
           
-      } catch (summaryErr) {
-        console.error("No se pudo generar extraer el reumen de IA:", summaryErr);
+          await supabase.from('tc_events').insert({
+            transaction_id: transactionId,
+            event_type:     'document_reviewed',
+            description:    `Documento rechazado automáticamente por irrelevancia.`,
+            is_alert:       true,
+          });
+        }
+      } catch (aiError) {
+        console.error("AI Evaluation failed, falling back to manual review:", aiError);
       }
     }
 
     return res.status(200).json({ 
       success: true, 
-      dealDocumentId, 
-      chunksProcessed: insertedCount,
-      summary: extractedSummary,
-      message: "Document successfully processed and indexed for AI querying."
+      message: "Documento procesado exitosamente",
+      chunksInserted: insertedCount,
+      ai_evaluation: aiResult
     });
 
   } catch (err) {
