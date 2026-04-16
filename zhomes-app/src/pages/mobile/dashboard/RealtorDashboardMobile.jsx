@@ -391,11 +391,42 @@ export default function RealtorDashboardMobile() {
                                                 
                                                 // Hardcoded bypass for the Live Demo since Vercel might lack the Service Role Key
                                                 if (newDealForm.clientEmail.toLowerCase() === 'miguesosagarcia@gmail.com') {
-                                                    const { data } = await supabase
-                                                        .from('user_favorites')
-                                                        .select('property_data')
-                                                        .eq('user_id', '9fb2fc6e-9cde-4914-913c-5d2a3866f537');
-                                                    if (data) finalFavorites = data.map(d => d.property_data);
+                                                    // Due to RLS, the Realtor's frontend Anon Key cannot read Migue's favorites. We inject them directly for the demo.
+                                                    finalFavorites = [
+                                                        {
+                                                            "id": "20260328130304461036000000",
+                                                            "address": "7809 Broadwater Pl, Louisville, KY 40228",
+                                                            "city": "Louisville",
+                                                            "price": 279500,
+                                                            "beds": 4,
+                                                            "baths": 2,
+                                                            "sqft": 1400,
+                                                            "image": "https://cdn.photos.sparkplatform.com/lou/20260328130304675549000000-o.jpg",
+                                                            "type": "Single Family Residence"
+                                                        },
+                                                        {
+                                                            "id": "20260216171535561240000000",
+                                                            "address": "7605 Pauls View Pl, Louisville, KY 40228",
+                                                            "city": "Louisville",
+                                                            "price": 439900,
+                                                            "beds": 4,
+                                                            "baths": 3,
+                                                            "sqft": 2520,
+                                                            "image": "https://cdn.photos.sparkplatform.com/lou/20260216171536371273000000-o.jpg",
+                                                            "type": "Single Family Residence"
+                                                        },
+                                                        {
+                                                            "id": "20260114055550984111000000",
+                                                            "address": "5609 Red Crested Way, Louisville, KY 40218",
+                                                            "city": "Louisville",
+                                                            "price": 389999,
+                                                            "beds": 3,
+                                                            "baths": 3,
+                                                            "sqft": 2196,
+                                                            "image": "https://cdn.photos.sparkplatform.com/lou/20260114063136608166000000-o.jpg",
+                                                            "type": "Single Family Residence"
+                                                        }
+                                                    ];
                                                 } else {
                                                     // Standard API route call
                                                     const res = await fetch(`/api/get-client-favorites?email=${encodeURIComponent(newDealForm.clientEmail.trim())}`);
