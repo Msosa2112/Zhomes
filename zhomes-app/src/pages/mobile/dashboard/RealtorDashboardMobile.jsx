@@ -3,7 +3,7 @@ import {
     Calendar, Users, CheckCircle2, AlertCircle, Briefcase,
     PenTool, LineChart, Upload, ChevronRight, Home,
     Phone, Clock, Loader2, FileText,
-    MessageSquare, ArrowRight, X, TrendingUp
+    MessageSquare, ArrowRight, X, TrendingUp, PlusCircle
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
@@ -231,58 +231,53 @@ export default function RealtorDashboardMobile() {
             <div className="rdb-section">
                 <div className="rdb-section-header">
                     <h2>Mis Deals</h2>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <button 
-                            className="rdb-create-deal-btn" 
-                            style={{ 
-                                background: 'var(--zhomes-red)', color: 'white', border: 'none', 
-                                padding: '6px 12px', borderRadius: '12px', fontSize: '13px', 
-                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
-                            }}
-                            onClick={() => setShowNewDealModal(true)}
-                        >
-                            + Nuevo Deal
-                        </button>
-                        <Link to="/realtor/deal" className="rdb-see-all">
-                            Ver todos <ArrowRight size={14} />
-                        </Link>
-                    </div>
                 </div>
 
-                {activeDeals.length === 0 ? (
-                    <div className="rdb-empty-state" onClick={() => navigate('/realtor/deal')} style={{cursor:'pointer'}}>
-                        <Briefcase size={32} />
-                        <p>Sin deals activos aún</p>
-                        <span>Cuando tengas transacciones en curso, aparecerán aquí</span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
+                    <div 
+                        onClick={() => setShowNewDealModal(true)}
+                        style={{
+                            background: 'var(--zhomes-red)',
+                            borderRadius: '16px',
+                            padding: '24px 16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)'
+                        }}
+                    >
+                        <PlusCircle size={32} />
+                        <span style={{ fontWeight: '600', fontSize: '15px' }}>Nuevo Deal</span>
                     </div>
-                ) : (
-                    <div className="rdb-deals-list">
-                        {activeDeals.map(deal => {
-                            const st = DEAL_STATUS[deal.status] || DEAL_STATUS.active
-                            return (
-                                <Link key={deal.id} to={`/realtor/deal`} className="rdb-deal-card">
-                                    <div className="rdb-deal-info">
-                                        <div className="rdb-deal-icon">
-                                            <Home size={18} />
-                                        </div>
-                                        <div className="rdb-deal-text">
-                                            <h3>{deal.address || 'Dirección pendiente'}</h3>
-                                            <p>
-                                                {deal.price ? `$${Number(deal.price).toLocaleString()}` : '—'}
-                                                {deal.closing_date ? ` · Cierre ${new Date(deal.closing_date).toLocaleDateString('es-US', { month: 'short', day: 'numeric' })}` : ''}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="rdb-deal-status">
-                                        <span className="rdb-status-dot" style={{ background: st.dot }} />
-                                        <span>{st.label}</span>
-                                        <ChevronRight size={14} />
-                                    </div>
-                                </Link>
-                            )
-                        })}
+
+                    <div 
+                        onClick={() => navigate('/realtor/deal')}
+                        style={{
+                            background: 'white',
+                            borderRadius: '16px',
+                            padding: '24px 16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--text-primary)',
+                            gap: '8px',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            border: '1px solid var(--border-color)'
+                        }}
+                    >
+                        <Briefcase size={32} color="var(--text-primary)" />
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                            <span style={{ fontSize: '24px', fontWeight: 'bold' }}>{activeDeals.length}</span>
+                            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Activos</span>
+                        </div>
                     </div>
-                )}
+                </div>
             </div>
 
             {/* ── 6. ÚLTIMOS LEADS ──────────────────────────── */}
