@@ -1,4 +1,4 @@
-﻿/* UI Nativa Móvil - Deal Room */
+/* UI Nativa Móvil - Deal Room */
 .mobile-deal-room {
     background: var(--bg-primary);
     min-height: 100vh;
@@ -232,7 +232,8 @@
     gap: 8px;
     position: sticky;
     bottom: 0;
-    padding-bottom: 20px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    background: var(--bg-primary); /* Ensure it covers anything behind when sticky */
 }
 
 .mdr-chat-input-area input {
@@ -539,7 +540,7 @@
     background: var(--bg-primary);
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    padding: 24px 20px;
+    padding: 24px 20px calc(80px + env(safe-area-inset-bottom));
     box-shadow: 0 -4px 24px rgba(0,0,0,0.1);
     transform: translateY(100%);
     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;

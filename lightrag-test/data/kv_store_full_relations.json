@@ -1,0 +1,122 @@
+{
+  "doc-15e43a846209c4065c12f0a1b112478d": {
+    "relation_pairs": [
+      [
+        "Estimated Closing Costs (Seller)",
+        "Total Commission"
+      ],
+      [
+        "Maria Hernandez",
+        "ZHomes TC Platform"
+      ],
+      [
+        "Carlos Hernandez",
+        "Inspection Contingencies"
+      ],
+      [
+        "First National Bank of Louisville",
+        "ZHomes TC Platform"
+      ],
+      [
+        "Buyer's Agent Commission",
+        "Total Commission"
+      ],
+      [
+        "Carlos Hernandez",
+        "ZHomes TC Platform"
+      ],
+      [
+        "Maria Hernandez",
+        "Sarah Mitchell"
+      ],
+      [
+        "Carlos Hernandez",
+        "Sarah Mitchell"
+      ],
+      [
+        "Repair Allowance",
+        "Robert Patterson"
+      ],
+      [
+        "Appraisal Contingency",
+        "Critical Deadlines Checklist"
+      ],
+      [
+        "Seller's Agent Commission",
+        "Total Commission"
+      ],
+      [
+        "Basement",
+        "Water Intrusion"
+      ],
+      [
+        "James Okafor",
+        "Linda Patterson"
+      ],
+      [
+        "Linda Patterson",
+        "Robert Patterson"
+      ],
+      [
+        "James Okafor",
+        "Robert Patterson"
+      ],
+      [
+        "Estimated Closing Costs (Seller)",
+        "TC Fee"
+      ],
+      [
+        "Robert Patterson",
+        "ZHomes TC Platform"
+      ],
+      [
+        "Inspection Contingencies",
+        "Maria Hernandez"
+      ],
+      [
+        "Linda Patterson",
+        "ZHomes TC Platform"
+      ],
+      [
+        "Commonwealth of Kentucky",
+        "Critical Deadlines Checklist"
+      ],
+      [
+        "Bluegrass Title & Escrow",
+        "David Nguyen"
+      ],
+      [
+        "FEMA Flood Zone X",
+        "Water Intrusion"
+      ],
+      [
+        "Estimated Closing Costs (Buyer)",
+        "Total Commission"
+      ],
+      [
+        "April 30, 2026",
+        "Bluegrass Title & Escrow"
+      ],
+      [
+        "Linda Patterson",
+        "Repair Allowance"
+      ],
+      [
+        "Carlos Hernandez",
+        "Maria Hernandez"
+      ],
+      [
+        "Estimated Closing Costs (Buyer)",
+        "Home Sale Contingency"
+      ],
+      [
+        "Critical Deadlines Checklist",
+        "Utilities"
+      ]
+    ],
+    "count": 28,
+    "create_time": 1776302527,
+    "update_time": 1776302527,
+    "_id": "doc-15e43a846209c4065c12f0a1b112478d"
+  }
+}

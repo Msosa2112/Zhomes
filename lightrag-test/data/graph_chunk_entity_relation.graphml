@@ -1,0 +1,601 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d13" for="edge" attr.name="truncate" attr.type="string"/>
+<key id="d12" for="edge" attr.name="created_at" attr.type="long"/>
+<key id="d11" for="edge" attr.name="file_path" attr.type="string"/>
+<key id="d10" for="edge" attr.name="source_id" attr.type="string"/>
+<key id="d9" for="edge" attr.name="keywords" attr.type="string"/>
+<key id="d8" for="edge" attr.name="description" attr.type="string"/>
+<key id="d7" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d6" for="node" attr.name="truncate" attr.type="string"/>
+<key id="d5" for="node" attr.name="created_at" attr.type="long"/>
+<key id="d4" for="node" attr.name="file_path" attr.type="string"/>
+<key id="d3" for="node" attr.name="source_id" attr.type="string"/>
+<key id="d2" for="node" attr.name="description" attr.type="string"/>
+<key id="d1" for="node" attr.name="entity_type" attr.type="string"/>
+<key id="d0" for="node" attr.name="entity_id" attr.type="string"/>
+<graph edgedefault="undirected"><node id="Robert Patterson">
+  <data key="d0">Robert Patterson</data>
+  <data key="d1">person</data>
+  <data key="d2">Robert Patterson signed as the seller on March 16, 2026, in the real estate transaction.&lt;SEP&gt;Robert Patterson is a seller involved in a residential real estate transaction in Kentucky.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522&lt;SEP&gt;chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302499</data>
+  <data key="d6"></data>
+</node>
+<node id="Linda Patterson">
+  <data key="d0">Linda Patterson</data>
+  <data key="d1">person</data>
+  <data key="d2">Linda Patterson signed as the seller on March 16, 2026, in the real estate transaction.&lt;SEP&gt;Linda Patterson is a seller involved in a residential real estate transaction in Kentucky.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522&lt;SEP&gt;chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302499</data>
+  <data key="d6"></data>
+</node>
+<node id="Carlos Hernandez">
+  <data key="d0">Carlos Hernandez</data>
+  <data key="d1">person</data>
+  <data key="d2">Carlos Hernandez signed as the buyer on March 15, 2026, in the real estate transaction.&lt;SEP&gt;Carlos Hernandez is a buyer participating in a residential real estate transaction in Kentucky.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522&lt;SEP&gt;chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302499</data>
+  <data key="d6"></data>
+</node>
+<node id="Maria Hernandez">
+  <data key="d0">Maria Hernandez</data>
+  <data key="d1">person</data>
+  <data key="d2">Maria Hernandez also signed as the buyer on March 15, 2026, in the real estate transaction.&lt;SEP&gt;Maria Hernandez is a buyer participating in a residential real estate transaction in Kentucky.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522&lt;SEP&gt;chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302500</data>
+  <data key="d6"></data>
+</node>
+<node id="Sarah Mitchell">
+  <data key="d0">Sarah Mitchell</data>
+  <data key="d1">person</data>
+  <data key="d2">Sarah Mitchell is the buyer's agent, representing Carlos and Maria Hernandez in the transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302501</data>
+  <data key="d6"></data>
+</node>
+<node id="James Okafor">
+  <data key="d0">James Okafor</data>
+  <data key="d1">person</data>
+  <data key="d2">James Okafor is the seller's agent, representing Robert and Linda Patterson in the transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302501</data>
+  <data key="d6"></data>
+</node>
+<node id="ZHomes TC Platform">
+  <data key="d0">ZHomes TC Platform</data>
+  <data key="d1">organization</data>
+  <data key="d2">ZHomes TC Platform is the entity managing transaction coordination, involved in the closing fees paid by the seller.&lt;SEP&gt;ZHomes TC Platform serves as the transaction coordinator for the real estate transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522&lt;SEP&gt;chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302501</data>
+  <data key="d6"></data>
+</node>
+<node id="Premier Real Estate Group">
+  <data key="d0">Premier Real Estate Group</data>
+  <data key="d1">organization</data>
+  <data key="d2">Premier Real Estate Group is the brokerage for the buyer's agent, Sarah Mitchell.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302501</data>
+  <data key="d6"></data>
+</node>
+<node id="Bluegrass Premier Realty">
+  <data key="d0">Bluegrass Premier Realty</data>
+  <data key="d1">organization</data>
+  <data key="d2">Bluegrass Premier Realty is the brokerage for the seller's agent, James Okafor.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302503</data>
+  <data key="d6"></data>
+</node>
+<node id="First National Bank of Louisville">
+  <data key="d0">First National Bank of Louisville</data>
+  <data key="d1">organization</data>
+  <data key="d2">First National Bank of Louisville is the lender offering financing for the buyer.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302503</data>
+  <data key="d6"></data>
+</node>
+<node id="Patricia Chen">
+  <data key="d0">Patricia Chen</data>
+  <data key="d1">person</data>
+  <data key="d2">Patricia Chen is the loan officer at First National Bank of Louisville involved in the financing process.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302503</data>
+  <data key="d6"></data>
+</node>
+<node id="Bluegrass Title &amp; Escrow">
+  <data key="d0">Bluegrass Title &amp; Escrow</data>
+  <data key="d1">organization</data>
+  <data key="d2">Bluegrass Title &amp; Escrow is the title company handling the closing of the real estate transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302504</data>
+  <data key="d6"></data>
+</node>
+<node id="David Nguyen">
+  <data key="d0">David Nguyen</data>
+  <data key="d1">person</data>
+  <data key="d2">David Nguyen is the closing attorney associated with Bluegrass Title &amp; Escrow.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302504</data>
+  <data key="d6"></data>
+</node>
+<node id="1204 Sycamore Lane">
+  <data key="d0">1204 Sycamore Lane</data>
+  <data key="d1">location</data>
+  <data key="d2">1204 Sycamore Lane is the property address involved in the residential real estate transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302504</data>
+  <data key="d6"></data>
+</node>
+<node id="Louisville">
+  <data key="d0">Louisville</data>
+  <data key="d1">location</data>
+  <data key="d2">Louisville is the city in Kentucky where the residential property is located.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302505</data>
+  <data key="d6"></data>
+</node>
+<node id="Kentucky">
+  <data key="d0">Kentucky</data>
+  <data key="d1">location</data>
+  <data key="d2">Kentucky is the state where the residential real estate transaction takes place.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302505</data>
+  <data key="d6"></data>
+</node>
+<node id="April 30, 2026">
+  <data key="d0">April 30, 2026</data>
+  <data key="d1">event</data>
+  <data key="d2">April 30, 2026 is the scheduled closing date for the residential real estate transaction.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302507</data>
+  <data key="d6"></data>
+</node>
+<node id="Inspection Contingencies">
+  <data key="d0">Inspection Contingencies</data>
+  <data key="d1">concept</data>
+  <data key="d2">Inspection contingencies refer to the conditions regarding home inspections required before the sale is finalized, including deadlines for various inspections.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302507</data>
+  <data key="d6"></data>
+</node>
+<node id="Home Inspection Deadline">
+  <data key="d0">Home Inspection Deadline</data>
+  <data key="d1">event</data>
+  <data key="d2">The home inspection deadline is set for March 25, 2026, by which the buyer must conduct a general home inspection.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302507</data>
+  <data key="d6"></data>
+</node>
+<node id="Radon Inspection Deadline">
+  <data key="d0">Radon Inspection Deadline</data>
+  <data key="d1">event</data>
+  <data key="d2">The radon inspection deadline is established for March 25, 2026.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302508</data>
+  <data key="d6"></data>
+</node>
+<node id="Termite/WDO Inspection Deadline">
+  <data key="d0">Termite/WDO Inspection Deadline</data>
+  <data key="d1">event</data>
+  <data key="d2">The termite/WDO inspection deadline is set for March 28, 2026.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302508</data>
+  <data key="d6"></data>
+</node>
+<node id="Inspection Response Deadline">
+  <data key="d0">Inspection Response Deadline</data>
+  <data key="d1">event</data>
+  <data key="d2">The inspection response deadline is specified for March 28, 2026, during which the seller must respond to the buyer's repair requests.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302508</data>
+  <data key="d6"></data>
+</node>
+<node id="Repair Allowance">
+  <data key="d0">Repair Allowance</data>
+  <data key="d1">concept</data>
+  <data key="d2">Repair allowance refers to the agreement that the seller will credit the buyer up to $5,000 for repairs identified in the home inspection.</data>
+  <data key="d3">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302508</data>
+  <data key="d6"></data>
+</node>
+<node id="Water Intrusion">
+  <data key="d0">Water Intrusion</data>
+  <data key="d1">concept</data>
+  <data key="d2">Water intrusion refers to the minor water seepage in the basement experienced during the 100-year flood event in 2019, resulting in the installation of a French drain system.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302509</data>
+  <data key="d6"></data>
+</node>
+<node id="Basement">
+  <data key="d0">Basement</data>
+  <data key="d1">location</data>
+  <data key="d2">The basement experienced minor water seepage, which prompted remedial measures like installing a French drain system.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302510</data>
+  <data key="d6"></data>
+</node>
+<node id="FEMA Flood Zone X">
+  <data key="d0">FEMA Flood Zone X</data>
+  <data key="d1">concept</data>
+  <data key="d2">FEMA Flood Zone X indicates a minimal flood hazard, confirming that the property is not in a known flood zone.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302510</data>
+  <data key="d6"></data>
+</node>
+<node id="Commonwealth of Kentucky">
+  <data key="d0">Commonwealth of Kentucky</data>
+  <data key="d1">location</data>
+  <data key="d2">The Commonwealth of Kentucky is referenced as the governing legal jurisdiction for the agreement.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302511</data>
+  <data key="d6"></data>
+</node>
+<node id="Critical Deadlines Checklist">
+  <data key="d0">Critical Deadlines Checklist</data>
+  <data key="d1">concept</data>
+  <data key="d2">A checklist of important deadlines related to the real estate transaction activities leading up to closing.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302511</data>
+  <data key="d6"></data>
+</node>
+<node id="Appraisal Contingency">
+  <data key="d0">Appraisal Contingency</data>
+  <data key="d1">concept</data>
+  <data key="d2">The appraisal contingency allows the buyer to renegotiate or cancel if the property does not appraise above $385,000.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302511</data>
+  <data key="d6"></data>
+</node>
+<node id="Utilities">
+  <data key="d0">Utilities</data>
+  <data key="d1">concept</data>
+  <data key="d2">The seller is obligated to maintain all utilities through the closing date, ensuring property functionality.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302512</data>
+  <data key="d6"></data>
+</node>
+<node id="Total Commission">
+  <data key="d0">Total Commission</data>
+  <data key="d1">concept</data>
+  <data key="d2">Total commission refers to the 5% of the purchase price amounting to $19,250.00 in the real estate transaction.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302512</data>
+  <data key="d6"></data>
+</node>
+<node id="Buyer's Agent Commission">
+  <data key="d0">Buyer's Agent Commission</data>
+  <data key="d1">concept</data>
+  <data key="d2">Buyer's agent commission is 2.5% of the purchase price, amounting to $9,625.00, paid by the seller at closing.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302512</data>
+  <data key="d6"></data>
+</node>
+<node id="Seller's Agent Commission">
+  <data key="d0">Seller's Agent Commission</data>
+  <data key="d1">concept</data>
+  <data key="d2">Seller's agent commission is 2.5% of the purchase price, amounting to $9,625.00, paid by the seller at closing.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302512</data>
+  <data key="d6"></data>
+</node>
+<node id="TC Fee">
+  <data key="d0">TC Fee</data>
+  <data key="d1">concept</data>
+  <data key="d2">The TC fee is a charge of $500.00, paid by the seller to ZHomes TC Platform at closing.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302514</data>
+  <data key="d6"></data>
+</node>
+<node id="Estimated Closing Costs (Buyer)">
+  <data key="d0">Estimated Closing Costs (Buyer)</data>
+  <data key="d1">concept</data>
+  <data key="d2">Estimated closing costs for the buyer approximate $7,405, encompassing various fees outlined in the document.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302514</data>
+  <data key="d6"></data>
+</node>
+<node id="Estimated Closing Costs (Seller)">
+  <data key="d0">Estimated Closing Costs (Seller)</data>
+  <data key="d1">concept</data>
+  <data key="d2">Estimated closing costs for the seller include $19,250 in real estate commissions and various other fees, totaling about $153,050 in proceeds.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302514</data>
+  <data key="d6"></data>
+</node>
+<node id="Home Sale Contingency">
+  <data key="d0">Home Sale Contingency</data>
+  <data key="d1">concept</data>
+  <data key="d2">Home sale contingency is stated as none since buyers have pre-qualified without needing to sell their current property.</data>
+  <data key="d3">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d4">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d5">1776302514</data>
+  <data key="d6"></data>
+</node>
+<edge source="Robert Patterson" target="Linda Patterson">
+  <data key="d7">1.0</data>
+  <data key="d8">Robert Patterson and Linda Patterson are co-sellers of the property in the real estate transaction.</data>
+  <data key="d9">relationship,sellers</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302516</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Robert Patterson" target="James Okafor">
+  <data key="d7">1.0</data>
+  <data key="d8">James Okafor represents Robert Patterson in the residential real estate transaction.</data>
+  <data key="d9">representation,seller agent</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302518</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Robert Patterson" target="Repair Allowance">
+  <data key="d7">1.0</data>
+  <data key="d8">Robert Patterson agrees to credit the buyer up to $5,000 at closing for repairs identified in the home inspection.</data>
+  <data key="d9">financial agreement,seller obligation</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302520</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Robert Patterson" target="ZHomes TC Platform">
+  <data key="d7">1.0</data>
+  <data key="d8">Robert Patterson coordinated with ZHomes TC Platform as the seller in the real estate transaction.</data>
+  <data key="d9">real estate transaction,seller representation</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302522</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Linda Patterson" target="Repair Allowance">
+  <data key="d7">1.0</data>
+  <data key="d8">Linda Patterson agrees to credit the buyer up to $5,000 at closing for repairs identified in the home inspection.</data>
+  <data key="d9">financial agreement,seller obligation</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302521</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Linda Patterson" target="James Okafor">
+  <data key="d7">1.0</data>
+  <data key="d8">James Okafor represents Linda Patterson in the residential real estate transaction.</data>
+  <data key="d9">representation,seller agent</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302523</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Linda Patterson" target="ZHomes TC Platform">
+  <data key="d7">1.0</data>
+  <data key="d8">Linda Patterson engaged with ZHomes TC Platform during the closing process as the seller.</data>
+  <data key="d9">real estate transaction,seller representation</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302524</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Carlos Hernandez" target="Maria Hernandez">
+  <data key="d7">1.0</data>
+  <data key="d8">Carlos Hernandez and Maria Hernandez are co-buyers of the property in the real estate transaction.</data>
+  <data key="d9">buyers,relationship</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302516</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Carlos Hernandez" target="Sarah Mitchell">
+  <data key="d7">1.0</data>
+  <data key="d8">Sarah Mitchell represents Carlos Hernandez in the residential real estate transaction.</data>
+  <data key="d9">buyer agent,representation</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302519</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Carlos Hernandez" target="Inspection Contingencies">
+  <data key="d7">1.0</data>
+  <data key="d8">Carlos Hernandez has the right to conduct inspections and will operate under the outlined inspection contingencies in the agreement.</data>
+  <data key="d9">buyer rights,due diligence</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302521</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Carlos Hernandez" target="ZHomes TC Platform">
+  <data key="d7">1.0</data>
+  <data key="d8">Carlos Hernandez engaged with ZHomes TC Platform as the coordinating entity during the purchase process.</data>
+  <data key="d9">buyer representation,real estate transaction</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302523</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Maria Hernandez" target="Sarah Mitchell">
+  <data key="d7">1.0</data>
+  <data key="d8">Sarah Mitchell represents Maria Hernandez in the residential real estate transaction.</data>
+  <data key="d9">buyer agent,representation</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302518</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Maria Hernandez" target="Inspection Contingencies">
+  <data key="d7">1.0</data>
+  <data key="d8">Maria Hernandez has the right to conduct inspections and will operate under the outlined inspection contingencies in the agreement.</data>
+  <data key="d9">buyer rights,due diligence</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302519</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Maria Hernandez" target="ZHomes TC Platform">
+  <data key="d7">1.0</data>
+  <data key="d8">Maria Hernandez interacted with ZHomes TC Platform during the real estate closing as a buyer.</data>
+  <data key="d9">buyer representation,real estate transaction</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302521</data>
+  <data key="d13"></data>
+</edge>
+<edge source="ZHomes TC Platform" target="First National Bank of Louisville">
+  <data key="d7">1.0</data>
+  <data key="d8">ZHomes TC Platform coordinates the transaction which includes financing from First National Bank of Louisville.</data>
+  <data key="d9">financing,transaction coordination</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302516</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bluegrass Title &amp; Escrow" target="April 30, 2026">
+  <data key="d7">1.0</data>
+  <data key="d8">Bluegrass Title &amp; Escrow is responsible for closing the transaction on April 30, 2026.</data>
+  <data key="d9">closing,legal services</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302516</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Bluegrass Title &amp; Escrow" target="David Nguyen">
+  <data key="d7">1.0</data>
+  <data key="d8">David Nguyen serves as the closing attorney for Bluegrass Title &amp; Escrow in this transaction.</data>
+  <data key="d9">closing attorney,legal representation</data>
+  <data key="d10">chunk-acea47a4100c063ac37397f754d68522</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302518</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Water Intrusion" target="Basement">
+  <data key="d7">1.0</data>
+  <data key="d8">The basement's condition is related to the water intrusion issue that occurred during the flood event.</data>
+  <data key="d9">environmental issue,property condition</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302520</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Water Intrusion" target="FEMA Flood Zone X">
+  <data key="d7">1.0</data>
+  <data key="d8">The classification of FEMA Flood Zone X confirms the minimal flood risk impacting the water intrusion incident.</data>
+  <data key="d9">flood risk,property classification</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302521</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Commonwealth of Kentucky" target="Critical Deadlines Checklist">
+  <data key="d7">1.0</data>
+  <data key="d8">The Commonwealth of Kentucky provides the legal framework governing the terms outlined in the Critical Deadlines Checklist.</data>
+  <data key="d9">jurisdiction,legal framework</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302522</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Critical Deadlines Checklist" target="Appraisal Contingency">
+  <data key="d7">1.0</data>
+  <data key="d8">The appraisal contingency is included in the Critical Deadlines Checklist, providing the buyer the right to renegotiate or cancel.</data>
+  <data key="d9">buyer right,contingency terms</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302523</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Critical Deadlines Checklist" target="Utilities">
+  <data key="d7">1.0</data>
+  <data key="d8">The requirement for utilities maintenance is part of the obligations listed in the Critical Deadlines Checklist.</data>
+  <data key="d9">closing requirements,seller obligations</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302525</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Total Commission" target="Estimated Closing Costs (Seller)">
+  <data key="d7">1.0</data>
+  <data key="d8">The total commission amount directly affects the estimated closing costs for the seller, influencing final proceeds.</data>
+  <data key="d9">commission structure,financial implications</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302523</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Total Commission" target="Buyer's Agent Commission">
+  <data key="d7">1.0</data>
+  <data key="d8">The buyer's agent commission is a component of the total commission for the transaction.</data>
+  <data key="d9">commission structure,financial breakdown</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302523</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Total Commission" target="Seller's Agent Commission">
+  <data key="d7">1.0</data>
+  <data key="d8">The seller's agent commission is another component of the total commission in the real estate transaction.</data>
+  <data key="d9">commission structure,financial breakdown</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302525</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Total Commission" target="Estimated Closing Costs (Buyer)">
+  <data key="d7">1.0</data>
+  <data key="d8">Estimated closing costs for the buyer are affected by the total commission paid in the transaction.</data>
+  <data key="d9">financial impact,transaction fees</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302526</data>
+  <data key="d13"></data>
+</edge>
+<edge source="TC Fee" target="Estimated Closing Costs (Seller)">
+  <data key="d7">1.0</data>
+  <data key="d8">The TC fee is included as part of the estimated closing costs incurred by the seller during the transaction.</data>
+  <data key="d9">seller expenses,transaction fee</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302524</data>
+  <data key="d13"></data>
+</edge>
+<edge source="Estimated Closing Costs (Buyer)" target="Home Sale Contingency">
+  <data key="d7">1.0</data>
+  <data key="d8">The absence of a home sale contingency impacts the estimated closing costs for the buyer, allowing for smoother transactions.</data>
+  <data key="d9">buyer obligations,contingency terms</data>
+  <data key="d10">chunk-0e2e80b56f12c0740ad861bb2e503188</data>
+  <data key="d11">purchase_agreement_TC-2026-0042.txt</data>
+  <data key="d12">1776302526</data>
+  <data key="d13"></data>
+</edge>
+</graph></graphml>

@@ -359,6 +359,7 @@ export default function DealRoomMobile() {
 
     } catch (err) {
       console.error('[DealRoom] Error subiendo documento:', err)
+      alert("Error subiendo documento: " + err.message)
     } finally {
       setUploadingDoc(null)
       setPendingDocId(null)
@@ -741,7 +742,7 @@ export default function DealRoomMobile() {
                               color: statusInfo.color,
                             }}>
                               {d.status === 'approved' && <><CheckCircle2 size={11} style={{ marginRight: '3px' }} />Aprobado</>}
-                              {d.status === 'uploaded' && <><Clock size={11} style={{ marginRight: '3px' }} />En Revisión</>}
+                              {d.status === 'uploaded' && <><Clock size={11} style={{ marginRight: '3px' }} />Pendiente de Revisión</>}
                               {d.status === 'reviewing' && <><Clock size={11} style={{ marginRight: '3px' }} />En Compliance</>}
                               {d.status === 'pending' && 'Pendiente — falta subir'}
                               {d.status === 'rejected' && (
@@ -765,12 +766,12 @@ export default function DealRoomMobile() {
                           {canReview && (
                             <div style={{ display: 'flex', gap: '4px' }}>
                               <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>✓ Aprobar</button>
-                              <button onClick={() => updateDocStatus(d.id, 'reviewing')} style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>A Compliance</button>
+                              <button onClick={() => updateDocStatus(d.id, 'reviewing')} style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>Análisis AI (Compliance)</button>
                             </div>
                           )}
   
                           {canClearToClose && (
-                            <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}>Clear to Close</button>
+                            <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}>✓ Aprobar Final</button>
                           )}
   
                           {d.status === 'uploaded' && d.file_name && !canReview && !canClearToClose && (

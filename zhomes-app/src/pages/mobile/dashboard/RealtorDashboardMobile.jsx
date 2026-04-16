@@ -8,6 +8,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import AICopilotWidget from '../../../components/AICopilotWidget'
+import { TC_DOCUMENT_TEMPLATES } from '../../../data/tcDocumentTemplates.js'
 import './RealtorDashboardMobile.css'
 
 // ── Quick actions (3-col, 6 items) ───────────────────────────
@@ -67,16 +68,8 @@ export default function RealtorDashboardMobile() {
         const todayStart = `${today}T00:00:00`
         const todayEnd   = `${today}T23:59:59`
 
-        const [showingsRes, leadsRes, dealsRes] = await Promise.all([
-            // Today's showings/citas
-            supabase
-                .from('showings')
-                .select('id, property_address, showing_date, client_name, status')
-                .eq('agent_email', email)
-                .gte('showing_date', todayStart)
-                .lte('showing_date', todayEnd)
-                .order('showing_date'),
-
+        // NOTE: 'showings' table does not exist yet — skip to avoid 404
+        const [leadsRes, dealsRes] = await Promise.all([
             // Recent leads (last 3)
             supabase
                 .from('realtor_leads')
@@ -96,7 +89,7 @@ export default function RealtorDashboardMobile() {
                 .limit(3),
         ])
 
-        setTodayCitas(showingsRes.data || [])
+        setTodayCitas([])
         setRecentLeads(leadsRes.data || [])
         setActiveDeals(dealsRes.data || [])
 
@@ -119,24 +112,59 @@ export default function RealtorDashboardMobile() {
         setIsCreatingDeal(true)
 
         try {
-            const { error } = await supabase.from('tc_transactions').insert({
+            const txType = newDealForm.type === 'buyer' ? 'purchase' : 'sale';
+
+            // 1. Insert Transaction and get ID
+            const { data: txData, error } = await supabase.from('tc_transactions').insert({
                 address: newDealForm.address,
                 price: parseFloat(newDealForm.price) || 0,
                 client_email: newDealForm.clientEmail.trim(),
                 realtor_id: user.id,
                 status: 'under_contract',
                 client_name: 'Pendiente',
-                transaction_type: newDealForm.type === 'buyer' ? 'purchase' : 'sale',
-            })
+                transaction_type: txType,
+            }).select().single();
 
             if (error) throw error
+
+            const txId = txData.id;
+
+            // 2. Fetch the required templates
+            const templates = TC_DOCUMENT_TEMPLATES[txType] || [];
+            
+            // DEBUG: Show template count
+            alert(`DEBUG: txId=${txId}, txType=${txType}, plantillas encontradas: ${templates.length}`);
+
+            // 3. Map to tc_documents
+            const docsToInsert = templates.map(tpl => ({
+                transaction_id: txId,
+                name: tpl.name,
+                category: tpl.category,
+                status: 'pending',
+                notes: tpl.notes || '',
+                required: tpl.required,
+                sort_order: tpl.sort_order,
+                ai_qa_enabled: !!tpl.ai_qa_enabled,
+                ai_guidelines: tpl.ai_guidelines || null
+            }));
+
+            if (docsToInsert.length > 0) {
+                const { data: insertedData, error: docError } = await supabase.from('tc_documents').insert(docsToInsert).select();
+                if (docError) {
+                    alert("ERROR insertando docs: " + JSON.stringify(docError));
+                } else {
+                    alert("ÉXITO: " + (insertedData?.length || 0) + " documentos creados en BD");
+                }
+            } else {
+                 alert("AVISO: Array docsToInsert está vacío. txType=" + txType);
+            }
             
             setShowNewDealModal(false)
             setNewDealForm({ address: '', price: '', clientEmail: '', type: 'buyer' })
             load() // refresh deals
         } catch (err) {
             console.error(err)
-            alert("Error al crear el deal.")
+            alert("Error al crear el deal: " + (err?.message || JSON.stringify(err)))
         } finally {
             setIsCreatingDeal(false)
         }

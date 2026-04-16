@@ -85,8 +85,8 @@ export default async function handler(req, res) {
                   }
               }
 
-              // REGLA 1: Cliente sube Documento (Category personal/contract) -> Notify Realtor
-              if (isNewUpload && ['contract', 'personal'].includes(record.category)) {
+              // REGLA 1: Si fue subido por el Cliente (no es el realtor) -> Notificar al Realtor
+              if (isNewUpload && record.uploaded_by && record.uploaded_by !== tx.realtor_id) {
                   await notify(
                       realtorPhone, realtorEmail,
                       `El cliente ha subido un documento: ${record.name}`,
@@ -95,13 +95,13 @@ export default async function handler(req, res) {
                   );
               }
 
-              // REGLA 2: Realtor sube doc Lender/Title -> Notify Client
-              if (isNewUpload && ['title', 'financial'].includes(record.category)) {
+              // REGLA 2: Si fue subido por el Realtor -> Notificar al Cliente (siempre, sin importar categoría)
+              if (isNewUpload && (!record.uploaded_by || record.uploaded_by === tx.realtor_id)) {
                   await notify(
                       clientPhone, clientEmail,
-                      `Tienes un nuevo documento legal disponible: ${record.name}`,
-                      'Documento de Tu Propiedad',
-                      `Hola ${tx.client_name || ''}, tu agente ha subido un documento de tipo Legal/Financiero ("${record.name}") para la propiedad ${tx.address}. Puedes acceder a tu portal para revisarlo.`
+                      `Se ha subido un nuevo documento de tu propiedad: ${record.name}`,
+                      'Nuevo Documento en tu Portal',
+                      `Hola ${tx.client_name || ''}, tu agente ha subido un nuevo documento titulado "${record.name}" para la transacción en ${tx.address}. Puedes acceder a tu portal protegido de ZHomes para revisarlo.`
                   );
               }
 
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
                       BROKER_PHONE, BROKER_EMAIL,
                       `Documento requiere revisión Broker: ${record.name}`,
                       'Revisión Pendiente TC',
-                      `El agente ha marcado el documento "${record.name}" para la transacción en ${tx.address} para revisión administrativa.`
+                      `El agente ha mandado el documento "${record.name}" para la transacción en ${tx.address} a la cola de compliance (Revisión Final).`
                   );
               }
 

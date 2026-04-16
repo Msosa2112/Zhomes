@@ -1,0 +1,241 @@
+KENTUCKY RESIDENTIAL REAL ESTATE PURCHASE AND SALE AGREEMENT
+Transaction #: TC-2026-0042
+Date: March 15, 2026
+
+=======================================================================
+PARTIES
+=======================================================================
+SELLER: Robert and Linda Patterson
+Address: 847 Maple Creek Drive, Louisville, KY 40218
+Phone: (502) 555-0133
+Email: rpatterson@email.com
+
+BUYER: Carlos and Maria Hernandez
+Address: 2231 Westport Road, Apt 4B, Louisville, KY 40212
+Phone: (502) 555-0287
+Email: carlos.hernandez@gmail.com
+
+BUYER'S AGENT: Sarah Mitchell, License #RE-2019-4821
+Brokerage: Premier Real Estate Group
+
+SELLER'S AGENT: James Okafor, License #RE-2017-3305
+Brokerage: Bluegrass Premier Realty
+
+TRANSACTION COORDINATOR: ZHomes TC Platform
+TC Contact: tc@zhomesapp.com
+
+=======================================================================
+PROPERTY DESCRIPTION
+=======================================================================
+Property Address: 1204 Sycamore Lane, Louisville, KY 40220
+Legal Description: Lot 14, Block 7, Sycamore Estates Subdivision,
+                   Jefferson County, Kentucky
+Parcel ID: 050-28-14-007-00
+MLS #: 1687432
+
+Property Type: Single-family residential
+Year Built: 1998
+Square Footage: 2,340 sq ft
+Bedrooms: 4
+Bathrooms: 2.5
+Garage: 2-car attached
+Lot Size: 0.28 acres
+
+=======================================================================
+PURCHASE PRICE & FINANCING
+=======================================================================
+PURCHASE PRICE: $385,000.00
+EARNEST MONEY DEPOSIT: $7,500.00
+  - Deposited with: Premier Real Estate Group Escrow Account
+  - Due by: March 19, 2026 (4 days after acceptance)
+
+FINANCING:
+  Loan Type: Conventional
+  Loan Amount: $308,000.00 (approximately 80% LTV)
+  Down Payment: $77,000.00 (20%)
+  Lender: First National Bank of Louisville
+  Loan Officer: Patricia Chen, NMLS #445821
+  
+FINANCING CONTINGENCY DEADLINE: April 12, 2026
+  Buyer must provide written financing commitment by this date.
+  If financing is not obtained, Buyer may cancel and receive full
+  earnest money refund.
+
+=======================================================================
+CLOSING & POSSESSION
+=======================================================================
+CLOSING DATE: April 30, 2026
+CLOSING ATTORNEY/TITLE COMPANY: Bluegrass Title & Escrow
+  Address: 333 West Vine St, Suite 200, Lexington, KY 40507
+  Contact: David Nguyen, Esq.
+  Phone: (859) 555-0922
+
+POSSESSION: Seller to deliver possession at closing.
+  Any occupancy after closing subject to $150/day holdover fee.
+
+=======================================================================
+INSPECTION CONTINGENCIES
+=======================================================================
+HOME INSPECTION DEADLINE: March 25, 2026
+  Buyer has the right to conduct a general home inspection.
+  Inspector: Certified Home Inspectors of Kentucky
+  
+RADON INSPECTION DEADLINE: March 25, 2026
+
+TERMITE/WDO INSPECTION DEADLINE: March 28, 2026
+
+INSPECTION RESPONSE DEADLINE: March 28, 2026
+  Seller must respond to Buyer's repair requests within 3 days
+  of receiving Buyer's inspection report.
+
+REPAIR ALLOWANCE: Seller agrees to credit Buyer up to $5,000
+  at closing for repairs identified in the home inspection.
+  Items over $5,000 will be renegotiated.
+
+=======================================================================
+INCLUSIONS & EXCLUSIONS
+=======================================================================
+INCLUDED IN SALE:
+  - All kitchen appliances (refrigerator, dishwasher, range)
+  - Washer and dryer (Samsung units, 2022)
+  - All window treatments and blinds
+  - Attached light fixtures
+  - Garage door openers (2 remotes)
+  - Backyard shed
+  - Central HVAC system (installed 2020, under warranty until 2025)
+  - Water softener system
+
+EXCLUDED FROM SALE:
+  - Dining room chandelier (heirloom, will be replaced before closing)
+  - Backyard playset
+  - Basement freezer chest
+
+=======================================================================
+LEAD-BASED PAINT DISCLOSURE
+=======================================================================
+This property was built in 1998, therefore no Lead-Based Paint
+Disclosure is required under 42 U.S.C. § 4852d.
+
+=======================================================================
+SELLER'S DISCLOSURE OF PROPERTY CONDITION
+=======================================================================
+Pursuant to KRS Chapter 324.360, Seller discloses the following:
+
+STRUCTURAL:
+  - Foundation: No known issues. Minor settling cracks in basement
+    wall repaired in 2021, cost $800.
+  - Roof: Replaced June 2022. 30-year architectural shingles.
+    GAF Materials warranty transferable to buyer.
+
+SYSTEMS:
+  - HVAC: Replaced 2020. Annual service performed December 2025.
+  - Water Heater: 50-gallon gas, installed 2019.
+  - Electrical: 200-amp service, updated 2015.
+  - Plumbing: No known issues.
+
+WATER INTRUSION: Basement had minor water seepage in 2019 during
+  100-year flood event. French drain system installed 2019.
+  No further incidents.
+
+ENVIRONMENTAL: No known underground storage tanks, asbestos, 
+  mold, or other environmental hazards.
+
+NEIGHBORHOOD: Property is not in a known flood zone.
+  FEMA Flood Zone: X (minimal flood hazard).
+
+=======================================================================
+COMMISSIONS & FEES
+=======================================================================
+TOTAL COMMISSION: 5% of purchase price = $19,250.00
+  - Buyer's Agent Commission: 2.5% = $9,625.00
+  - Seller's Agent Commission: 2.5% = $9,625.00
+  - Paid by Seller at closing.
+
+TC FEE: $500.00 (paid by Seller to ZHomes TC Platform at closing)
+
+TITLE INSURANCE:
+  - Owner's Policy: Buyer's expense, estimated $850
+  - Lender's Policy: Buyer's expense, estimated $400
+
+ESTIMATED CLOSING COSTS (BUYER):
+  - Loan origination fee: $2,310
+  - Appraisal: $550
+  - Title insurance: $1,250
+  - Recording fees: $95
+  - Prepaid items (insurance, taxes): ~$3,200
+  TOTAL ESTIMATED BUYER CLOSING COSTS: ~$7,405
+
+ESTIMATED CLOSING COSTS (SELLER):
+  - Real estate commissions: $19,250
+  - TC Fee: $500
+  - Attorney fee: $600
+  - Deed preparation: $150
+  - Payoff of existing mortgage: $210,450 (approx)
+  TOTAL ESTIMATED SELLER PROCEEDS: ~$153,050
+
+=======================================================================
+CRITICAL DEADLINES CHECKLIST
+=======================================================================
+[ ] March 19, 2026 — Earnest money deposit due
+[ ] March 25, 2026 — Home inspection deadline
+[ ] March 25, 2026 — Radon inspection deadline
+[ ] March 28, 2026 — WDO/termite inspection deadline
+[ ] March 28, 2026 — Buyer's inspection response to Seller
+[ ] March 31, 2026 — Seller's repair response deadline
+[ ] April 5,  2026 — Appraisal ordered by lender
+[ ] April 12, 2026 — FINANCING CONTINGENCY DEADLINE (critical)
+[ ] April 15, 2026 — Homeowner's insurance binder due to lender
+[ ] April 20, 2026 — Final walkthrough scheduled
+[ ] April 28, 2026 — Closing disclosure provided (3 days before)
+[ ] April 30, 2026 — CLOSING DAY
+
+=======================================================================
+ADDITIONAL TERMS
+=======================================================================
+1. APPRAISAL CONTINGENCY: If property appraises below $385,000,
+   Buyer may renegotiate, make up the difference, or cancel with
+   full earnest money refund.
+
+2. HOME SALE CONTINGENCY: None. Buyers have pre-qualified without
+   contingency on sale of current property.
+
+3. SURVEY: No survey required by lender. Existing survey on file
+   with Jefferson County Clerk acceptable.
+
+4. HOA: Property is NOT subject to a Homeowner's Association.
+
+5. UTILITIES: Seller to maintain all utilities through closing date.
+
+6. DISPUTE RESOLUTION: Any disputes shall be mediated through the
+   Greater Louisville Association of REALTORS® mediation program
+   prior to any legal action.
+
+7. GOVERNING LAW: This Agreement shall be governed by the laws
+   of the Commonwealth of Kentucky.
+
+=======================================================================
+SIGNATURES
+=======================================================================
+BUYER SIGNATURE: _____________________ Date: March 15, 2026
+Carlos Hernandez
+
+BUYER SIGNATURE: _____________________ Date: March 15, 2026
+Maria Hernandez
+
+SELLER SIGNATURE: _____________________ Date: March 16, 2026
+Robert Patterson
+
+SELLER SIGNATURE: _____________________ Date: March 16, 2026
+Linda Patterson
+
+=======================================================================
+TC NOTES (ZHomes Internal)
+=======================================================================
+- Transaction opened: March 16, 2026
+- File assigned to: TC Platform Auto
+- Priority: HIGH (closing April 30 - 45 day timeline)
+- Lender communication: Patricia Chen confirmed pre-approval March 14
+- Title company booked: Confirmed March 17
+- NOTE: Seller replacement chandelier must be documented before
+  closing walkthrough. Request photo confirmation from agent.
+- Roof warranty transfer: Request original documents from sellers.
