@@ -128,11 +128,31 @@ export default async function handler(req, res) {
         });
         extractedSummary = summaryResponse.choices[0].message.content;
 
-        // Guardamos este resumen brillante preparado en el documento del cliente en tc_documents
+        // Guardamos este resumen brillante preparado y APROBAMOS el documento automáticamente
         await supabase
           .from('tc_documents')
-          .update({ ai_feedback: extractedSummary })
+          .update({ 
+            ai_feedback: extractedSummary,
+            status: 'approved'
+          })
           .eq('id', documentId);
+          
+        // Inyectamos un mensaje automático al chat informando de la aprobación
+        await supabase.from('tc_messages').insert({
+          transaction_id: transactionId,
+          sender_name:    'ZHomes AI',
+          sender_role:    'system',
+          content:        `✨ Verificado y Aprobado Automáticamente:\n\n${extractedSummary}`,
+          message_type:   'document_update',
+        });
+        
+        // Lo dejamos en el log interno
+        await supabase.from('tc_events').insert({
+          transaction_id: transactionId,
+          event_type:     'document_reviewed',
+          description:    `Documento aprobado automáticamente por ZHomes AI`,
+          is_alert:       false,
+        });
           
       } catch (summaryErr) {
         console.error("No se pudo generar extraer el reumen de IA:", summaryErr);
