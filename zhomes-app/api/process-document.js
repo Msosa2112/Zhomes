@@ -7,7 +7,7 @@ export const config = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// Helper: determina el media_type correcto según la extensión
+// Helper: detectar el media_type según extensión
 // ─────────────────────────────────────────────────────────────
 function getMediaType(fileName) {
   const ext = fileName.toLowerCase().split('.').pop();
@@ -25,85 +25,45 @@ function getMediaType(fileName) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Helper: construye el mensaje correcto para OpenAI según tipo
+// Helper: subir PDF a OpenAI Files API y retornar file_id
 // ─────────────────────────────────────────────────────────────
-function buildOpenAIMessage(fileName, base64Data, mediaType, docContext) {
-  const systemPrompt = `Eres la IA QA y auditora de la agencia de Bienes Raíces ZHomes.
-El agente inmobiliario ha subido este archivo como parte del checklist de cierre de una transacción.
-${docContext}
-INSTRUCCIONES ESTRICTAS:
-- Analiza el contenido REAL del archivo. Puedes ver texto, imágenes, formularios, tablas, firmas, sellos, etc.
-- Si el archivo NO cumple las REGLAS ESTRICTAS del tipo de documento esperado, devuelve status "rejected" con el motivo exacto.
-- Si el archivo SÍ cumple las reglas, devuelve status "approved" con un resumen de: fechas límite, montos (purchase price, earnest money, comisiones, etc.) y riesgos encontrados, en viñetas claras.
-- Si el archivo es completamente ilegible, corrupto o imposible de analizar, devuelve status "reviewing" con una nota breve.
+async function uploadPdfToOpenAI(buffer, fileName, apiKey) {
+  // Use native Node 18 FormData + Blob (no external packages needed)
+  const blob = new Blob([buffer], { type: 'application/pdf' });
+  const form = new FormData();
+  form.append('file', blob, fileName);
+  form.append('purpose', 'assistants');
 
-Devuelve ESTRICTAMENTE este JSON (sin markdown, sin texto extra):
-{
-  "status": "approved" | "rejected" | "reviewing",
-  "feedback": "Resumen en español con viñetas (si aprobado) | Motivo formal del rechazo | Nota de revisión manual"
-}`;
+  const response = await fetch('https://api.openai.com/v1/files', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`
+      // Do NOT set Content-Type here - fetch sets it automatically with boundary
+    },
+    body: form
+  });
 
-  const isPdf = mediaType === 'application/pdf';
-  const isImage = mediaType && mediaType.startsWith('image/');
-
-  if (isPdf) {
-    return {
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: [
-            {
-              type: "file",
-              file: {
-                filename: fileName,
-                file_data: `data:${mediaType};base64,${base64Data}`,
-              }
-            },
-            {
-              type: "text",
-              text: "Analiza este documento PDF según las instrucciones del sistema. Devuelve solo el JSON solicitado."
-            }
-          ]
-        }
-      ]
-    };
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`OpenAI Files API upload failed: ${err}`);
   }
 
-  if (isImage) {
-    return {
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: [
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${mediaType};base64,${base64Data}`,
-                detail: "high"
-              }
-            },
-            {
-              type: "text",
-              text: "Analiza esta imagen de documento según las instrucciones del sistema. Devuelve solo el JSON solicitado."
-            }
-          ]
-        }
-      ]
-    };
-  }
+  const data = await response.json();
+  return data.id; // file_id
+}
 
-  // Fallback: texto plano (ej. .txt, .xml)
-  return {
-    messages: [
-      { role: "system", content: systemPrompt },
-      {
-        role: "user",
-        content: `Analiza este contenido de documento:\n\n${Buffer.from(base64Data, 'base64').toString('utf-8').slice(0, 60000)}`
-      }
-    ]
-  };
+// ─────────────────────────────────────────────────────────────
+// Helper: eliminar archivo de OpenAI Files API (limpieza)
+// ─────────────────────────────────────────────────────────────
+async function deleteOpenAIFile(fileId, apiKey) {
+  try {
+    await fetch(`https://api.openai.com/v1/files/${fileId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${apiKey}` }
+    });
+  } catch (e) {
+    console.warn("Could not delete OpenAI file:", e.message);
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -120,17 +80,36 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (filePath, fileName, transactionId)" });
     }
 
-    const openai   = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    const openai       = new OpenAI({ apiKey: openaiApiKey });
+    const supabaseUrl  = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseKey  = process.env.SUPABASE_SERVICE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
       return res.status(500).json({ error: "Supabase configuration missing" });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase   = createClient(supabaseUrl, supabaseKey);
+    const mediaType  = getMediaType(fileName);
 
-    // ── 1. Descargar el archivo desde Supabase Storage ────────
+    // ── 1. Tipo de archivo no soportado ──────────────────────
+    if (!mediaType) {
+      if (documentId) {
+        await supabase.from('tc_documents').update({
+          ai_feedback: `Tipo de archivo no compatible: "${fileName}". Solo se aceptan PDF, JPG, PNG o WEBP.`,
+          status: 'rejected'
+        }).eq('id', documentId);
+        await supabase.from('tc_messages').insert({
+          transaction_id: transactionId,
+          sender_name: 'ZHomes AI', sender_role: 'system',
+          content: `❌ Documento Rechazado: El tipo de archivo "${fileName}" no es compatible. Suba un PDF, JPG o PNG.`,
+          message_type: 'document_update',
+        });
+      }
+      return res.status(200).json({ success: true, status: "rejected", message: "Unsupported file type" });
+    }
+
+    // ── 2. Descargar el archivo de Supabase Storage ───────────
     const { data: fileData, error: downloadError } = await supabase.storage
       .from('tc_documents')
       .download(filePath);
@@ -142,10 +121,8 @@ export default async function handler(req, res) {
 
     const arrayBuffer = await fileData.arrayBuffer();
     const buffer      = Buffer.from(arrayBuffer);
-    const base64Data  = buffer.toString('base64');
-    const mediaType   = getMediaType(fileName);
 
-    // ── 2. Obtener el contexto específico del tipo de documento ──
+    // ── 3. Obtener contexto del tipo de documento ─────────────
     let docContext = "";
     if (documentId) {
       const { data: tcDoc } = await supabase
@@ -162,99 +139,132 @@ export default async function handler(req, res) {
       }
     }
 
-    // ── 3. Intentar extracción de texto (solo para PDFs con capa de texto) ──
-    let extractedText = "";
-    if (mediaType === 'application/pdf') {
-      try {
-        const parsed = await pdfParse(buffer);
-        extractedText = (parsed.text || "").replace(/\n+/g, '\n').replace(/\s{2,}/g, ' ').trim();
-        console.log(`pdf-parse extracted ${extractedText.length} characters.`);
-      } catch (parseErr) {
-        console.warn("pdf-parse failed (scanned or protected PDF):", parseErr.message);
-      }
-    }
-
-    // ── 4. Decidir estrategia de análisis IA ──
-    // Si el PDF tiene suficiente texto extraído, mandamos el texto (más barato).
-    // En CUALQUIER otro caso (escaneado, imagen, protegido, texto insuficiente),
-    // mandamos el archivo completo via Vision/Native PDF para máxima cobertura.
-    let aiInput;
-    const TEXT_THRESHOLD = 200; // mínimo de chars para confiar en la extracción de texto
-
-    if (mediaType === 'application/pdf' && extractedText.length >= TEXT_THRESHOLD) {
-      // Modo eficiente: solo texto
-      console.log("Strategy: text extraction (sufficient text found)");
-      const systemPrompt = `Eres la IA QA y auditora de la agencia de Bienes Raíces ZHomes.
+    const systemPrompt = `Eres la IA QA y auditora de la agencia de Bienes Raíces ZHomes.
 El agente inmobiliario ha subido este archivo como parte del checklist de cierre de una transacción.
 ${docContext}
-INSTRUCCIONES ESTRICTAS:
-- Analiza el contenido del documento.
-- Si NO cumple las REGLAS ESTRICTAS, devuelve status "rejected" con el motivo.
-- Si SÍ cumple, devuelve status "approved" con viñetas de fechas, montos y riesgos.
-- Si es imposible determinarlo, devuelve status "reviewing".
+INSTRUCCIONES:
+- Analiza el contenido real del documento con todo detalle.
+- Si NO cumple las REGLAS ESTRICTAS, devuelve status "rejected" explicando el motivo exacto.
+- Si SÍ cumple, devuelve status "approved" con un resumen de: fechas límite, montos (purchase price, earnest money, comisiones, etc.) y riesgos relevantes, en viñetas claras en español.
+- Solo si el archivo es genuinamente ilegible o corrupto, devuelve status "reviewing".
 
-Devuelve ESTRICTAMENTE este JSON:
+Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
 {
   "status": "approved" | "rejected" | "reviewing",
   "feedback": "..."
 }`;
-      aiInput = {
-        model: "gpt-4o-mini",
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user",   content: `Texto del documento:\n\n${extractedText.slice(0, 80000)}` }
-        ]
-      };
-    } else {
-      // Modo visión: mandamos el archivo completo (PDF nativo o Image)
-      console.log(`Strategy: vision/native (${mediaType || 'unknown type'})`);
 
-      if (!mediaType) {
-        // Tipo de archivo no soportado
-        console.warn("Unsupported file type:", fileName);
-        if (documentId) {
-          await supabase.from('tc_documents').update({
-            ai_feedback: "Tipo de archivo no reconocido. Solo se aceptan PDFs, JPG, PNG y WEBP.",
-            status: 'rejected'
-          }).eq('id', documentId);
-          await supabase.from('tc_messages').insert({
-            transaction_id: transactionId,
-            sender_name: 'ZHomes AI',
-            sender_role: 'system',
-            content: `⚠️ Documento Rechazado: El tipo de archivo "${fileName}" no es compatible. Por favor suba un PDF, JPG o PNG.`,
-            message_type: 'document_update',
-          });
-        }
-        return res.status(200).json({ success: true, status: "rejected", message: "Unsupported file type" });
+    // ── 4. Elegir estrategia según tipo y contenido ───────────
+    let aiMessages = [];
+    const TEXT_THRESHOLD = 200;
+
+    if (mediaType === 'application/pdf') {
+      // Intentar extraer texto primero (rápido y barato)
+      let extractedText = "";
+      try {
+        const parsed = await pdfParse(buffer);
+        extractedText = (parsed.text || "").replace(/\n+/g, '\n').replace(/\s{2,}/g, ' ').trim();
+        console.log(`pdf-parse: extracted ${extractedText.length} chars`);
+      } catch (e) {
+        console.warn("pdf-parse failed:", e.message);
       }
 
-      const { messages } = buildOpenAIMessage(fileName, base64Data, mediaType, docContext);
-      aiInput = {
+      if (extractedText.length >= TEXT_THRESHOLD) {
+        // PDF con texto → modo texto (barato)
+        console.log("Strategy: text-only");
+        aiMessages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Texto extraído del documento:\n\n${extractedText.slice(0, 80000)}` }
+        ];
+      } else {
+        // PDF escaneado/protegido → subir a OpenAI Files API y usar file_id
+        console.log("Strategy: OpenAI Files API (scanned/protected PDF)");
+        let fileId = null;
+        try {
+          fileId = await uploadPdfToOpenAI(buffer, fileName, openaiApiKey);
+          console.log("Uploaded to OpenAI Files API, file_id:", fileId);
+
+          aiMessages = [
+            { role: "system", content: systemPrompt },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Analiza el siguiente documento PDF. Devuelve solo el JSON solicitado."
+                },
+                {
+                  type: "file",
+                  file: { file_id: fileId }
+                }
+              ]
+            }
+          ];
+        } catch (uploadErr) {
+          console.error("OpenAI Files upload failed:", uploadErr.message);
+          // Último recurso: marcar como reviewing
+          if (documentId) {
+            await supabase.from('tc_documents').update({
+              ai_feedback: "El documento es un PDF escaneado o protegido que no pudo ser procesado automáticamente. Use Adobe Scan o CamScanner con OCR para generar un PDF con texto.",
+              status: 'reviewing'
+            }).eq('id', documentId);
+            await supabase.from('tc_messages').insert({
+              transaction_id: transactionId,
+              sender_name: 'ZHomes AI', sender_role: 'system',
+              content: "🔎 Revisión Manual Requerida: El PDF parece estar escaneado o protegido y no pudo ser leído automáticamente. Por favor, use una app de escaneo con OCR (Adobe Scan, CamScanner) y suba un nuevo PDF.",
+              message_type: 'document_update',
+            });
+          }
+          return res.status(200).json({ success: true, status: "reviewing", message: "Scanned PDF could not be uploaded for analysis" });
+        }
+
+        // Limpiar el archivo de OpenAI después de usar
+        if (fileId) {
+          await deleteOpenAIFile(fileId, openaiApiKey);
+        }
+      }
+
+    } else if (mediaType.startsWith('image/')) {
+      // Imagen directa (foto del celular, JPG, PNG)
+      console.log("Strategy: Vision (image)");
+      const base64 = buffer.toString('base64');
+      aiMessages = [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: [
+            {
+              type: "image_url",
+              image_url: { url: `data:${mediaType};base64,${base64}`, detail: "high" }
+            },
+            {
+              type: "text",
+              text: "Analiza esta imagen del documento. Devuelve solo el JSON solicitado."
+            }
+          ]
+        }
+      ];
+    }
+
+    // ── 5. Llamar a OpenAI ────────────────────────────────────
+    let aiResult = { status: 'reviewing', feedback: 'No se pudo procesar el documento automáticamente.' };
+    try {
+      const aiResponse = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         response_format: { type: "json_object" },
-        messages
-      };
-    }
-
-    // ── 5. Llamar a OpenAI ──
-    let aiResult = { status: 'reviewing', feedback: 'No se pudo procesar el documento.' };
-    try {
-      const aiResponse = await openai.chat.completions.create(aiInput);
+        messages: aiMessages
+      });
       const rawContent = aiResponse.choices[0].message.content;
-      console.log("OpenAI raw response:", rawContent);
-      aiResult = JSON.parse(rawContent);
+      console.log("OpenAI response:", rawContent);
+      const parsed = JSON.parse(rawContent);
+      if (['approved', 'rejected', 'reviewing'].includes(parsed.status)) {
+        aiResult = parsed;
+      }
     } catch (aiError) {
-      console.error("OpenAI call failed:", aiError);
+      console.error("OpenAI call failed:", aiError.message);
     }
 
-    // Normalizar el status por si la IA devuelve algo inesperado
-    const validStatuses = ['approved', 'rejected', 'reviewing'];
-    if (!validStatuses.includes(aiResult.status)) {
-      aiResult.status = 'reviewing';
-    }
-
-    // ── 6. Actualizar la DB y notificar según el resultado ──
+    // ── 6. Actualizar DB y notificar ──────────────────────────
     if (documentId) {
       if (aiResult.status === 'approved') {
         await supabase.from('tc_documents').update({
@@ -264,8 +274,7 @@ Devuelve ESTRICTAMENTE este JSON:
 
         await supabase.from('tc_messages').insert({
           transaction_id: transactionId,
-          sender_name: 'ZHomes AI',
-          sender_role: 'system',
+          sender_name: 'ZHomes AI', sender_role: 'system',
           content: `✅ Documento Aprobado Automáticamente:\n\n${aiResult.feedback}`,
           message_type: 'document_update',
         });
@@ -277,7 +286,7 @@ Devuelve ESTRICTAMENTE este JSON:
           is_alert: false,
         });
 
-        // Email de confirmación via Resend
+        // Email de confirmación
         if (process.env.RESEND_API_KEY) {
           try {
             await fetch('https://api.resend.com/emails', {
@@ -296,9 +305,9 @@ Devuelve ESTRICTAMENTE este JSON:
                       <h1 style="color: #fff; margin: 0; font-size: 20px;">ZHomes AI — Documento Aprobado</h1>
                     </div>
                     <div style="background: #f8fafc; padding: 24px; border-radius: 0 0 8px 8px; border: 1px solid #e2e8f0;">
-                      <p style="font-size: 16px;">El siguiente documento ha sido <strong style="color: #16a34a;">aprobado automáticamente</strong> por nuestro sistema de IA:</p>
+                      <p>El siguiente documento ha sido <strong style="color: #16a34a;">aprobado automáticamente</strong>:</p>
                       <p style="background: #fff; border: 1px solid #e2e8f0; border-radius:6px; padding: 12px; font-weight: bold;">${fileName}</p>
-                      <h3 style="color: #0f172a;">Resumen del documento:</h3>
+                      <h3>Resumen del documento:</h3>
                       <div style="background: #fff; border-left: 4px solid #16a34a; padding: 12px 16px; border-radius: 4px;">
                         ${aiResult.feedback.replace(/\n/g, '<br />')}
                       </div>
@@ -309,9 +318,9 @@ Devuelve ESTRICTAMENTE este JSON:
                 `
               })
             });
-            console.log("Approval email sent via Resend.");
+            console.log("Approval email sent.");
           } catch (emailErr) {
-            console.error("Resend email failed:", emailErr);
+            console.error("Resend failed:", emailErr.message);
           }
         }
 
@@ -323,8 +332,7 @@ Devuelve ESTRICTAMENTE este JSON:
 
         await supabase.from('tc_messages').insert({
           transaction_id: transactionId,
-          sender_name: 'ZHomes AI',
-          sender_role: 'system',
+          sender_name: 'ZHomes AI', sender_role: 'system',
           content: `❌ Documento Rechazado:\n\n${aiResult.feedback}`,
           message_type: 'document_update',
         });
@@ -337,7 +345,7 @@ Devuelve ESTRICTAMENTE este JSON:
         });
 
       } else {
-        // reviewing — no se pudo determinar, se escala a revisión manual
+        // reviewing
         await supabase.from('tc_documents').update({
           ai_feedback: aiResult.feedback,
           status: 'reviewing'
@@ -345,8 +353,7 @@ Devuelve ESTRICTAMENTE este JSON:
 
         await supabase.from('tc_messages').insert({
           transaction_id: transactionId,
-          sender_name: 'ZHomes AI',
-          sender_role: 'system',
+          sender_name: 'ZHomes AI', sender_role: 'system',
           content: `🔎 Revisión Manual Requerida:\n\n${aiResult.feedback}`,
           message_type: 'document_update',
         });
