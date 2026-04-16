@@ -93,9 +93,29 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
     }
   };
 
-  const handleForward = (text) => {
+  const handleForward = async (text) => {
     if (onForwardToClient) {
       onForwardToClient(text);
+    } else {
+      if (!activeTxId) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const senderName = user?.user_metadata?.full_name || user?.email || 'Agente';
+        const senderRole = user?.user_metadata?.role || 'realtor';
+  
+        await supabase.from('tc_messages').insert({
+          transaction_id: activeTxId,
+          sender_id:      user?.id,
+          sender_name:    senderName,
+          sender_role:    senderRole,
+          content:        `🤖 Nota de ${senderName}:\n\n${text}`,
+          message_type:   'ai_forward',
+        });
+        alert("Enviado al chat del cliente exitosamente.");
+      } catch (err) {
+        console.error('[Copilot] Error reenviando mensaje de IA:', err);
+        alert("Error al reenviar el mensaje.");
+      }
     }
     setIsOpen(false);
   };
@@ -140,7 +160,7 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
             </div>
             
             {/* Si es respuesta de máquina, mostramos botón de transferir */}
-            {m.role === 'assistant' && m.id !== 'welcome' && onForwardToClient && (
+            {m.role === 'assistant' && m.id !== 'welcome' && (
               <button
                 className="ai-forward-btn"
                 onClick={() => handleForward(m.text)}

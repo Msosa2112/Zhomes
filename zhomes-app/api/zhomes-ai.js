@@ -93,6 +93,22 @@ export default async function handler(req, res) {
                 return res.status(500).json({ error: "Failed to query database context" });
             }
 
+            let dbContext = "No se encontraron detalles de la base de datos para esta transacción.";
+            if (transactionId) {
+                const { data: tx } = await supabase.from('tc_transactions').select('*').eq('id', transactionId).maybeSingle();
+                const { data: events } = await supabase.from('tc_events').select('*').eq('transaction_id', transactionId).order('due_date', { ascending: true });
+                
+                if (tx) {
+                    dbContext = `Detalles de Transacción:\n- Dirección: ${tx.property_address}\n- Estado: ${tx.status}\n- Precio: $${tx.price || 'N/A'}\n- Fecha de Cierre: ${tx.closing_date || 'N/A'}\n- Comprador: ${tx.buyer_name || 'N/A'}\n- Vendedor: ${tx.seller_name || 'N/A'}\n\n`;
+                }
+                if (events && events.length > 0) {
+                    dbContext += `Eventos y Plazos (Timeline):\n`;
+                    events.forEach(e => {
+                        dbContext += `- [${e.status}] ${e.title} (Vence: ${e.due_date})\n`;
+                    });
+                }
+            }
+
             let contextContent = "No se encontraron documentos relevantes en la base de datos.";
             let citations = [];
 
@@ -103,8 +119,8 @@ export default async function handler(req, res) {
                 }).join("\n---\n");
             }
 
-            system_message = "You are an expert real estate transaction coordinator assistant. You answer questions based ONLY on the provided document excerpts. If the answer is not in the excerpts, simply state you don't know based on the current documents. Do not make up information or make assumptions. Reply in Spanish. Return a JSON object with two fields: 'answer' (string) and 'citations' (array of strings exactly matching the document filenames provided).";
-            prompt = `User Question: ${query}\n\nRelevant Document Excerpts:\n${contextContent}`;
+            system_message = "You are an expert real estate transaction coordinator assistant. You answer questions using the provided database transaction context and document excerpts. If the answer is completely missing, state that you don't know based on current data. Do not invent information. Reply in Spanish. Return a JSON object with two fields: 'answer' (string) and 'citations' (array of strings, match filenames provided).";
+            prompt = `User Question: ${query}\n\n=== Contexto de la Base de Datos ===\n${dbContext}\n\n=== Extractos de Documentos Relacionados ===\n${contextContent}`;
         } else {
             return res.status(400).json({ error: "Invalid action" });
         }
