@@ -27,6 +27,11 @@ export default async function handler(req, res) {
                 return res.status(200).json({
                     message: `¡Hola ${data?.clientData?.name?.split(' ')[0] || ''}! Noté que estabas viendo propiedades recientemente. Tengo justo un par de "pocket listings" off-market que encajan 100% con tu estilo. ¿Te late si te las mando por aquí o coordinamos una visita rápida esta semana? `
                 });
+            } else if (action === "deal_query") {
+                return res.status(200).json({
+                    answer: "Según los documentos indexados, la fecha de cierre es el 30 de abril de 2026 y el earnest money deposit es de $7,500.00.",
+                    citations: ["purchase_agreement_TC-2026-0042.txt"]
+                });
             } else if (action === "broker_compliance") {
                 return res.status(200).json({
                     allPassed: true,
@@ -60,6 +65,46 @@ export default async function handler(req, res) {
             const { clientData } = data;
             system_message = "You are an expert real estate CRM assistant. Given the client details, suggest a short, engaging WhatsApp message to follow up. Reply in Spanish. Return a JSON object with a single field 'message' (string).";
             prompt = `Client Details:\nName: ${clientData.name}\nStatus: ${clientData.status}\nLast Active: ${clientData.lastActive}\nInterested in: ${clientData.interest}`;
+        } else if (action === "deal_query") {
+            const { query, transactionId } = data;
+            
+            // Generate embedding for the user's query
+            const embeddingResponse = await openai.embeddings.create({
+                model: "text-embedding-3-small",
+                input: query,
+            });
+            const queryEmbedding = embeddingResponse.data[0].embedding;
+
+            const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+            const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+            const { createClient } = await import('@supabase/supabase-js');
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Fetch closest matching chunks via our postgres function
+            const { data: documents, error } = await supabase.rpc('match_document_chunks', {
+                query_embedding: queryEmbedding,
+                match_threshold: 0.25,
+                match_count: 5,
+                p_transaction_id: transactionId
+            });
+
+            if (error) {
+                console.error("Match error:", error);
+                return res.status(500).json({ error: "Failed to query database context" });
+            }
+
+            let contextContent = "No se encontraron documentos relevantes en la base de datos.";
+            let citations = [];
+
+            if (documents && documents.length > 0) {
+                contextContent = documents.map((doc) => {
+                    if (!citations.includes(doc.file_name)) citations.push(doc.file_name);
+                    return `[Document: ${doc.file_name}]\nExcerpt: ${doc.content}\n`;
+                }).join("\n---\n");
+            }
+
+            system_message = "You are an expert real estate transaction coordinator assistant. You answer questions based ONLY on the provided document excerpts. If the answer is not in the excerpts, simply state you don't know based on the current documents. Do not make up information or make assumptions. Reply in Spanish. Return a JSON object with two fields: 'answer' (string) and 'citations' (array of strings exactly matching the document filenames provided).";
+            prompt = `User Question: ${query}\n\nRelevant Document Excerpts:\n${contextContent}`;
         } else {
             return res.status(400).json({ error: "Invalid action" });
         }

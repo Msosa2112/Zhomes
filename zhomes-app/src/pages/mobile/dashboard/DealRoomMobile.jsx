@@ -8,6 +8,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../../lib/supabaseClient'
 import { DOCUMENT_CATEGORIES, DOCUMENT_STATUSES, TRANSACTION_STATUSES } from '../../../data/tcDocumentTemplates'
+import AICopilotWidget from '../../../components/AICopilotWidget'
 import './DealRoomMobile.css'
 
 const TABS = ['Checklist Interno', 'Chat', 'Detalles', 'AI']
@@ -200,6 +201,20 @@ export default function DealRoomMobile() {
         is_alert:       false,
       })
 
+      // Inyección proactiva del AI Feedback al aprobar el documento
+      if (newStatus === 'approved') {
+        const docObj = dealDocs.find((d) => d.id === docId);
+        if (docObj?.ai_feedback) {
+          await supabase.from('tc_messages').insert({
+            transaction_id: selectedDeal.id,
+            sender_name:    'ZHomes AI',
+            sender_role:    'system',
+            content:        `✨ Resumen Automático de "${docName}":\n\n${docObj.ai_feedback}`,
+            message_type:   'document_update',
+          });
+        }
+      }
+
     } catch (err) {
       console.error('[DealRoom] Error actualizando estado:', err)
       alert("Error al actualizar el documento.")
@@ -229,6 +244,29 @@ export default function DealRoomMobile() {
       console.error('[DealRoom] Error enviando mensaje:', err)
     } finally {
       setSendingMsg(false)
+    }
+  }
+
+  // Guardar mensaje de IA reenviado al chat
+  const handleForwardAiMessage = async (content) => {
+    if (!selectedDeal) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      const senderName = user?.user_metadata?.full_name || user?.email || 'Agente'
+      const senderRole = user?.user_metadata?.role || 'realtor'
+
+      await supabase.from('tc_messages').insert({
+        transaction_id: selectedDeal.id,
+        sender_id:      user?.id,
+        sender_name:    senderName,
+        sender_role:    senderRole,
+        content:        `✨ Nota de ${senderName}:\n\n${content}`,
+        message_type:   'ai_forward',
+      })
+      alert("Enviado al chat del cliente exitosamente.")
+    } catch (err) {
+      console.error('[DealRoom] Error reenviando mensaje de IA:', err)
+      alert("Error al reenviar el mensaje.")
     }
   }
 
@@ -301,6 +339,24 @@ export default function DealRoomMobile() {
             : d
         )
       )
+
+      // 6. Proactive Backend Vector Processing (Background)
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Data = reader.result.split(',')[1];
+        fetch('/api/process-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileBase64: base64Data,
+            fileName: file.name,
+            transactionId: selectedDeal.id,
+            documentId: pendingDocId
+          })
+        }).catch(err => console.error("Error trigger AI process:", err));
+      };
+      reader.readAsDataURL(file);
+
     } catch (err) {
       console.error('[DealRoom] Error subiendo documento:', err)
     } finally {
@@ -955,6 +1011,14 @@ export default function DealRoomMobile() {
         )}
 
       </div>
+
+      {/* RENDER PRIVATE AI COPILOT FOR REALTORS AND BROKERS */}
+      {(userRole === 'realtor' || userRole === 'broker') && selectedDeal && (
+        <AICopilotWidget 
+          transactionId={selectedDeal.id} 
+          onForwardToClient={handleForwardAiMessage} 
+        />
+      )}
     </div>
   )
 }
