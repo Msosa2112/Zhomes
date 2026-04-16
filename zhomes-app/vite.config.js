@@ -107,6 +107,10 @@ export default defineConfig(({ mode }) => {
           target: 'https://api.walkscore.com',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/walkscore/, '/score')
+        },
+        '/api/process-document': {
+          target: 'https://zhomesapp.com',
+          changeOrigin: true
         }
       }
     },

@@ -342,7 +342,7 @@ export default function DealRoomMobile() {
 
       // 6. Synchronous Backend Vector Processing (AI Analysis Waiter UI)
       try {
-        await fetch('/api/process-document', {
+        const aiRes = await fetch('/api/process-document', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -352,8 +352,14 @@ export default function DealRoomMobile() {
             documentId: pendingDocId
           })
         });
+        
+        if (!aiRes.ok) {
+          const aiText = await aiRes.text();
+          throw new Error(`El servidor falló al analizar con IA: ${aiText}`);
+        }
       } catch (err) {
         console.error("Error trigger AI process:", err);
+        throw err;
       }
 
       // 7. Automatically reflect the new AI-approved status
@@ -760,7 +766,7 @@ export default function DealRoomMobile() {
                               style={{ opacity: isUploading ? 0.6 : 1 }}
                             >
                               {isUploading ? <Loader2 size={14} className="ai-loading-icon" /> : <Upload size={14} />}
-                              {isUploading ? ' Subiendo...' : ' Subir'}
+                              {isUploading ? ' Analizando IA...' : ' Subir'}
                             </button>
                           )}
   
