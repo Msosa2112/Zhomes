@@ -25,42 +25,22 @@ function getMediaType(fileName) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Helper: subir PDF a OpenAI Files API y retornar file_id
+// Helper: subir PDF a OpenAI Files API via SDK y retornar file_id
 // ─────────────────────────────────────────────────────────────
-async function uploadPdfToOpenAI(buffer, fileName, apiKey) {
-  // Use native Node 18 FormData + Blob (no external packages needed)
-  const blob = new Blob([buffer], { type: 'application/pdf' });
-  const form = new FormData();
-  form.append('file', blob, fileName);
-  form.append('purpose', 'assistants');
-
-  const response = await fetch('https://api.openai.com/v1/files', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`
-      // Do NOT set Content-Type here - fetch sets it automatically with boundary
-    },
-    body: form
+async function uploadPdfToOpenAI(openai, buffer, fileName) {
+  const file = await openai.files.create({
+    file: new File([buffer], fileName, { type: 'application/pdf' }),
+    purpose: 'assistants'
   });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`OpenAI Files API upload failed: ${err}`);
-  }
-
-  const data = await response.json();
-  return data.id; // file_id
+  return file.id;
 }
 
 // ─────────────────────────────────────────────────────────────
-// Helper: eliminar archivo de OpenAI Files API (limpieza)
+// Helper: eliminar archivo de OpenAI Files API via SDK
 // ─────────────────────────────────────────────────────────────
-async function deleteOpenAIFile(fileId, apiKey) {
+async function deleteOpenAIFile(openai, fileId) {
   try {
-    await fetch(`https://api.openai.com/v1/files/${fileId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${apiKey}` }
-    });
+    await openai.files.del(fileId);
   } catch (e) {
     console.warn("Could not delete OpenAI file:", e.message);
   }
@@ -181,7 +161,7 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         console.log("Strategy: OpenAI Files API (scanned/protected PDF)");
         let fileId = null;
         try {
-          fileId = await uploadPdfToOpenAI(buffer, fileName, openaiApiKey);
+          fileId = await uploadPdfToOpenAI(openai, buffer, fileName);
           console.log("Uploaded to OpenAI Files API, file_id:", fileId);
 
           aiMessages = [
@@ -219,9 +199,8 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         }
 
         // Limpiar el archivo de OpenAI después de usar
-        if (fileId) {
-          await deleteOpenAIFile(fileId, openaiApiKey);
-        }
+        if (fileId) await deleteOpenAIFile(openai, fileId);
+
       }
 
     } else if (mediaType.startsWith('image/')) {
