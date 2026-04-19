@@ -218,6 +218,7 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
 
     let aiResult = { status: 'reviewing', feedback: 'Error interno al analizar el documento.' };
     let aiErrorDetail = null;
+    let rawAIResponse = null;
     try {
       const aiResponse = await openai.chat.completions.create({
         model,
@@ -225,15 +226,24 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         messages: aiMessages,
         max_tokens: 1000,
       });
-      const rawContent = aiResponse.choices[0].message.content;
-      console.log(`OpenAI (${model}) response:`, rawContent);
-      const parsed = JSON.parse(rawContent);
-      if (['approved', 'rejected', 'reviewing'].includes(parsed.status)) {
-        aiResult = parsed;
+      rawAIResponse = aiResponse.choices[0].message.content;
+      console.log(`OpenAI (${model}) raw response:`, rawAIResponse);
+      const parsed = JSON.parse(rawAIResponse);
+      console.log(`Parsed status: "${parsed.status}"`);
+      // Aceptar status en inglés y español
+      const statusMap = {
+        'approved': 'approved', 'aprobado': 'approved', 'approve': 'approved',
+        'rejected': 'rejected', 'rechazado': 'rejected', 'reject': 'rejected',
+        'reviewing': 'reviewing', 'revision': 'reviewing', 'revisión': 'reviewing',
+      };
+      const normalizedStatus = statusMap[(parsed.status || '').toLowerCase()];
+      if (normalizedStatus) {
+        aiResult = { status: normalizedStatus, feedback: parsed.feedback || parsed.comentarios || parsed.response || JSON.stringify(parsed) };
       }
     } catch (aiError) {
       aiErrorDetail = `[${aiError.status || 'ERR'}] ${aiError.message || String(aiError)} (code: ${aiError.code || 'N/A'})`;
       console.error("OpenAI API call failed:", aiErrorDetail);
+      rawAIResponse = `EXCEPTION: ${aiErrorDetail}`;
       // Para scanned PDFs que fallan con inline, intentar subir a Files API
       if (strategy.includes('inline-base64-pdf')) {
         console.log("Retrying with OpenAI Files API...");
@@ -339,11 +349,9 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         });
 
       } else {
-        // reviewing — mostrar el error real de OpenAI si existe
-        const debugMsg = aiErrorDetail
-          ? `🔎 Error de procesamiento:\n\n${aiResult.feedback}\n\n🛠 Detalle técnico: ${aiErrorDetail}`
-          : `🔎 Revisión Manual Requerida:\n\n${aiResult.feedback}`;
-        await updateDocStatus(supabase, documentId, 'reviewing', aiResult.feedback, null);
+        // reviewing — mostrar debug completo
+        const debugMsg = `🔎 No se pudo determinar el estado del documento.\n\nError: ${aiErrorDetail || 'Ninguno'}\n\nRespuesta OpenAI: ${rawAIResponse || 'Sin respuesta'}\n\nModelo: ${model} | Estrategia: ${strategy}`;
+        await updateDocStatus(supabase, documentId, 'reviewing', debugMsg, null);
         await postChatMessage(supabase, transactionId, debugMsg);
       }
     }
