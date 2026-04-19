@@ -41,8 +41,7 @@ export function PropertiesProvider({ children }) {
                         return true;
                     });
                     setProperties(formattedProps);
-                    const zhomesActive = formattedProps.filter(p => p.exclusive).length;
-                    console.log(` Loaded ${formattedProps.length} active MLS properties (${zhomesActive} ZHomes)`);
+
                 } else {
                     console.warn(' Supabase returned 0 active properties');
                     setProperties([]);
@@ -53,7 +52,7 @@ export function PropertiesProvider({ children }) {
                 if (offMarketProps.length > 0) {
                     const formatted = offMarketProps.map(p => SupabasePropertyService.formatForApp(p));
                     setOffMarketListings(formatted);
-                    console.log(` Loaded ${formatted.length} off-market (app-uploaded) properties`);
+
                 }
 
                 // ── ZHomes Agents ──
@@ -75,7 +74,7 @@ export function PropertiesProvider({ children }) {
                         recentDeals: a.recent_deals || []
                     }));
                     setAgentStats(stats);
-                    console.log(` Loaded ${agents.length} agents from Supabase`);
+
                 } else {
                     console.warn(' Agents table empty, fetching from Spark...');
                     try {
@@ -91,7 +90,7 @@ export function PropertiesProvider({ children }) {
                                 city: a.MemberCity || '', state: a.MemberStateOrProvince || '', source: 'Spark'
                             }));
                             setZhomesAgents(agents);
-                            console.log(` Loaded ${agents.length} agents from Spark (fallback)`);
+
                         }
                     } catch (e) {
                         console.warn(' Could not load agents:', e.message);
@@ -108,7 +107,7 @@ export function PropertiesProvider({ children }) {
                         brokerKey: o.broker_key, mlsId: o.mls_id, status: o.status,
                         source: 'Supabase'
                     });
-                    console.log(` Loaded office: ${o.name}`);
+
                 }
 
             } catch (err) {
@@ -159,10 +158,10 @@ export function PropertiesProvider({ children }) {
             if (error) throw error;
 
             // Add to local state immediately
-            const formatted = SupabasePropertyService.formatForApp(data);
-            setOffMarketListings(prev => [formatted, ...prev]);
-            console.log(' Off Market property saved to Supabase:', data.id);
-            return formatted;
+            const formatted = SupabasePropertyService.formatForApp(data)
+            setOffMarketListings(prev => [formatted, ...prev])
+            return formatted
+
         } catch (err) {
             console.error(' Failed to save off-market property:', err.message);
             // Fallback: add locally

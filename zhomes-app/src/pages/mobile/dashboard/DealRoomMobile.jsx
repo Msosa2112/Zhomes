@@ -11,7 +11,7 @@ import { DOCUMENT_CATEGORIES, DOCUMENT_STATUSES, TRANSACTION_STATUSES } from '..
 import AICopilotWidget from '../../../components/AICopilotWidget'
 import './DealRoomMobile.css'
 
-const TABS = ['Checklist Interno', 'Chat', 'Detalles', 'AI']
+const TABS = ['Checklist Interno', 'Chat', 'Detalles', 'Historial', 'AI']
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const formatPrice = (p) => {
@@ -43,7 +43,8 @@ export default function DealRoomMobile() {
   const [selectedDeal, setSelectedDeal]   = useState(null)
   const [dealDocs, setDealDocs]           = useState([])
   const [dealMessages, setDealMessages]   = useState([])
-  const [tab, setTab]                     = useState('Chat') // Default a Chat por el cliente
+  const [dealEvents, setDealEvents]       = useState([])   // tc_events audit trail
+  const [tab, setTab]                     = useState('Chat')
   const [showAttachMenu, setShowAttachMenu] = useState(false)
 
   // Chat
@@ -342,9 +343,13 @@ export default function DealRoomMobile() {
 
       // 6. Synchronous Backend Vector Processing (AI Analysis Waiter UI)
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         const aiRes = await fetch('/api/process-document', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          },
           body: JSON.stringify({
             filePath: path,
             fileName: file.name,
@@ -978,6 +983,11 @@ export default function DealRoomMobile() {
           </div>
         )}
 
+        {/* ── TAB: HISTORIAL (Audit Trail) ──────────────────────────── */}
+        {tab === 'Historial' && (
+          <HistorialTab dealId={selectedDeal.id} />
+        )}
+
         {/* ── TAB: AI ───────────────────────────────────────────────── */}
         {tab === 'AI' && (
           <div className="mdr-ai-view animate-fadeInUp">
@@ -1048,6 +1058,79 @@ export default function DealRoomMobile() {
           onForwardToClient={handleForwardAiMessage} 
         />
       )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HistorialTab — Audit Trail from tc_events
+// ─────────────────────────────────────────────────────────────────────────────
+const EVENT_META = {
+  document_uploaded:  { label: 'Documento Subido',    color: '#3B82F6', icon: '📄' },
+  document_approved:  { label: 'Documento Aprobado',  color: '#10B981', icon: '✅' },
+  document_rejected:  { label: 'Documento Rechazado', color: '#E31E24', icon: '❌' },
+  ai_analysis_done:   { label: 'Análisis IA',          color: '#8B5CF6', icon: '🤖' },
+  email_sent:         { label: 'Email Enviado',         color: '#F59E0B', icon: '📧' },
+  deadline_alert:     { label: 'Alerta de Deadline',   color: '#EF4444', icon: '⚠️' },
+  status_changed:     { label: 'Estado Cambiado',      color: '#64748B', icon: '🔄' },
+  note_added:         { label: 'Nota Agregada',         color: '#06B6D4', icon: '📝' },
+}
+
+function HistorialTab({ dealId }) {
+  const [events, setEvents]   = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!dealId) return
+    supabase
+      .from('tc_events')
+      .select('*')
+      .eq('transaction_id', dealId)
+      .order('created_at', { ascending: false })
+      .limit(50)
+      .then(({ data }) => { setEvents(data || []); setLoading(false) })
+  }, [dealId])
+
+  if (loading) return (
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 16px' }}>
+      <Loader2 size={24} style={{ color: 'var(--zhomes-red)', animation: 'spin 1s linear infinite' }} />
+    </div>
+  )
+  if (events.length === 0) return (
+    <div style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--text-tertiary)' }}>
+      <Clock size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+      <p style={{ fontSize: 14 }}>No hay actividad registrada para esta transacción.</p>
+    </div>
+  )
+  return (
+    <div className="animate-fadeInUp" style={{ padding: '16px' }}>
+      <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        {events.length} eventos registrados
+      </p>
+      <div style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', left: 19, top: 0, bottom: 0, width: 2, background: 'var(--border-subtle)', zIndex: 0 }} />
+        {events.map((ev, i) => {
+          const meta    = EVENT_META[ev.event_type] || { label: ev.event_type, color: '#6B7280', icon: '•' }
+          const date    = new Date(ev.created_at)
+          const dateStr = date.toLocaleDateString('es-US', { month: 'short', day: 'numeric' })
+          const timeStr = date.toLocaleTimeString('es-US', { hour: '2-digit', minute: '2-digit' })
+          return (
+            <div key={ev.id || i} style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 1 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', flexShrink: 0, background: `${meta.color}15`, border: `2px solid ${meta.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                {meta.icon}
+              </div>
+              <div style={{ flex: 1, background: 'var(--bg-card)', borderRadius: 12, padding: '10px 14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: meta.color }}>{meta.label}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-tertiary)', whiteSpace: 'nowrap', marginLeft: 8 }}>{dateStr} · {timeStr}</span>
+                </div>
+                {ev.description && <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{ev.description}</p>}
+                {ev.actor_name && <span style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4, display: 'block' }}>por {ev.actor_name}</span>}
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

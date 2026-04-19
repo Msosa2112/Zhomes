@@ -60,6 +60,8 @@ import TwilioOptInPage from './pages/public/TwilioOptInPage'
 import PrivacyPolicyPage from './pages/public/PrivacyPolicyPage'
 import TermsConditionsPage from './pages/public/TermsConditionsPage'
 
+// NOTE: CommissionsPageMobile y RealtorCommissionsMobile deshabilitadas — ver política legal NAR Settlement
+
 export default function AppRoutes() {
     const location = useLocation()
 

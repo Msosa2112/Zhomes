@@ -13,7 +13,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_KEY
 )
 
 const N8N_WEBHOOK = process.env.N8N_TC_WEBHOOK_URL // p.ej: https://n8n.zhomesreapp.com/webhook/tc-sms-alert

@@ -50,8 +50,8 @@ export const FCMService = {
     try {
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
-        console.log('Notification permission denied');
         return null;
+
       }
 
       const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY || '';
@@ -70,8 +70,8 @@ export const FCMService = {
               updated_at: new Date().toISOString()
             }, { onConflict: 'user_id' });
         }
-        console.log('FCM Token saved:', token.substring(0, 20) + '...');
         return token;
+
       }
     } catch (error) {
       console.error('FCM token error:', error);
@@ -88,8 +88,8 @@ export const FCMService = {
     if (!messaging) return () => {};
 
     return onMessage(messaging, (payload) => {
-      console.log('Foreground message:', payload);
       callback(payload);
+
     });
   },
 

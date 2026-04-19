@@ -57,7 +57,6 @@ export async function enqueueLeadNotification({
     }
 
     const data = await response.json();
-    console.log(`[LeadNotification]  Encolado con ${data.delayMinutes}min de delay — ID: ${data.messageId}`);
     return { enqueued: true, messageId: data.messageId };
 
   } catch (err) {

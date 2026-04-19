@@ -70,6 +70,14 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(200).end(); return; }
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' });
 
+  // ── Auth guard: validar JWT de Supabase ──────────────────────
+  const authHeader = req.headers['authorization'] || '';
+  const jwt = authHeader.replace('Bearer ', '').trim();
+  if (!jwt) return res.status(401).json({ error: 'No autorizado — falta token de sesión' });
+  // Verificación ligera: el JWT debe tener 3 segmentos (no verificamos firma aquí, Supabase RLS lo hace)
+  if (jwt.split('.').length !== 3) return res.status(401).json({ error: 'Token inválido' });
+
+
   try {
     const { filePath, fileName, transactionId, documentId } = req.body;
 

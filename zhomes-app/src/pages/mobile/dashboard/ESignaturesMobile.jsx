@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
     FileText, Send, CheckCircle2, Clock, AlertCircle, Plus, X,
@@ -320,7 +320,7 @@ export default function ESignaturesMobile() {
                                     </>
                                 )}
                                 {selectedDoc.status === 'signed' && (
-                                    <button className="esign-action-btn blue" onClick={() => alert('El PDF firmado está disponible en el proveedor E-Sign.')}>
+                                    <button className="esign-action-btn blue" onClick={() => window.open('https://docuseal-railway-production-97d8.up.railway.app', '_blank')}>
                                         <Download size={16} /> Descargar PDF
                                     </button>
                                 )}

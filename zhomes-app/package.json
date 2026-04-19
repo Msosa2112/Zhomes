@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "sync": "node scripts/sync-mls.mjs",
-    "sync:status": "node -e \"const s=require('@supabase/supabase-js').createClient('https://elhqcwpqbnxafaepmswl.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsaHFjd3BxYm54YWZhZXBtc3dsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjczNjUxMzMsImV4cCI6MjA0Mjk0MTEzM30.yT5F14NA892OvOH8zethl3Vjqjn80jJ0sQ_FaD20RA4');Promise.all([s.from('mls_properties').select('status'),s.from('zhomes_agents').select('id'),s.from('zhomes_office').select('name')]).then(([p,a,o])=>{const c={};(p.data||[]).forEach(r=>{c[r.status]=(c[r.status]||0)+1});console.log('\\n=== Supabase Status ===');Object.entries(c).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>console.log(' ',k+':',v));console.log('  Agents:',a.data?.length||0);console.log('  Office:',o.data?.[0]?.name||'not synced');console.log('======================\\n')})\""
+    "sync:status": "node scripts/sync-status.mjs",
+
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",

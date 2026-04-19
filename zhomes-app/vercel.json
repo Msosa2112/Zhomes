@@ -16,6 +16,10 @@
     {
       "path": "/api/tc-deadline-check",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/weekly-briefing",
+      "schedule": "0 13 * * 1"
     }
   ],
   "rewrites": [
