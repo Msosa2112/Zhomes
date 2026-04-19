@@ -2,6 +2,21 @@ import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import { buildEmailHtml } from "./_email-brand.js";
+import admin from "firebase-admin";
+
+// ── Inicializar Firebase Admin (HTTP v1) de forma segura ──
+if (!admin.apps.length) {
+  try {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
+    if (Object.keys(serviceAccount).length > 0) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    }
+  } catch (e) {
+    console.error("Firebase admin init error:", e.message);
+  }
+}
 
 export const config = { maxDuration: 60 };
 
@@ -64,12 +79,11 @@ async function sendEmail({ to, subject, html }) {
 
 
 // ─────────────────────────────────────────────────────────────
-// Helper: enviar FCM push notification vía Google FCM HTTP v1
+// Helper: enviar FCM push notification vía HTTP v1 (Firebase Admin)
 // Lee el token del usuario desde la tabla push_tokens de Supabase
 // ─────────────────────────────────────────────────────────────
 async function sendFCMPush(supabase, userId, { title, body, data = {} }) {
-  const fcmKey = process.env.FIREBASE_SERVER_KEY;
-  if (!fcmKey || !userId) return;
+  if (!admin.apps.length || !userId) return;
   try {
     // Buscar token del usuario
     const { data: tokenRow } = await supabase
@@ -77,23 +91,26 @@ async function sendFCMPush(supabase, userId, { title, body, data = {} }) {
       .select('token')
       .eq('user_id', userId)
       .single();
+      
     if (!tokenRow?.token) return;
 
-    await fetch('https://fcm.googleapis.com/fcm/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `key=${fcmKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: tokenRow.token,
-        notification: { title, body, icon: '/assets/logo/fav.png', badge: '/assets/logo/fav.png' },
-        data,
-        priority: 'high',
-      }),
+    // Convert numeric IDs to strings for FCM data payload
+    const stringData = {};
+    for (const key in data) { stringData[key] = String(data[key]); }
+
+    await admin.messaging().send({
+      token: tokenRow.token,
+      notification: { title, body },
+      data: stringData,
+      webpush: {
+        notification: {
+          icon: 'https://zhomes.vercel.app/assets/logo/fav.png',
+          badge: 'https://zhomes.vercel.app/assets/logo/fav.png',
+        }
+      }
     });
   } catch (e) {
-    // FCM failures are non-critical — don't block the main flow
+    console.error("FCM Push Error:", e);
   }
 }
 

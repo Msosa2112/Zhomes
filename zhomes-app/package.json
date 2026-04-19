@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "sync": "node scripts/sync-mls.mjs",
-    "sync:status": "node scripts/sync-status.mjs",
-
+    "sync:status": "node scripts/sync-status.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
@@ -31,6 +30,7 @@
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^12.11.0",
+    "firebase-admin": "^13.8.0",
     "i18next": "^26.0.1",
     "i18next-browser-languagedetector": "^8.2.1",
     "ionicons": "^8.0.13",
