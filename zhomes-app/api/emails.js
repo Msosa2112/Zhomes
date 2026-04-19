@@ -1,3 +1,5 @@
+import { zhomesLogo, zhomesFooter } from './_email-brand.js';
+
 /**
  * api/emails.js — ZHomes Email System vía Resend
  *
@@ -24,44 +26,19 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_EMAIL     = 'ZHomes TC <info@zhomesapp.com>'
 const BROKER_EMAIL   = 'zhomesreapp@gmail.com'
 
-// ── Templates HTML ────────────────────────────────────────────────────────────
+// ── Estilos internos (dark mode para emails de sistema) ──────────────────────
+const baseStyle      = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e8e8e8;padding:0;margin:0;`
+const containerStyle = `max-width:600px;margin:0 auto;background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;`
+const headerStyle    = `background:#18191a;padding:32px 32px 24px;text-align:center;`
+const bodyStyle      = `padding:32px;`
+const badgeStyle = (color) => `display:inline-block;background:${color}22;color:${color};border:1px solid ${color}44;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;`
+const cardStyle  = `background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:20px;margin:16px 0;`
+const btnStyle   = (color='#c0392b') => `display:inline-block;background:${color};color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;margin-top:20px;`
 
-const baseStyle = `
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #0a0a0a; color: #e8e8e8; padding: 0; margin: 0;
-`
-const containerStyle = `
-  max-width: 600px; margin: 0 auto; background: #111; 
-  border: 1px solid #222; border-radius: 12px; overflow: hidden;
-`
-const headerStyle = `
-  background: #18191a;
-  padding: 32px 32px 24px; text-align: center;
-`
-const bodyStyle = `
-  padding: 32px;
-`
-const footerStyle = `
-  background: #0a0a0a; padding: 24px 32px; 
-  text-align: center; color: #666; font-size: 12px;
-  border-top: 1px solid #222;
-`
-const badgeStyle = (color) => `
-  display: inline-block; background: ${color}22; color: ${color};
-  border: 1px solid ${color}44; border-radius: 6px; 
-  padding: 4px 12px; font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px;
-`
-const cardStyle = `
-  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
-  padding: 20px; margin: 16px 0;
-`
-const btnStyle = (color='#c0392b') => `
-  display: inline-block; background: ${color}; color: white;
-  padding: 12px 28px; border-radius: 8px; text-decoration: none;
-  font-weight: 700; font-size: 14px; margin-top: 20px;
-`
 
+// Alias para compatibilidad con templates existentes
+const logo   = () => zhomesLogo();
+const footer = () => zhomesFooter();
 
 function lucide(name, color = '#ffffff', size = 16) {
   const icons = {
