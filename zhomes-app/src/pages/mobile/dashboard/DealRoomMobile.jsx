@@ -823,9 +823,11 @@ export default function DealRoomMobile() {
                 </div>
               )}
               {dealMessages.map((m) => {
-                const isSystem = m.message_type !== 'text'
+                const isAI     = m.sender_role === 'system' && m.sender_name === 'ZHomes AI'
+                const isSystem = m.message_type !== 'text' && !isAI
                 const isMine   = m.sender_role === 'broker' // ajustar según rol actual
 
+                // Notificaciones del sistema (subida de doc, etc) → pill pequeño
                 if (isSystem) {
                   return (
                     <div key={m.id} style={{ textAlign: 'center', margin: '8px 0' }}>
@@ -835,6 +837,25 @@ export default function DealRoomMobile() {
                         borderRadius: '20px', border: '1px solid var(--border-subtle)'
                       }}>
                         {m.content}
+                      </span>
+                    </div>
+                  )
+                }
+
+                // Mensajes del AI → burbuja izquierda con nombre "ZHomes AI"
+                if (isAI) {
+                  return (
+                    <div key={m.id} className="mdr-msg">
+                      <span className="mdr-sender" style={{ color: 'var(--accent)', fontWeight: 600 }}>ZHomes AI</span>
+                      <div className="mdr-bubble" style={{
+                        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                        color: '#f1f5f9',
+                        borderRadius: '0 16px 16px 16px',
+                      }}>
+                        {m.content}
+                      </div>
+                      <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                        {new Date(m.created_at).toLocaleTimeString('es-US', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                   )

@@ -42,6 +42,84 @@ async function updateDocStatus(supabase, documentId, status, feedback) {
 // ─────────────────────────────────────────────────────────────
 // Helper: enviar email vía Resend
 // ─────────────────────────────────────────────────────────────
+// Helper: wrapper de email con branding ZHomes
+// ─────────────────────────────────────────────────────────────
+function buildEmailHtml({ headerColor = '#0f172a', headerLabel, bodyHtml, ctaUrl = 'https://zhomesapp.com/tc-room', ctaLabel = 'Ver en ZHomes Deal Room →' }) {
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10)">
+
+        <!-- HEADER -->
+        <tr>
+          <td style="background:${headerColor};padding:28px 32px">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <!-- Logo ZHomes (texto+ícono) -->
+                  <table cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background:#3b82f6;border-radius:8px;width:38px;height:38px;text-align:center;vertical-align:middle">
+                        <span style="color:#fff;font-size:20px;font-weight:900;line-height:38px">Z</span>
+                      </td>
+                      <td style="padding-left:10px;vertical-align:middle">
+                        <span style="color:#fff;font-size:18px;font-weight:700;letter-spacing:-0.3px">ZHomes</span>
+                        <span style="color:#94a3b8;font-size:13px;display:block;margin-top:1px">Transaction Coordinator</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td align="right" style="vertical-align:middle">
+                  <span style="color:#94a3b8;font-size:12px">tc@zhomesapp.com</span>
+                </td>
+              </tr>
+            </table>
+            <p style="color:#cbd5e1;font-size:15px;margin:20px 0 0;font-weight:600">${headerLabel}</p>
+          </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+          <td style="background:#ffffff;padding:32px">
+            ${bodyHtml}
+            <br/>
+            <a href="${ctaUrl}" style="display:inline-block;background:#0f172a;color:#ffffff;padding:13px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;margin-top:8px">${ctaLabel}</a>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="background:#f8fafc;padding:20px 32px;border-top:1px solid #e2e8f0">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <p style="margin:0;color:#64748b;font-size:12px;line-height:1.6">
+                    <strong>ZHomes Real Estate · Transaction Coordinator</strong><br/>
+                    Louisville, Kentucky · <a href="https://zhomesapp.com" style="color:#3b82f6;text-decoration:none">zhomesapp.com</a><br/>
+                    ¿Preguntas? Responde este correo o usa el chat en tu Deal Room.
+                  </p>
+                </td>
+                <td align="right" style="vertical-align:top">
+                  <p style="margin:0;color:#cbd5e1;font-size:11px">Enviado por ZHomes AI</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Helper: enviar email vía Resend
+// ─────────────────────────────────────────────────────────────
 async function sendEmail({ to, subject, html }) {
   if (!process.env.RESEND_API_KEY) return;
   try {
@@ -59,6 +137,7 @@ async function sendEmail({ to, subject, html }) {
     console.error(`Email to ${to} failed:`, e.message);
   }
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // MAIN HANDLER
@@ -288,52 +367,44 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
           is_alert: false,
         });
 
-        // FIX 3: Email al CLIENTE
+        // Email al CLIENTE (aprobado)
         if (clientEmail) {
           await sendEmail({
             to: clientEmail,
             subject: `✅ Documento aprobado: ${docName}`,
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-                <div style="background:#0f172a;padding:24px;border-radius:8px 8px 0 0">
-                  <h1 style="color:#fff;margin:0;font-size:20px">ZHomes — Documento Aprobado ✅</h1>
+            html: buildEmailHtml({
+              headerColor: '#166534',
+              headerLabel: '✅ Tu documento fue aprobado',
+              ctaLabel: 'Ver mi Deal Room →',
+              bodyHtml: `
+                <p style="color:#333;font-size:15px">Hola <strong>${clientName}</strong>,</p>
+                <p style="color:#333;font-size:15px">Tu documento <strong>${docName}</strong> para la propiedad <strong>${address}</strong> fue revisado y <strong style="color:#16a34a">aprobado</strong>. Todo está en orden.</p>
+                <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 18px;border-radius:6px;color:#166534;font-size:14px;line-height:1.6;margin:16px 0">
+                  ${aiResult.feedback}
                 </div>
-                <div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;border:1px solid #e2e8f0">
-                  <p>Hola ${clientName},</p>
-                  <p>Tu documento <strong>${docName}</strong> para la propiedad <strong>${address}</strong> fue revisado y <strong style="color:#16a34a">aprobado</strong>. Todo está en orden.</p>
-                  <p>${aiResult.feedback}</p>
-                  <br/>
-                  <a href="https://zhomesapp.com/tc-room" style="display:inline-block;background:#0f172a;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Ver mi Deal Room →</a>
-                  <br/><br/>
-                  <p style="color:#64748b;font-size:13px">Si tienes preguntas, responde este correo o escríbenos en el chat de tu Deal Room.</p>
-                </div>
-              </div>
-            `,
+              `,
+            }),
           });
         }
 
-        // FIX 3: Email al REALTOR con análisis completo
+        // Email al REALTOR con análisis completo (aprobado)
         if (realtorEmail) {
           await sendEmail({
             to: realtorEmail,
             subject: `✅ [ZHomes TC] Documento aprobado: ${docName} — ${address}`,
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-                <div style="background:#0f172a;padding:24px;border-radius:8px 8px 0 0">
-                  <h1 style="color:#fff;margin:0;font-size:20px">ZHomes TC — Documento Aprobado</h1>
+            html: buildEmailHtml({
+              headerColor: '#0f172a',
+              headerLabel: `Documento aprobado: ${docName}`,
+              ctaLabel: 'Ver en TC Dashboard →',
+              bodyHtml: `
+                <p style="color:#333;font-size:15px">Hola <strong>${realtorName}</strong>,</p>
+                <p style="color:#333;font-size:15px">El documento <strong>${docName}</strong> de la transacción <strong>${address}</strong> fue aprobado automáticamente por ZHomes AI.</p>
+                <h3 style="color:#0f172a;font-size:14px;margin:20px 0 8px">Resumen del análisis:</h3>
+                <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 18px;border-radius:6px;color:#166534;font-size:14px;line-height:1.6">
+                  ${aiResult.feedback}
                 </div>
-                <div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;border:1px solid #e2e8f0">
-                  <p>Hola ${realtorName},</p>
-                  <p>El documento <strong>${docName}</strong> de la transacción <strong>${address}</strong> fue aprobado automáticamente.</p>
-                  <h3>Resumen del análisis:</h3>
-                  <div style="background:#fff;border-left:4px solid #16a34a;padding:12px 16px;border-radius:4px">
-                    ${aiResult.feedback}
-                  </div>
-                  <br/>
-                  <a href="https://zhomesapp.com/tc-room" style="display:inline-block;background:#0f172a;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Ver en TC Dashboard →</a>
-                </div>
-              </div>
-            `,
+              `,
+            }),
           });
         }
 
@@ -352,52 +423,46 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
           is_alert: true,
         });
 
-        // Email al cliente sobre rechazo
+        // Email al CLIENTE (rechazado)
         if (clientEmail) {
           await sendEmail({
             to: clientEmail,
             subject: `⚠️ Documento requiere corrección: ${docName}`,
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-                <div style="background:#7f1d1d;padding:24px;border-radius:8px 8px 0 0">
-                  <h1 style="color:#fff;margin:0;font-size:20px">Documento Requiere Corrección</h1>
+            html: buildEmailHtml({
+              headerColor: '#7f1d1d',
+              headerLabel: '⚠️ Tu documento requiere una corrección',
+              ctaLabel: 'Ir a mi Deal Room →',
+              ctaUrl: 'https://zhomesapp.com/tc-room',
+              bodyHtml: `
+                <p style="color:#333;font-size:15px">Hola <strong>${clientName}</strong>,</p>
+                <p style="color:#333;font-size:15px">Revisamos tu documento <strong>${docName}</strong> y necesita una corrección antes de continuar con el cierre:</p>
+                <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px 18px;border-radius:6px;color:#991b1b;font-size:14px;line-height:1.6;margin:16px 0">
+                  ${aiResult.feedback}
                 </div>
-                <div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;border:1px solid #e2e8f0">
-                  <p>Hola ${clientName},</p>
-                  <p>Revisamos tu documento <strong>${docName}</strong> y necesita una corrección antes de continuar:</p>
-                  <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:12px 16px;border-radius:4px">
-                    ${aiResult.feedback}
-                  </div>
-                  <br/>
-                  <p>Por favor corrígelo y súbelo de nuevo en tu Deal Room.</p>
-                  <a href="https://zhomesapp.com/tc-room" style="display:inline-block;background:#7f1d1d;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Ir a mi Deal Room →</a>
-                </div>
-              </div>
-            `,
+                <p style="color:#64748b;font-size:14px">Por favor corrígelo y súbelo de nuevo en tu Deal Room.</p>
+              `,
+            }),
           });
         }
 
-        // Email al realtor sobre rechazo
+        // Email al REALTOR (rechazado)
         if (realtorEmail) {
           await sendEmail({
             to: realtorEmail,
             subject: `⚠️ [ZHomes TC] Documento rechazado: ${docName} — ${address}`,
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333">
-                <div style="background:#7f1d1d;padding:24px;border-radius:8px 8px 0 0">
-                  <h1 style="color:#fff;margin:0;font-size:20px">ZHomes TC — Documento Rechazado</h1>
+            html: buildEmailHtml({
+              headerColor: '#7f1d1d',
+              headerLabel: `Documento rechazado: ${docName}`,
+              ctaLabel: 'Ver en TC Dashboard →',
+              ctaUrl: 'https://zhomesapp.com/tc-room',
+              bodyHtml: `
+                <p style="color:#333;font-size:15px">Hola <strong>${realtorName}</strong>,</p>
+                <p style="color:#333;font-size:15px">El documento <strong>${docName}</strong> de la transacción <strong>${address}</strong> fue rechazado por ZHomes AI.</p>
+                <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px 18px;border-radius:6px;color:#991b1b;font-size:14px;line-height:1.6;margin:16px 0">
+                  ${aiResult.feedback}
                 </div>
-                <div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;border:1px solid #e2e8f0">
-                  <p>Hola ${realtorName},</p>
-                  <p>El documento <strong>${docName}</strong> de la transacción <strong>${address}</strong> fue rechazado.</p>
-                  <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:12px 16px;border-radius:4px">
-                    ${aiResult.feedback}
-                  </div>
-                  <br/>
-                  <a href="https://zhomesapp.com/tc-room" style="display:inline-block;background:#7f1d1d;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Ver en TC Dashboard →</a>
-                </div>
-              </div>
-            `,
+              `,
+            }),
           });
         }
 
