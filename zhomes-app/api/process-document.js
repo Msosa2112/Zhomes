@@ -238,7 +238,10 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
       };
       const normalizedStatus = statusMap[(parsed.status || '').toLowerCase()];
       if (normalizedStatus) {
-        aiResult = { status: normalizedStatus, feedback: parsed.feedback || parsed.comentarios || parsed.response || JSON.stringify(parsed) };
+        // Asegurar que feedback SIEMPRE sea un string
+        const toStr = (v) => v == null ? '' : (typeof v === 'string' ? v : JSON.stringify(v));
+        const feedbackRaw = parsed.feedback ?? parsed.comentarios ?? parsed.response ?? parsed;
+        aiResult = { status: normalizedStatus, feedback: toStr(feedbackRaw) };
       }
     } catch (aiError) {
       aiErrorDetail = `[${aiError.status || 'ERR'}] ${aiError.message || String(aiError)} (code: ${aiError.code || 'N/A'})`;
