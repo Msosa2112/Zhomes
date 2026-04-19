@@ -216,7 +216,8 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
     // gpt-4o-mini para texto plano (más barato)
     const model = strategy.startsWith("text-only") ? "gpt-4o-mini" : "gpt-4o";
 
-    let aiResult = { status: 'reviewing', feedback: 'No se pudo procesar el documento automáticamente.' };
+    let aiResult = { status: 'reviewing', feedback: 'Error interno al analizar el documento.' };
+    let aiErrorDetail = null;
     try {
       const aiResponse = await openai.chat.completions.create({
         model,
@@ -231,7 +232,8 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         aiResult = parsed;
       }
     } catch (aiError) {
-      console.error("OpenAI API call failed:", aiError.status, aiError.message, aiError.code);
+      aiErrorDetail = `[${aiError.status || 'ERR'}] ${aiError.message || String(aiError)} (code: ${aiError.code || 'N/A'})`;
+      console.error("OpenAI API call failed:", aiErrorDetail);
       // Para scanned PDFs que fallan con inline, intentar subir a Files API
       if (strategy.includes('inline-base64-pdf')) {
         console.log("Retrying with OpenAI Files API...");
@@ -337,9 +339,12 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
         });
 
       } else {
-        // reviewing
+        // reviewing — mostrar el error real de OpenAI si existe
+        const debugMsg = aiErrorDetail
+          ? `🔎 Error de procesamiento:\n\n${aiResult.feedback}\n\n🛠 Detalle técnico: ${aiErrorDetail}`
+          : `🔎 Revisión Manual Requerida:\n\n${aiResult.feedback}`;
         await updateDocStatus(supabase, documentId, 'reviewing', aiResult.feedback, null);
-        await postChatMessage(supabase, transactionId, `🔎 Revisión Manual Requerida:\n\n${aiResult.feedback}`);
+        await postChatMessage(supabase, transactionId, debugMsg);
       }
     }
 
