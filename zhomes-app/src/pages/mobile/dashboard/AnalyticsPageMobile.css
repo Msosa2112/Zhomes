@@ -1,9 +1,11 @@
-﻿.mobile-analytics-page {
+.mobile-analytics-page {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     padding: 1rem;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .mobile-analytics-header h1 {
     font-size: 1.5rem;

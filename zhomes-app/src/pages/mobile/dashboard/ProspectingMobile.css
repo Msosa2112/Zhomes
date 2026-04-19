@@ -1,9 +1,11 @@
-﻿.prospect-page {
+.prospect-page {
     display: flex;
     flex-direction: column;
     gap: 16px;
     padding: 80px 16px 120px;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .prospect-header h1 { font-size: 1.8rem; font-weight: 900; margin: 0; }
 .prospect-header p { font-size: 0.9rem; color: var(--text-tertiary); margin: 4px 0 0; }

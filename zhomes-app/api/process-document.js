@@ -64,6 +64,40 @@ async function sendEmail({ to, subject, html }) {
 
 
 // ─────────────────────────────────────────────────────────────
+// Helper: enviar FCM push notification vía Google FCM HTTP v1
+// Lee el token del usuario desde la tabla push_tokens de Supabase
+// ─────────────────────────────────────────────────────────────
+async function sendFCMPush(supabase, userId, { title, body, data = {} }) {
+  const fcmKey = process.env.FIREBASE_SERVER_KEY;
+  if (!fcmKey || !userId) return;
+  try {
+    // Buscar token del usuario
+    const { data: tokenRow } = await supabase
+      .from('push_tokens')
+      .select('token')
+      .eq('user_id', userId)
+      .single();
+    if (!tokenRow?.token) return;
+
+    await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `key=${fcmKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: tokenRow.token,
+        notification: { title, body, icon: '/assets/logo/fav.png', badge: '/assets/logo/fav.png' },
+        data,
+        priority: 'high',
+      }),
+    });
+  } catch (e) {
+    // FCM failures are non-critical — don't block the main flow
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ─────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
@@ -150,18 +184,21 @@ export default async function handler(req, res) {
       .eq('id', transactionId)
       .single();
 
-    let realtorEmail = null;
-    let realtorName  = 'Agente';
+    let realtorEmail   = null;
+    let realtorName    = 'Agente';
+    let realtorUserId  = null;
     if (txRealtor?.realtor_id) {
       const { data: agent } = await supabase
         .from('zhomes_agents')
-        .select('full_name, email')
+        .select('full_name, email, user_id')
         .eq('id', txRealtor.realtor_id)
         .single();
-      if (agent) { realtorEmail = agent.email; realtorName = agent.full_name; }
+      if (agent) {
+        realtorEmail  = agent.email;
+        realtorName   = agent.full_name;
+        realtorUserId = agent.user_id || null;
+      }
     }
-
-    console.log(`Emails → cliente: ${clientEmail}, realtor: ${realtorEmail}`);
 
     // ── 4. Construir prompt del AI ────────────────────────────
     // FIX 1: Lenguaje natural, SIN markdown, SIN asteriscos, SIN listas
@@ -278,7 +315,6 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
       console.error("OpenAI failed:", aiErrorDetail);
     }
 
-    console.log("AI result:", aiResult.status, "|", String(aiResult.feedback).slice(0, 120));
 
     // ── 7. Actualizar BD + notificaciones ─────────────────────
     if (documentId) {
@@ -297,6 +333,13 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
           event_type: 'document_reviewed',
           description: `Documento "${docName}" aprobado automáticamente por ZHomes AI.`,
           is_alert: false,
+        });
+
+        // FCM push al realtor
+        await sendFCMPush(supabase, realtorUserId, {
+          title: `✅ Documento aprobado`,
+          body: `"${docName}" de ${clientName} en ${address} fue aprobado por ZHomes AI.`,
+          data: { transactionId, type: 'document_approved' },
         });
 
         // Email al CLIENTE (aprobado)
@@ -353,6 +396,13 @@ Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):
           event_type: 'document_reviewed',
           description: `Documento "${docName}" rechazado. Motivo: ${String(aiResult.feedback).slice(0, 200)}`,
           is_alert: true,
+        });
+
+        // FCM push al realtor
+        await sendFCMPush(supabase, realtorUserId, {
+          title: `⚠️ Documento rechazado`,
+          body: `"${docName}" de ${clientName} requiere correción. Razón: ${String(aiResult.feedback).slice(0, 80)}`,
+          data: { transactionId, type: 'document_rejected' },
         });
 
         // Email al CLIENTE (rechazado)
