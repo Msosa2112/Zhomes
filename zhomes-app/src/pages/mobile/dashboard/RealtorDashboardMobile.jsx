@@ -418,7 +418,7 @@ export default function RealtorDashboardMobile() {
                                                 let finalFavorites = [];
                                                 
                                                 // Hardcoded bypass for the Live Demo since Vercel might lack the Service Role Key
-                                                if (newDealForm.clientEmail.toLowerCase() === 'miguesosagarcia@gmail.com') {
+                                                if (newDealForm.clientEmail.toLowerCase() === 'miguesosagarcia@gmail.com' || newDealForm.clientEmail.toLowerCase() === 'info.twoitsolutions@gmail.com') {
                                                     // Due to RLS, the Realtor's frontend Anon Key cannot read Migue's favorites. We inject them directly for the demo.
                                                     finalFavorites = [
                                                         {
