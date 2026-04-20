@@ -278,6 +278,21 @@ export default function DealRoomMobile() {
     fileInputRef.current?.click()
   }
 
+  // Previsualizar documento en nueva pestaña
+  const previewDocument = async (fileUrl) => {
+    if (!fileUrl) return
+    try {
+      const { data, error } = await supabase.storage.from('tc_documents').createSignedUrl(fileUrl, 300)
+      if (error) throw error
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank')
+      }
+    } catch (err) {
+      console.error('[DealRoom] Error preview:', err)
+      alert('Error cargando vista previa.')
+    }
+  }
+
   // Subir archivo a Supabase Storage
   const handleFileSelected = async (e) => {
     const file = e.target.files?.[0]
@@ -712,8 +727,8 @@ export default function DealRoomMobile() {
                     // Cliente: solo sube. (Aunque el cliente ya no ve esta pestaña, por seguridad lo dejamos)
                     const canUpload = (d.status === 'pending' || d.status === 'rejected') && (isClient || isRealtor)
                     
-                    // Realtor: aprueba docs o manda a compliance
-                    const canReview = d.status === 'uploaded' && (isRealtor || isBroker)
+                    // Realtor/Broker: puede forzar aprobación/rechazo manual en cualquier momento tras subir
+                    const canManualOverride = d.file_url && (isRealtor || isBroker) && uploadingDoc !== d.id
                     
                     // Broker: da Clear to Close a docs en reviewing
                     const canClearToClose = d.status === 'reviewing' && (isBroker || isRealtor) // Realtor tmb en caso de emergencia
@@ -723,7 +738,9 @@ export default function DealRoomMobile() {
                         <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
                           <div className="mdr-doc-icon"><FileText size={18} /></div>
                           <div className="mdr-doc-info" style={{ flex: 1 }}>
-                            <div className="mdr-doc-name">
+                            <div className="mdr-doc-name"
+                                 style={{ cursor: d.file_url ? 'pointer' : 'default', textDecoration: d.file_url ? 'underline' : 'none', textDecorationColor: 'var(--border-subtle)' }}
+                                 onClick={() => d.file_url && previewDocument(d.file_url)}>
                               {d.name}
                               {!d.required && (
                                 <span style={{ marginLeft: '6px', fontSize: '10px', color: 'var(--text-tertiary)', fontWeight: '400' }}>
@@ -775,10 +792,10 @@ export default function DealRoomMobile() {
                             </button>
                           )}
   
-                          {canReview && (
+                          {canManualOverride && d.status !== 'approved' && (
                             <div style={{ display: 'flex', gap: '4px' }}>
                               <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>✓ Aprobar</button>
-                              <button onClick={() => updateDocStatus(d.id, 'reviewing')} style={{ background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>Análisis AI (Compliance)</button>
+                              {d.status !== 'rejected' && <button onClick={() => updateDocStatus(d.id, 'rejected')} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>Forzar Rechazo</button>}
                             </div>
                           )}
   
@@ -786,7 +803,7 @@ export default function DealRoomMobile() {
                             <button onClick={() => updateDocStatus(d.id, 'approved')} style={{ background: '#10b981', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}>✓ Aprobar Final</button>
                           )}
   
-                          {d.status === 'uploaded' && d.file_name && !canReview && !canClearToClose && (
+                          {d.status === 'uploaded' && d.file_name && !canManualOverride && !canClearToClose && (
                             <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', flexShrink: 0 }}>
                               {d.file_name.slice(0, 12)}...
                             </span>
@@ -797,16 +814,43 @@ export default function DealRoomMobile() {
                           <div style={{ 
                             width: '100%', 
                             marginTop: '10px', 
-                            padding: '10px', 
-                            background: d.status === 'rejected' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(59, 130, 246, 0.08)', 
+                            padding: '12px', 
+                            background: d.status === 'rejected' ? '#fef2f2' : '#f0fdf4', 
+                            border: `1px solid ${d.status === 'rejected' ? '#fecaca' : '#bbf7d0'}`,
                             borderRadius: '8px', 
                             fontSize: '12px', 
-                            color: d.status === 'rejected' ? '#b91c1c' : '#1d4ed8' 
+                            color: d.status === 'rejected' ? '#991b1b' : '#166534' 
                           }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: 'bold' }}>
-                              <Bot size={14} /> <span>ZHomes AI</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
+                              <Bot size={14} /> <span>Análisis de ZHomes AI</span>
                             </div>
-                            <span style={{ lineHeight: '1.4' }}>{d.ai_feedback}</span>
+                            <span style={{ lineHeight: '1.5' }}>{d.ai_feedback}</span>
+                            
+                            {d.status === 'rejected' && (isClient || isRealtor) && (
+                                <button
+                                  onClick={() => handleTriggerUpload(d.id)}
+                                  disabled={isUploading}
+                                  style={{
+                                      marginTop: '10px',
+                                      width: '100%',
+                                      padding: '8px',
+                                      background: '#dc2626',
+                                      color: '#fff',
+                                      border: 'none',
+                                      borderRadius: '6px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: '6px',
+                                      fontWeight: '600',
+                                      cursor: isUploading ? 'not-allowed' : 'pointer',
+                                      opacity: isUploading ? 0.7 : 1
+                                  }}
+                                >
+                                  {isUploading && uploadingDoc === d.id ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                                  {isUploading && uploadingDoc === d.id ? 'Analizando Reemplazo...' : 'Subir Nueva Versión'}
+                                </button>
+                            )}
                           </div>
                         )}
                       </div>

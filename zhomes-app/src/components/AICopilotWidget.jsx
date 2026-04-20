@@ -109,10 +109,10 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
         await supabase.from('tc_messages').insert({
           transaction_id: activeTxId,
           sender_id:      user?.id,
-          sender_name:    senderName,
-          sender_role:    senderRole,
-          content:        `🤖 Nota de ${senderName}:\n\n${text}`,
-          message_type:   'ai_forward',
+          sender_name:    'ZHomes AI',
+          sender_role:    'system',
+          content:        `✨ Resumen Automático:\n\n${text}`,
+          message_type:   'document_update',
         });
         alert("Enviado al chat del cliente exitosamente.");
       } catch (err) {
