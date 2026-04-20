@@ -37,10 +37,13 @@ export default function AICopilotWidget({ transactionId, onForwardToClient }) {
 
         let query = supabase.from('tc_transactions').select('id, address').not('status', 'in', '("closed","cancelled")').order('created_at', { ascending: false });
         if (role === 'realtor') {
-            query = query.eq('realtor_email', email);
+            query = query.eq('realtor_id', session.user.id);
         }
         
-        const { data } = await query;
+        const { data, error } = await query;
+        if (error) {
+            console.error('Error fetching deals for Copilot:', error);
+        }
         if (data) setAvailableDeals(data);
       };
       fetchDeals();
