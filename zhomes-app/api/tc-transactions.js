@@ -57,9 +57,12 @@ export default async function handler(req, res) {
       const enriched = data.map((tx) => {
         const docs      = tx.tc_documents || [];
         const events    = tx.tc_events || [];
-        const required  = docs.filter((d) => d.required);
-        const completed = required.filter((d) => d.status === 'approved');
-        const pending   = required.filter((d) => d.status === 'pending');
+        
+        // Documents that are either strictly required or optionally uploaded/interacted with
+        const activeDocs = docs.filter((d) => d.required || d.status !== 'pending');
+        const completed  = activeDocs.filter((d) => ['approved', 'uploaded', 'reviewing'].includes(d.status));
+        const pending    = activeDocs.filter((d) => ['pending', 'rejected'].includes(d.status));
+        
         const alerts    = events.filter((e) => e.is_alert && !e.is_resolved);
         const urgentDeadlines = events.filter((e) => {
           if (!e.due_date) return false;
@@ -70,11 +73,11 @@ export default async function handler(req, res) {
         return {
           ...tx,
           _metrics: {
-            docs_total:     required.length,
+            docs_total:     activeDocs.length,
             docs_completed: completed.length,
             docs_pending:   pending.length,
-            docs_progress:  required.length > 0
-              ? Math.round((completed.length / required.length) * 100)
+            docs_progress:  activeDocs.length > 0
+              ? Math.round((completed.length / activeDocs.length) * 100)
               : 0,
             alerts_count:   alerts.length,
             urgent_deadlines: urgentDeadlines.length,

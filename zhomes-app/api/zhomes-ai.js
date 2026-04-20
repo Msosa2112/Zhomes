@@ -97,6 +97,7 @@ export default async function handler(req, res) {
             if (transactionId) {
                 const { data: tx } = await supabase.from('tc_transactions').select('*').eq('id', transactionId).maybeSingle();
                 const { data: events } = await supabase.from('tc_events').select('*').eq('transaction_id', transactionId).order('due_date', { ascending: true });
+                const { data: docs } = await supabase.from('tc_documents').select('name, status, required').eq('transaction_id', transactionId);
                 
                 if (tx) {
                     dbContext = `Detalles de Transacción:\n- Dirección: ${tx.property_address}\n- Estado: ${tx.status}\n- Precio: $${tx.price || 'N/A'}\n- Fecha de Cierre: ${tx.closing_date || 'N/A'}\n- Comprador: ${tx.buyer_name || 'N/A'}\n- Vendedor: ${tx.seller_name || 'N/A'}\n\n`;
@@ -106,6 +107,14 @@ export default async function handler(req, res) {
                     events.forEach(e => {
                         dbContext += `- [${e.status}] ${e.title} (Vence: ${e.due_date})\n`;
                     });
+                    dbContext += `\n`;
+                }
+                if (docs && docs.length > 0) {
+                    dbContext += `Estado de Documentos (Checklist):\n`;
+                    docs.forEach(d => {
+                        dbContext += `- [${d.status.toUpperCase()}] ${d.name} ${d.required ? '(Requerido)' : '(Opcional)'}\n`;
+                    });
+                    dbContext += `\n`;
                 }
             }
 
