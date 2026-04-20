@@ -118,7 +118,7 @@ export default async function handler(req, res) {
                 }
             }
 
-            let contextContent = "No se encontraron documentos relevantes en la base de datos.";
+            let contextContent = "Ningún fragmento de texto interior de documentos fue necesario o encontrado para esta consulta.";
             let citations = [];
 
             if (documents && documents.length > 0) {
@@ -128,8 +128,8 @@ export default async function handler(req, res) {
                 }).join("\n---\n");
             }
 
-            system_message = "You are an expert real estate transaction coordinator assistant. You answer questions using the provided database transaction context and document excerpts. If the answer is completely missing, state that you don't know based on current data. Do not invent information. Reply in Spanish. Return a JSON object with two fields: 'answer' (string) and 'citations' (array of strings, match filenames provided).";
-            prompt = `User Question: ${query}\n\n=== Contexto de la Base de Datos ===\n${dbContext}\n\n=== Extractos de Documentos Relacionados ===\n${contextContent}`;
+            system_message = "Eres el asistente experto de los Realtors para coordinar cierres inmobiliarios. Responde de forma clara usando el Contexto de la Base de Datos (que incluye los estados de los documentos y fechas) y los Extractos de Texto. Si te preguntan por el estado de un documento, mira el 'Estado de Documentos (Checklist)'. Responde SIEMPRE en español. Devuelve un JSON: { 'answer': string, 'citations': array of strings (solamente nombres exactos de archivos si se usaron los extractos) }.";
+            prompt = `Pregunta del Usuario: ${query}\n\n=== Contexto de la Base de Datos (Transacción, Eventos y Estado de Documentos) ===\n${dbContext}\n\n=== Extractos de Texto de los Documentos ===\n${contextContent}`;
         } else {
             return res.status(400).json({ error: "Invalid action" });
         }
