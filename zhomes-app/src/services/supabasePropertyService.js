@@ -84,16 +84,31 @@ export const SupabasePropertyService = {
         let nonZhomes = [];
 
         if (remaining > 0) {
-            const { data: idxData, error: e2 } = await this._buildBaseQuery(filters)
-                .eq('is_zhomes', false)
-                .not('lat', 'is', null)
-                .not('lng', 'is', null)
-                .order('list_date', { ascending: false })  // newest non-ZHomes next
-                .order('price',     { ascending: false })
-                .range(offset, offset + remaining - 1);
+            // Bypass Supabase default 1000 Max Rows limit by chunking 
+            const chunkSize = 1000;
+            const chunks = Math.ceil(remaining / chunkSize);
+            const reqs = [];
 
-            if (e2) console.error('NonZHomes query error:', e2.message);
-            nonZhomes = idxData || [];
+            for (let i = 0; i < chunks; i++) {
+                const chunkOffset = offset + (i * chunkSize);
+                const chunkEnd = Math.min(offset + remaining - 1, chunkOffset + chunkSize - 1);
+                
+                reqs.push(
+                    this._buildBaseQuery(filters)
+                    .eq('is_zhomes', false)
+                    .not('lat', 'is', null)
+                    .not('lng', 'is', null)
+                    .order('list_date', { ascending: false })
+                    .order('price',     { ascending: false })
+                    .range(chunkOffset, chunkEnd)
+                );
+            }
+
+            const results = await Promise.all(reqs);
+            results.forEach(res => {
+                if (res.error) console.error('NonZHomes query error:', res.error.message);
+                if (res.data) nonZhomes.push(...res.data);
+            });
         }
 
         // ── 3. Return ZHomes first, then fill ──

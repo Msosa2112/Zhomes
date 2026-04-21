@@ -143,12 +143,22 @@ export default function MapPageMobile() {
       const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,photos,close_price,list_date';
       const base = (q) => q.not('lat','is',null).not('lng','is',null).neq('lat',0).neq('lng',0);
 
-      const [zhA, nonA, zhC] = await Promise.all([
+      // Fetch max 5 pages (5000) or 7 pages of non-Zhomes to bypass default Supabase 1k limit
+      const limitNonA = 1000;
+      const pages = 7; 
+      
+      const zhReqs = [
         base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).limit(10000),
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).limit(10000),
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}).limit(10000),
-      ]);
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}).limit(10000)
+      ];
+      
+      const nonAReqs = Array.from({length: pages}).map((_, i) => 
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).range(i*limitNonA, (i+1)*limitNonA - 1)
+      );
 
+      const [zhA, zhC, ...nonAResults] = await Promise.all([...zhReqs, ...nonAReqs]);
+      
+      const nonAData = nonAResults.map(res => res.data || []).flat();
       const fmt = p => ({
         id: p.id, address: p.address || '',
         lat: p.lat, lng: p.lng,
@@ -161,9 +171,28 @@ export default function MapPageMobile() {
         images: p.photos || [p.primary_photo].filter(Boolean),
       });
 
+      let rawActive = [...(zhA.data||[]).map(fmt), ...(nonAData||[]).map(fmt)];
+      let rawExclusive = [...(zhC.data||[]).map(fmt)];
+
+      // Deduplicate by address (keep ZHomes first, then newest/highest price)
+      const dedup = (list) => {
+        const map = new Map();
+        for (const p of list) {
+          if (!p.address) continue;
+          const k = p.address.trim().toLowerCase();
+          if (!map.has(k)) { map.set(k, p); }
+          else {
+            const ext = map.get(k);
+            if (!ext.exclusive && p.exclusive) map.set(k, p); 
+            else if (ext.exclusive === p.exclusive && new Date(p.list_date || 0) > new Date(ext.list_date || 0)) map.set(k, p);
+          }
+        }
+        return Array.from(map.values());
+      };
+
       setAllMapProps({
-        active:    [...(zhA.data||[]).map(fmt), ...(nonA.data||[]).map(fmt)],
-        exclusivas:[...(zhC.data||[]).map(fmt)],
+        active: dedup(rawActive),
+        exclusivas: dedup(rawExclusive),
       });
       setMapLoading(false);
     }

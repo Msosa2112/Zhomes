@@ -22,7 +22,7 @@ export function PropertiesProvider({ children }) {
             try {
                 const [supaPropsResult, offMarketResult, agentsResult, officeResult] = await Promise.allSettled([
                     // Active = "En Venta": Active, Pending, Active Under Contract (from MLS)
-                    SupabasePropertyService.getProperties({ status: 'Active', limit: 1000 }),
+                    SupabasePropertyService.getProperties({ status: 'Active', limit: 10000 }),
                     // Exclusivas = propiedades subidas desde la app (no MLS), status = 'Exclusiva'
                     SupabasePropertyService.getProperties({ status: 'Exclusiva', limit: 500 }),
                     supabase.from('zhomes_agents').select('*').order('full_name', { ascending: true }),
@@ -33,11 +33,13 @@ export function PropertiesProvider({ children }) {
                 const supaProps = supaPropsResult.status === 'fulfilled' ? supaPropsResult.value : [];
                 if (supaProps.length > 0) {
                     let formattedProps = supaProps.map(p => SupabasePropertyService.formatForApp(p));
-                    // Deduplicate by id (service returns ZHomes first)
-                    const seen = new Set();
+                    // Deduplicate by address (service returns newest ZHomes first, so the first seen is always the best one)
+                    const seenAddr = new Set();
                     formattedProps = formattedProps.filter(p => {
-                        if (seen.has(p.id)) return false;
-                        seen.add(p.id);
+                        if (!p.address) return true;
+                        const addr = p.address.trim().toLowerCase();
+                        if (seenAddr.has(addr)) return false;
+                        seenAddr.add(addr);
                         return true;
                     });
                     setProperties(formattedProps);
