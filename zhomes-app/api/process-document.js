@@ -186,13 +186,15 @@ export default async function handler(req, res) {
     // Obtener emails del cliente y del realtor desde la transacción
     const { data: txData } = await supabase
       .from('tc_transactions')
-      .select('client_name, client_email, address')
+      .select('client_name, client_email, address, property_address, buyer_name, seller_name')
       .eq('id', transactionId)
       .single();
 
     const clientEmail = txData?.client_email || null;
-    const clientName  = txData?.client_name  || 'Cliente';
-    const address     = txData?.address      || '';
+    const clientName  = txData?.client_name  || txData?.buyer_name || 'Cliente';
+    const address     = txData?.address      || txData?.property_address || '';
+    const buyerName   = txData?.buyer_name   || '';
+    const sellerName  = txData?.seller_name  || '';
 
     // Email del realtor vía zhomes_agents
     const { data: txRealtor } = await supabase
@@ -220,18 +222,27 @@ export default async function handler(req, res) {
     // ── 4. Construir prompt del AI ────────────────────────────
     // FIX 1: Lenguaje natural, SIN markdown, SIN asteriscos, SIN listas
     const docContext = docGuidelines
-      ? `El tipo de documento es "${docName}". Criterios de validación: ${docGuidelines}`
+      ? `El tipo de documento es "${docName}". Criterios de validación sugeridos: ${docGuidelines}`
       : `El tipo de documento es "${docName}".`;
+
+    const transactionContext = `
+CONTEXTO OBLIGATORIO DE LA TRANSACCIÓN (DEAL ROOM ACTUAL):
+- Dirección de la Propiedad: ${address}
+- Nombre del Comprador/Cliente: ${clientName} ${buyerName && buyerName !== clientName ? `(o ${buyerName})` : ''}
+${sellerName ? `- Nombre del Vendedor: ${sellerName}` : ''}`;
 
     const systemPrompt = `Eres la IA de ZHomes Real Estate que revisa documentos de cierre de transacciones inmobiliarias.
 ${docContext}
+${transactionContext}
 
-INSTRUCCIONES IMPORTANTES:
-- Analiza el contenido del documento con detalle.
-- Si NO cumple los criterios, devuelve status "rejected" explicando el motivo en lenguaje natural y sencillo.
-- Si SÍ cumple, devuelve status "approved" con un resumen breve en 2-3 oraciones en español, en lenguaje natural y conversacional.
+INSTRUCCIONES IMPORTANTES Y DE SEGURIDAD (VALIDACIÓN CRUZADA):
+- PRIMER PASO OBLIGATORIO: Compara los datos del documento (direcciones, nombres) con el "CONTEXTO OBLIGATORIO DE LA TRANSACCIÓN". 
+- Si el documento subido (como un contrato, anexo o ID) menciona CLARAMENTE otra dirección de propiedad o nombres de personas que no coinciden en absoluto con el contexto provisto, DEBES RECHAZARLO inmediatamente. Explica que el documento parece pertenecer a otra propiedad o persona.
+- Analiza el contenido del documento con detalle para verificar si cumple su propósito.
+- Si NO cumple los criterios o es el documento equivocado, devuelve status "rejected" explicando el motivo en lenguaje natural y sencillo.
+- Si SÍ cumple y las validaciones cruzadas son correctas, devuelve status "approved" con un resumen breve en 2-3 oraciones en español, en lenguaje natural y conversacional.
 - Solo si el archivo es genuinamente ilegible o corrupto, devuelve status "reviewing".
-- NO uses asteriscos, guiones, markdown, ni listas. Escribe en prosa natural como si le hablaras a una persona.
+- NO uses asteriscos, guiones, markdown, ni listas en tu feedback. Escribe en prosa natural como si le hablaras a una persona.
 - El campo "feedback" debe ser siempre un string de texto plano, no un objeto.
 
 Devuelve ESTRICTAMENTE este JSON (sin markdown ni texto extra):

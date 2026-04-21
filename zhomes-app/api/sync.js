@@ -7,10 +7,20 @@
  * Protected by CRON_SECRET to prevent unauthorized calls.
  */
 
+import { Client } from '@upstash/qstash';
+
+export const maxDuration = 60; // Allow 60s execution limit on Vercel
+
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const SPARK_BASE   = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 const ZHOMES_OFFICE_KEY = '20141212170001416260000000';
+
+const QSTASH_TOKEN = process.env.QSTASH_TOKEN;
+const APP_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : process.env.APP_URL;
+const qstashClient = QSTASH_TOKEN ? new Client({ token: QSTASH_TOKEN }) : null;
 
 const TOKENS = {
   broker: process.env.SPARK_BROKER_TOKEN || process.env.VITE_SPARK_API_KEY,
@@ -87,37 +97,30 @@ function transformProperty(raw, source) {
   };
 }
 
-async function crawlFeed(tokenName, token, maxProperties = Infinity) {
-  let total = 0, skipToken = null, page = 0, seenTokens = new Set();
+async function processFeedPage(tokenName, token, skipToken = null, customFilter = null) {
+  const params = { '$expand': 'Media' };
+  if (customFilter) params['$filter'] = customFilter;
+  if (skipToken) params['$skiptoken'] = skipToken;
 
-  while (page < 5000 && total < maxProperties) {
-    const params = { '$expand': 'Media' };
-    if (skipToken) params['$skiptoken'] = skipToken;
-
-    const data = await sparkFetch(token, 'Property', params);
-    const results = data.value || [];
-    if (!results.length) break;
-
-    const remaining = maxProperties - total;
-    const rows = results.slice(0, remaining).map(p => transformProperty(p, tokenName));
+  const data = await sparkFetch(token, 'Property', params);
+  const results = data.value || [];
+  
+  if (results.length > 0) {
+    const rows = results.map(p => transformProperty(p, tokenName));
     await supabaseUpsert('mls_properties', rows).catch(async () => {
+      // Chunk insertions internally if bulk fails
       for (let i = 0; i < rows.length; i += 25)
         await supabaseUpsert('mls_properties', rows.slice(i, i + 25)).catch(() => {});
     });
-
-    total += rows.length;
-    page++;
-    if (total >= maxProperties) break;
-
-    const nextLink = data['@odata.nextLink'];
-    if (!nextLink) break;
-    const newToken = new URL(nextLink).searchParams.get('$skiptoken');
-    if (!newToken || seenTokens.has(newToken)) break;
-    seenTokens.add(newToken);
-    skipToken = newToken;
-    await sleep(100);
   }
-  return total;
+
+  const nextLink = data['@odata.nextLink'];
+  let newSkipToken = null;
+  if (nextLink) {
+    newSkipToken = new URL(nextLink).searchParams.get('$skiptoken');
+  }
+
+  return { rowsProcessed: results.length, nextSkipToken: newSkipToken };
 }
 
 async function syncAgents() {
@@ -209,65 +212,128 @@ async function updateSyncLog(logId, updates) {
 
 // ── Vercel Handler ──
 export default async function handler(req, res) {
-  // Security: only allow Vercel Cron or requests with CRON_SECRET
-  const authHeader = req.headers['authorization'];
-  const cronSecret = process.env.CRON_SECRET;
-  const triggeredBy = req.query.trigger || (req.headers['x-vercel-cron'] ? 'cron' : 'manual');
-  
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  // Parsing HTTP requests including potential JSON from upstash
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const start = Date.now();
-  const log = [];
-  const logId = await createSyncLog(triggeredBy);
+  const authHeader = req.headers['authorization'];
+  const cronSecret = process.env.CRON_SECRET;
+  
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!req.headers['x-vercel-cron']) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  }
+
+  let body = {};
+  if (req.method === 'POST') {
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch(e) {}
+  }
+
+  // The Chunked Job State Machine
+  const state = body.state || {
+    step: 'broker',
+    skipToken: null,
+    stats: { broker: 0, idx: 0, agents: 0 },
+    logId: null,
+    startTime: Date.now()
+  };
+
+  const activeFilter = "MlsStatus eq 'Active' or MlsStatus eq 'Active Under Contract' or MlsStatus eq 'Pending'";
+
+  // Create logging session if this is the very first chunk
+  if (!state.logId) {
+    const triggeredBy = req.query.trigger || (req.headers['x-vercel-cron'] ? 'cron' : 'qstash');
+    state.logId = await createSyncLog(triggeredBy);
+    if (state.logId) {
+      await updateSyncLog(state.logId, { details: { message: 'Started chunked sync natively' } });
+    }
+  }
+
+  // Helper to hand over the baton to the next QStash request
+  async function enqueueNext(nextState) {
+    if (!qstashClient) throw new Error("QSTASH_TOKEN missing, cannot chain execution.");
+    if (!APP_URL) throw new Error("APP_URL or VERCEL_PROJECT_PRODUCTION_URL missing, cannot chain execution.");
+    
+    await qstashClient.publishJSON({
+      url: `${APP_URL}/api/sync`,
+      body: { state: nextState },
+      headers: {
+        ...(cronSecret ? { Authorization: `Bearer ${cronSecret}` } : {}),
+        'x-triggered-by': 'qstash-chain'
+      },
+      retries: 3,
+      timeout: 300 // Max upstash timeout per request instance
+    });
+  }
 
   try {
-    log.push('Starting MLS sync...');
-    
-    const brokerTotal = await crawlFeed('broker', TOKENS.broker);
-    log.push(`Broker feed: ${brokerTotal} properties`);
-    
-    const idxTotal = await crawlFeed('idx', TOKENS.idx, 10_000);
-    log.push(`IDX feed: ${idxTotal} properties (limit 10k)`);
-    
-    const agentCount = await syncAgents();
-    log.push(`Agents: ${agentCount} synced`);
-    
-    await syncOffice();
-    log.push('Office: synced');
+    if (state.step === 'broker') {
+      const { rowsProcessed, nextSkipToken } = await processFeedPage('broker', TOKENS.broker, state.skipToken, activeFilter);
+      state.stats.broker += rowsProcessed;
+      
+      if (nextSkipToken) {
+        // Enqueue the next page
+        state.skipToken = nextSkipToken;
+        await enqueueNext(state);
+      } else {
+        // Enqueue the next step
+        state.step = 'idx';
+        state.skipToken = null;
+        await enqueueNext(state);
+      }
+    } 
+    else if (state.step === 'idx') {
+      const { rowsProcessed, nextSkipToken } = await processFeedPage('idx', TOKENS.idx, state.skipToken, activeFilter);
+      state.stats.idx += rowsProcessed;
+      
+      if (nextSkipToken && state.stats.idx < 10000) {
+        state.skipToken = nextSkipToken;
+        await enqueueNext(state);
+      } else {
+        state.step = 'agents';
+        state.skipToken = null;
+        await enqueueNext(state);
+      }
+    }
+    else if (state.step === 'agents') {
+      const agentCount = await syncAgents();
+      state.stats.agents = agentCount;
+      
+      state.step = 'office';
+      state.skipToken = null;
+      await enqueueNext(state);
+    }
+    else if (state.step === 'office') {
+      await syncOffice();
+      
+      // End of pipeline!
+      const elapsedSeconds = Math.round((Date.now() - (state.startTime || Date.now())) / 1000);
+      
+      await updateSyncLog(state.logId, {
+        status: 'success',
+        duration_seconds: elapsedSeconds,
+        properties_upserted: state.stats.broker + state.stats.idx,
+        agents_upserted: state.stats.agents,
+        office_updated: true,
+        details: { message: 'Sync pipeline completed successfully!', final_stats: state.stats }
+      });
+      return res.status(200).json({ success: true, message: 'Sync pipeline completed!', state });
+    }
 
-    const elapsed = Math.round((Date.now() - start) / 1000);
-    log.push(`Done in ${elapsed}s`);
+    // Acknowledge the current chunk execution gracefully
+    return res.status(200).json({ success: true, message: `Chunk ${state.step} executed successfully. Next phase queued.`, state });
 
-    // Write success to sync_logs
-    await updateSyncLog(logId, {
-      status: 'success',
-      duration_seconds: elapsed,
-      properties_upserted: brokerTotal + idxTotal,
-      agents_upserted: agentCount,
-      office_updated: true,
-      details: { log }
-    });
-
-    return res.status(200).json({
-      success: true,
-      timestamp: new Date().toISOString(),
-      duration_seconds: elapsed,
-      log
-    });
   } catch (err) {
-    const elapsed = Math.round((Date.now() - start) / 1000);
-    console.error('Sync error:', err);
-
-    // Write failure to sync_logs
-    await updateSyncLog(logId, {
+    console.error(`Chunk error at step ${state.step}:`, err);
+    await updateSyncLog(state.logId, {
       status: 'failed',
-      duration_seconds: elapsed,
       error_message: err.message,
-      details: { log }
+      details: { step_failed: state.step, state, error: err.stack }
     });
-
-    return res.status(500).json({ success: false, error: err.message, log });
+    return res.status(500).json({ success: false, error: err.message, state });
   }
 }

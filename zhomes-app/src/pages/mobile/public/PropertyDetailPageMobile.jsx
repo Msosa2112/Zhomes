@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useTheme } from '../../../context/ThemeContext'
-import { SparkService } from '../../../services/sparkService'
+import { SupabasePropertyService } from '../../../services/supabasePropertyService'
 import { supabase } from '../../../lib/supabaseClient'
 import { useProperties } from '../../../context/PropertyContext'
 import { useAgent } from '../../../context/AgentContext'
@@ -89,37 +89,24 @@ export default function PropertyDetailPageMobile() {
             return;
         }
 
-        // 2. Fallback: try Spark API directly (RESO v3 format)
-        SparkService.getListingDetails(id)
+        // 2. Fallback: try Supabase directly
+        SupabasePropertyService.getPropertyById(id)
             .then(data => {
-                // RESO v3 returns single entity directly or in value array
-                const p = data?.value?.[0] || data;
-                if (p && (p.ListPrice || p.UnparsedAddress)) {
-                    const mediaPhotos = (p.Media || [])
-                        .filter(m => m.MediaURL)
-                        .map(m => m.MediaURL);
+                if (data) {
+                    const formatted = SupabasePropertyService.formatForApp(data);
+                    
                     setProperty({
-                        id: String(p.ListingKey || id),
-                        address: p.UnparsedAddress || 'Dirección no disponible',
-                        city: `${p.City || ''}, ${p.StateOrProvince || ''}`,
-                        price: p.ListPrice || 0,
-                        image: mediaPhotos[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600',
-                        photos: mediaPhotos.length > 0 ? mediaPhotos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600'],
-                        beds: p.BedsTotal || p.BedroomsTotal || 0,
-                        baths: p.BathroomsTotalInteger || p.BathroomsFull || 0,
-                        sqft: p.LivingArea || p.BuildingAreaTotal || 0,
-                        lat: p.Latitude || null,
-                        lng: p.Longitude || null,
-                        desc: p.PublicRemarks || 'Descripción no disponible',
-                        virtual_tour_url: p.VirtualTourURLUnbranded || p.VirtualTourURLBranded || null,
-                        exclusive: String(p.ListOfficeName || '').toLowerCase().includes('zhomes')
+                        ...formatted,
+                        photos: formatted.images || [formatted.image],
+                        desc: formatted.description || 'Hermosa propiedad...',
+                        city: formatted.city || ''
                     });
                 } else {
-                    throw new Error("Property not found in Spark");
+                    throw new Error("Property not found in Supabase");
                 }
             })
             .catch(err => {
-                console.warn("Spark fallback failed:", err.message);
+                console.warn("Supabase fallback failed:", err.message);
                 setProperty(null);
             })
             .finally(() => setLoading(false));

@@ -922,12 +922,34 @@ export default function DealRoomMobile() {
                   </div>
                 )
               })}
+
+              {/* Indicador de "Analizando documento" cuando uploadingDoc está activo */}
+              {uploadingDoc && (
+                <div className="mdr-msg mine" style={{ animation: 'fadeIn 0.3s ease' }}>
+                  <div className="mdr-bubble" style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', opacity: 0.9 }}>
+                    <Loader2 size={16} className="animate-spin" style={{ color: 'var(--zhomes-red)' }} />
+                    <span style={{ fontSize: '13px', fontWeight: '500' }}>Analizando documento con IA...</span>
+                  </div>
+                </div>
+              )}
+
               <div ref={chatBottomRef} />
             </div>
 
             <div className="mdr-chat-input-area">
-              <button className="mdr-chat-attach-btn" onClick={() => setShowAttachMenu(true)} style={{
-                background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0
+              <button 
+                className="mdr-chat-attach-btn" 
+                onClick={() => !uploadingDoc && setShowAttachMenu(true)} 
+                disabled={!!uploadingDoc}
+                style={{
+                  background: 'var(--bg-card)', 
+                  color: uploadingDoc ? 'var(--text-tertiary)' : 'var(--text-secondary)', 
+                  border: '1px solid var(--border-medium)', 
+                  borderRadius: '50%', width: '44px', height: '44px', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  flexShrink: 0, padding: 0,
+                  opacity: uploadingDoc ? 0.5 : 1,
+                  cursor: uploadingDoc ? 'not-allowed' : 'pointer'
               }}>
                 <Plus size={22} />
               </button>
@@ -937,9 +959,9 @@ export default function DealRoomMobile() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-                disabled={sendingMsg}
+                disabled={sendingMsg || !!uploadingDoc}
               />
-              <button onClick={handleSendMessage} disabled={sendingMsg || !newMessage.trim()}>
+              <button onClick={handleSendMessage} disabled={sendingMsg || !newMessage.trim() || !!uploadingDoc}>
                 {sendingMsg ? <Loader2 size={18} className="ai-loading-icon" /> : <Send size={18} />}
               </button>
             </div>
