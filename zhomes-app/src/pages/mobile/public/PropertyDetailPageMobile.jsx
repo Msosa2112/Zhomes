@@ -392,8 +392,8 @@ export default function PropertyDetailPageMobile() {
                 <div className="mpd-map-wrap" style={{ padding: '0 10px' }}>
                     <NeighborhoodMap 
                         propertyId={property.id}
-                        lat={Number(property.lat) || (38.15 + (property.id * 0.012))} 
-                        lng={Number(property.lng) || (-85.7 + (property.id * 0.015))} 
+                        lat={Number(property.lat) || 38.2527} 
+                        lng={Number(property.lng) || -85.7585} 
                         address={property.address}
                     />
                 </div>

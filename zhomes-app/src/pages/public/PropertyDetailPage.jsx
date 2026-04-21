@@ -186,7 +186,7 @@ export default function PropertyDetailPage() {
                     <section className="section-map">
                         <h3>Ubicación & Vibe</h3>
                         <div className="map-frame">
-                            <NeighborhoodMap lat={property.lat} lng={property.lng} />
+                            <NeighborhoodMap lat={parseFloat(property.lat) || 38.2527} lng={parseFloat(property.lng) || -85.7585} propertyId={property.id} address={property.address} />
                         </div>
                     </section>
                 </div>
