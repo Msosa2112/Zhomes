@@ -37,7 +37,8 @@ export function PropertiesProvider({ children }) {
                     const seenAddr = new Set();
                     formattedProps = formattedProps.filter(p => {
                         if (!p.address) return true;
-                        const addr = p.address.trim().toLowerCase();
+                        // Strip all spaces, commas and punctuation for a robust deduplication match
+                        const addr = p.address.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
                         if (seenAddr.has(addr)) return false;
                         seenAddr.add(addr);
                         return true;

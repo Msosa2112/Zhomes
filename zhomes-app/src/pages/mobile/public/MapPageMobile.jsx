@@ -8,6 +8,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Supercluster from 'supercluster'
 import { useTheme } from '../../../context/ThemeContext'
+import { useProperties } from '../../../context/PropertyContext'
 import { supabase } from '../../../lib/supabaseClient'
 import { Bed, Bath, Expand, ChevronUp, ChevronDown, Search, X, Flame, Hexagon, Map as MapIcon, Loader, Home, Coins, MapPin, Building, Waves, HelpCircle, Bot, Info, Star, Car, DollarSign } from 'lucide-react'
 import './MapPageMobile.css'
@@ -105,6 +106,7 @@ function PropCard({ prop, isActive, onClick, onView }) {
 export default function MapPageMobile() {
   const navigate   = useNavigate();
   const { theme }  = useTheme();
+  const { properties, offMarketListings, loading: contextLoading } = useProperties();
   const scrollRef  = useRef(null);
 
   // ── ViewState (DeckGL controla el viewport) ──────────────────────────────
@@ -136,76 +138,42 @@ export default function MapPageMobile() {
   const [showSearch, setShowSearch]   = useState(false);
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
-  // ── Load properties ───────────────────────────────────────────────────────
+  // ── Load properties from Context ──────────────────────────────────────────
   useEffect(() => {
-    async function load() {
+    if (contextLoading) {
       setMapLoading(true);
-      const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,close_price,list_date';
-      const base = (q) => q.not('lat','is',null).not('lng','is',null).neq('lat',0).neq('lng',0);
-
-      // Fetch max 5 pages (5000) or 7 pages of non-Zhomes to bypass default Supabase 1k limit
-      const limitNonA = 1000;
-      const pages = 7; 
-      
-      const zhReqs = [
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).limit(10000),
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}).limit(10000)
-      ];
-      
-      const nonAReqs = Array.from({length: pages}).map((_, i) => 
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).range(i*limitNonA, (i+1)*limitNonA - 1)
-      );
-
-      const [zhA, zhC, ...nonAResults] = await Promise.all([...zhReqs, ...nonAReqs]);
-      
-      const nonAData = nonAResults.map(res => res.data || []).flat();
-      const fmt = p => ({
-        id: p.id, address: p.address || '',
-        lat: p.lat, lng: p.lng,
-        price: p.price || p.close_price || 0,
-        beds: p.beds || 0, baths: Math.round(p.baths || 0),
-        sqft: p.sqft || 0, type: p.property_type || '',
-        status: p.status || 'Active',
-        exclusive: p.is_zhomes || false,
-        image: p.primary_photo || null,
-        images: p.photos || [p.primary_photo].filter(Boolean),
-      });
-
-      let rawActive = [...(zhA.data||[]).map(fmt), ...(nonAData||[]).map(fmt)];
-      let rawExclusive = [...(zhC.data||[]).map(fmt)];
-
-      // Deduplicate by address (keep ZHomes first, then newest/highest price)
-      const dedup = (list) => {
-        const map = new Map();
-        for (const p of list) {
-          if (!p.address) continue;
-          const k = p.address.trim().toLowerCase();
-          if (!map.has(k)) { map.set(k, p); }
-          else {
-            const ext = map.get(k);
-            if (!ext.exclusive && p.exclusive) map.set(k, p); 
-            else if (ext.exclusive === p.exclusive && new Date(p.list_date || 0) > new Date(ext.list_date || 0)) map.set(k, p);
-          }
-        }
-        return Array.from(map.values());
-      };
-
-      setAllMapProps({
-        active: dedup(rawActive),
-        exclusivas: dedup(rawExclusive),
-      });
-      setMapLoading(false);
+      return;
     }
-    load();
-  }, []);
+    const fmt = p => ({
+      id: p.id, address: p.address || '',
+      lat: p.lat, lng: p.lng,
+      price: p.price || p.closePrice || 0,
+      beds: p.beds || 0, baths: Math.round(p.baths || 0),
+      sqft: p.sqft || 0, type: p.type || '',
+      status: p.status || 'Active',
+      exclusive: p.exclusive || p.is_zhomes || false,
+      image: p.image || null,
+      images: p.images || [],
+    });
+
+    setAllMapProps({
+      active: properties.map(fmt),
+      exclusivas: offMarketListings.map(fmt),
+    });
+    setMapLoading(false);
+  }, [properties, offMarketListings, contextLoading]);
 
   // ── Apply category + AI filters ───────────────────────────────────────────
   useEffect(() => {
     const { active, exclusivas } = allMapProps;
-    let combined =
-      statusFilter === 'Active'     ? [...active]     :
-      statusFilter === 'Exclusivas' ? [...exclusivas]  :
-      [...active, ...exclusivas];
+    let combined = [];
+    if (statusFilter === 'Active') {
+      combined = [...active];
+    } else if (statusFilter === 'Exclusivas') {
+      combined = [...active.filter(p => p.exclusive), ...exclusivas];
+    } else {
+      combined = [...active, ...exclusivas];
+    }
 
     if (zhomesOnly)          combined = combined.filter(p => p.exclusive);
     
