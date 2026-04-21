@@ -64,7 +64,7 @@ export const SupabasePropertyService = {
         zhomesOnly = false,
         limit = 200,
         offset = 0,
-        cols = 'id, address, city, price, beds, baths, sqft, property_type, property_subtype, primary_photo, status, is_zhomes, lat, lng, close_price, list_date, agent_name, office_name'
+        cols = 'id, address, city, price, beds, baths, sqft, property_type, property_subtype, primary_photo, status, is_zhomes, lat, lng, close_price, list_date, list_agent_name'
     } = {}) {
         const filters = { status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType };
 
