@@ -140,7 +140,7 @@ export default function MapPageMobile() {
   useEffect(() => {
     async function load() {
       setMapLoading(true);
-      const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,photos,close_price,list_date';
+      const cols = 'id,address,lat,lng,price,beds,baths,sqft,status,property_type,is_zhomes,primary_photo,close_price,list_date';
       const base = (q) => q.not('lat','is',null).not('lng','is',null).neq('lat',0).neq('lng',0);
 
       // Fetch max 5 pages (5000) or 7 pages of non-Zhomes to bypass default Supabase 1k limit

@@ -76,7 +76,7 @@ export default function PropertyDetailPageMobile() {
     useEffect(() => {
         setLoading(true);
         
-        // 1. First try to find in context (works for both Spark and sample IDs)
+        // 1. Immediately show limited data from context if available (avoids loading screen)
         const ctxProp = ctxProperties.find(p => String(p.id) === String(id));
         if (ctxProp) {
             setProperty({
@@ -86,28 +86,28 @@ export default function PropertyDetailPageMobile() {
                 city: ctxProp.city || ''
             });
             setLoading(false);
-            return;
         }
 
-        // 2. Fallback: try Supabase directly
+        // 2. ALWAYS fetch full property from Supabase because context excludes 'photos' and 'description' for performance
         SupabasePropertyService.getPropertyById(id)
             .then(data => {
                 if (data) {
                     const formatted = SupabasePropertyService.formatForApp(data);
                     
-                    setProperty({
+                    setProperty(prev => ({
+                        ...(prev || {}),
                         ...formatted,
-                        photos: formatted.images || [formatted.image],
-                        desc: formatted.description || 'Hermosa propiedad...',
-                        city: formatted.city || ''
-                    });
-                } else {
+                        photos: formatted.images && formatted.images.length > 0 ? formatted.images : (prev?.photos || [formatted.image]),
+                        desc: formatted.description || prev?.desc || 'Hermosa propiedad...',
+                        city: formatted.city || prev?.city || ''
+                    }));
+                } else if (!ctxProp) {
                     throw new Error("Property not found in Supabase");
                 }
             })
             .catch(err => {
-                console.warn("Supabase fallback failed:", err.message);
-                setProperty(null);
+                console.warn("Supabase fetch failed:", err.message);
+                if (!ctxProp) setProperty(null);
             })
             .finally(() => setLoading(false));
     }, [id, ctxProperties]);

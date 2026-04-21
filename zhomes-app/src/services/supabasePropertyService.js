@@ -14,8 +14,8 @@ export const SupabasePropertyService = {
     /**
      * Build a filtered query base (shared between ZHomes and non-ZHomes queries)
      */
-    _buildBaseQuery({ status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType }) {
-        let q = supabase.from('mls_properties').select('*');
+    _buildBaseQuery({ status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType }, cols = '*') {
+        let q = supabase.from('mls_properties').select(cols);
 
         // Status filter
         if (status === 'Active') {
@@ -64,11 +64,12 @@ export const SupabasePropertyService = {
         zhomesOnly = false,
         limit = 200,
         offset = 0,
+        cols = 'id, address, city, price, beds, baths, sqft, property_type, property_subtype, primary_photo, status, is_zhomes, lat, lng, close_price, list_date, agent_name, office_name'
     } = {}) {
         const filters = { status, city, minPrice, maxPrice, minBeds, minBaths, minSqft, maxSqft, propertyType };
 
         // ── 1. Always fetch ALL ZHomes matching the filter first ──
-        const { data: zhomesData, error: e1 } = await this._buildBaseQuery(filters)
+        const { data: zhomesData, error: e1 } = await this._buildBaseQuery(filters, cols)
             .eq('is_zhomes', true)
             .order('list_date', { ascending: false })   // newest ZHomes first
             .order('price',     { ascending: false });
@@ -94,7 +95,7 @@ export const SupabasePropertyService = {
                 const chunkEnd = Math.min(offset + remaining - 1, chunkOffset + chunkSize - 1);
                 
                 reqs.push(
-                    this._buildBaseQuery(filters)
+                    this._buildBaseQuery(filters, cols)
                     .eq('is_zhomes', false)
                     .not('lat', 'is', null)
                     .not('lng', 'is', null)
