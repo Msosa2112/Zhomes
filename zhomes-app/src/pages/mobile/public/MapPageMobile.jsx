@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DeckGL from 'deck.gl'
 import { WebMercatorViewport } from 'deck.gl'
@@ -144,9 +144,9 @@ export default function MapPageMobile() {
       const base = (q) => q.not('lat','is',null).not('lng','is',null).neq('lat',0).neq('lng',0);
 
       const [zhA, nonA, zhC] = await Promise.all([
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}),
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}),
-        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}),
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).limit(10000),
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',false).in('status',['Active','Active Under Contract','Pending']).order('list_date',{ascending:false}).limit(10000),
+        base(supabase.from('mls_properties').select(cols)).eq('is_zhomes',true).in('status',['Exclusiva']).order('list_date',{ascending:false}).limit(10000),
       ]);
 
       const fmt = p => ({
