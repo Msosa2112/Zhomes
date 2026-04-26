@@ -39,17 +39,16 @@ export default function TwilioOptInPage() {
 
                         <button 
                             type="submit" 
-                            disabled={!agreed}
                             style={{ 
                                 width: '100%', 
                                 padding: '12px 16px', 
-                                backgroundColor: agreed ? '#111827' : '#9ca3af', 
+                                backgroundColor: '#111827', 
                                 color: 'white', 
                                 border: 'none', 
                                 borderRadius: '6px', 
                                 fontSize: '16px', 
                                 fontWeight: 'bold',
-                                cursor: agreed ? 'pointer' : 'not-allowed',
+                                cursor: 'pointer',
                                 transition: 'background-color 0.2s'
                             }}
                         >
