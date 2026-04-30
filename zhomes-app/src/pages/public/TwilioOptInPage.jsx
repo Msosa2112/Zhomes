@@ -33,7 +33,8 @@ export default function TwilioOptInPage() {
                             />
                             <label htmlFor="smsConsent" style={{ fontSize: '13px', color: '#4b5563', lineHeight: '1.5', cursor: 'pointer' }}>
                                 By checking this box and submitting this form, you actively consent to receive SMS text messages from ZHomes Real Estate LLC regarding your inquiry and properties. Reply STOP to opt out. Message and data rates may apply. <br/><br/>
-                                <a href="https://zhomesre.com/#privacy" style={{ color: '#E31E24', textDecoration: 'underline' }}>View Privacy Policy</a>
+                                <a href="https://www.zhomesapp.com/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: '#E31E24', textDecoration: 'underline', marginRight: '16px' }}>Privacy Policy</a>
+                                <a href="https://www.zhomesapp.com/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: '#E31E24', textDecoration: 'underline' }}>Terms of Service</a>
                             </label>
                         </div>
 
