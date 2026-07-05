@@ -72,6 +72,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
+    base: './',
     plugins: [react(), aiMiddleware()],
     server: {
       allowedHosts: true,
