@@ -38,6 +38,9 @@ workflows:
         script: |
           keychain initialize
           keychain add-certificates -c /tmp/ios_distribution.p12 --certificate-password "$CM_CERTIFICATE_PASSWORD"
+      - name: Disable automatic signing in Xcode project
+        script: |
+          python3 -c "import re; path = 'zhomes-app/ios/App/App.xcodeproj/project.pbxproj'; content = open(path).read(); content = re.sub(r'DevelopmentTeam\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'DevelopmentTeam = 98Z74Q5FCB;', content); content = re.sub(r'ProvisioningStyle\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'ProvisioningStyle = Manual;', content); open(path, 'w').write(content); print('Firma automática desactivada en Xcode project.')"
       - name: Set up code signing
         script: |
           cd zhomes-app/ios/App
