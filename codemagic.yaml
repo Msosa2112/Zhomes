@@ -11,6 +11,20 @@ workflows:
         XCODE_SCHEME: "App"
         APP_STORE_APP_ID: 6739819170 # Tu ID de Apple obtenido de tu consola
     scripts:
+      - name: Format Apple API Private Key
+        script: |
+          python3 -c "
+          import os
+          key = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '').strip()
+          clean = key.replace('-----BEGIN PRIVATE KEY-----', '').replace('-----END PRIVATE KEY-----', '').replace(' ', '').replace('\n', '').replace('\r', '')
+          lines = [clean[i:i+64] for i in range(0, len(clean), 64)]
+          pem = '-----BEGIN PRIVATE KEY-----\n' + '\n'.join(lines) + '\n-----END PRIVATE KEY-----\n'
+          fci = os.environ.get('FCI_ENV')
+          if fci:
+              with open(fci, 'a') as f:
+                  f.write('APP_STORE_CONNECT_PRIVATE_KEY<<EOF\n' + pem + 'EOF\n')
+          print('PEM key formatted.')
+          "
       - name: Install npm dependencies
         script: |
           cd zhomes-app
