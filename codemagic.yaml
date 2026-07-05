@@ -28,10 +28,7 @@ workflows:
         script: |
           cd zhomes-app
           npx cap sync ios
-      - name: Cocoapods installation
-        script: |
-          cd zhomes-app/ios/App
-          pod install
+
       - name: Decode signing files
         script: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
