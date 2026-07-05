@@ -7,7 +7,7 @@ workflows:
       groups:
         - ios_signing
       vars:
-        XCODE_WORKSPACE: "App.xcworkspace"
+        XCODE_PROJECT: "App.xcodeproj"
         XCODE_SCHEME: "App"
         APP_STORE_APP_ID: 6739819170 # Tu ID de Apple obtenido de tu consola
     scripts:
@@ -28,12 +28,7 @@ workflows:
         script: |
           cd zhomes-app
           npx cap sync ios
-      - name: Cocoapods installation
-        script: |
-          cd zhomes-app
-          find ios -maxdepth 3 || true
-          cd ios/App
-          pod install
+
 
       - name: Decode signing files
         script: |
@@ -55,7 +50,7 @@ workflows:
         script: |
           cd zhomes-app/ios/App
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
+            --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
     artifacts:
       - zhomes-app/ios/App/build/ios/ipa/*.ipa
