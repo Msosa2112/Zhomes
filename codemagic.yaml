@@ -37,7 +37,7 @@ workflows:
       - name: Set up keychain
         script: |
           keychain initialize
-          keychain add-certificates --cert /tmp/ios_distribution.p12 --cert-password "$CM_CERTIFICATE_PASSWORD"
+          keychain add-certificates -c /tmp/ios_distribution.p12 --certificate-password "$CM_CERTIFICATE_PASSWORD"
       - name: Set up code signing
         script: |
           xcode-project use-profiles
