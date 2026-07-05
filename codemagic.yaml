@@ -6,9 +6,8 @@ workflows:
     integrations:
       app_store_connect: codemagic # Nombre de tu integración con App Store Connect en el panel de Codemagic
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.zhomesre.app
+      groups:
+        - ios_signing
       vars:
         XCODE_WORKSPACE: "App.xcworkspace"
         XCODE_SCHEME: "App"
