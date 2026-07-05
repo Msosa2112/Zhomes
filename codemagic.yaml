@@ -32,8 +32,8 @@ workflows:
       - name: Decode signing files
         script: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$CM_PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-          echo "$CM_CERTIFICATE" | base64 --decode > /tmp/ios_distribution.p12
+          python3 -c "import base64, os; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision'), 'wb').write(base64.b64decode(os.environ['CM_PROVISIONING_PROFILE'].replace('\n','').replace('\r','')))"
+          python3 -c "import base64, os; open('/tmp/ios_distribution.p12', 'wb').write(base64.b64decode(os.environ['CM_CERTIFICATE'].replace('\n','').replace('\r','')))"
       - name: Set up keychain
         script: |
           keychain initialize
