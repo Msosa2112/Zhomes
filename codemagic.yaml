@@ -30,6 +30,12 @@ workflows:
         script: |
           cd zhomes-app/ios/App
           pod install
+      - name: Set up keychain
+        script: |
+          keychain initialize
+      - name: Fetch Apple signing files
+        script: |
+          app-store-connect fetch-signing-files "com.zhomesre.app" --create
       - name: Set up code signing
         script: |
           xcode-project use-profiles
