@@ -69,6 +69,30 @@ workflows:
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
+      - name: Publish to TestFlight
+        script: |
+          python3 -c "
+          import os, subprocess, glob
+          key = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '').strip()
+          clean = key.replace('-----BEGIN PRIVATE KEY-----', '').replace('-----END PRIVATE KEY-----', '').replace(' ', '').replace('\n', '').replace('\r', '')
+          lines = [clean[i:i+64] for i in range(0, len(clean), 64)]
+          pem = '-----BEGIN PRIVATE KEY-----\n' + '\n'.join(lines) + '\n-----END PRIVATE KEY-----\n'
+          ipa_files = glob.glob('zhomes-app/ios/App/build/ios/ipa/*.ipa')
+          if not ipa_files:
+              print('Error: IPA file not found!')
+              exit(1)
+          cmd = [
+              'app-store-connect', 'publish',
+              '--path', ipa_files[0],
+              '--key-id', os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER'),
+              '--issuer-id', os.environ.get('APP_STORE_CONNECT_ISSUER_ID'),
+              '--private-key', pem,
+              '--testflight'
+          ]
+          print('Iniciando subida a App Store Connect...')
+          result = subprocess.run(cmd)
+          exit(result.returncode)
+          "
     artifacts:
       - zhomes-app/ios/App/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -79,9 +103,4 @@ workflows:
         notify:
           success: true
           failure: true
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: true
-        submit_to_app_store: false
+
