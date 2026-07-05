@@ -59,9 +59,10 @@ workflows:
         script: |
           cd zhomes-app/ios/App
           xcode-project use-profiles
-      - name: Increment build number
+      - name: Set App Version and Build Number
         script: |
           cd zhomes-app/ios/App
+          agvtool new-marketing-version 1.1.0
           agvtool new-version -all $BUILD_NUMBER
       - name: Build ipa for App Store distribution
         script: |
