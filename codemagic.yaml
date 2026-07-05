@@ -19,6 +19,11 @@ workflows:
         script: |
           cd zhomes-app
           npm run build
+      - name: Recreate iOS Platform Workspace
+        script: |
+          cd zhomes-app
+          rm -rf ios
+          npx cap add ios
       - name: Sync Capacitor assets to iOS
         script: |
           cd zhomes-app
