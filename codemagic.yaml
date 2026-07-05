@@ -41,6 +41,7 @@ workflows:
           keychain add-certificates -c /tmp/ios_distribution.p12 --certificate-password "$CM_CERTIFICATE_PASSWORD"
       - name: Set up code signing
         script: |
+          cd zhomes-app/ios/App
           xcode-project use-profiles
       - name: Increment build number
         script: |
