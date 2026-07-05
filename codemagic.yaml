@@ -52,9 +52,10 @@ workflows:
         script: |
           keychain initialize
           keychain add-certificates -c /tmp/ios_distribution.p12 --certificate-password "$CM_CERTIFICATE_PASSWORD"
-      - name: Patch Xcode project file for signing
+      - name: Patch Xcode project and Info.plist
         script: |
           python3 -c "import re; path = 'zhomes-app/ios/App/App.xcodeproj/project.pbxproj'; content = open(path).read(); content = re.sub(r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*[A-Za-z0-9._\'\"\-]*\s*;', 'PRODUCT_BUNDLE_IDENTIFIER = com.zhomesre.app;', content); content = re.sub(r'DevelopmentTeam\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'DevelopmentTeam = 98Z74Q5FCB;', content); content = re.sub(r'ProvisioningStyle\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'ProvisioningStyle = Manual;', content); open(path, 'w').write(content); print('Proyecto parcheado con Bundle ID, Team ID y firma Manual.')"
+          python3 -c "path = 'zhomes-app/ios/App/App/Info.plist'; content = open(path).read(); content = content.replace('<dict>', '<dict>\n\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>') if 'ITSAppUsesNonExemptEncryption' not in content else content; open(path, 'w').write(content); print('Info.plist parcheado con Export Compliance.')"
       - name: Set up code signing
         script: |
           cd zhomes-app/ios/App
