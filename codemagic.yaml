@@ -30,7 +30,9 @@ workflows:
           npx cap sync ios
       - name: Cocoapods installation
         script: |
-          cd zhomes-app/ios/App
+          cd zhomes-app
+          find ios -maxdepth 3 || true
+          cd ios/App
           pod install
 
       - name: Decode signing files
