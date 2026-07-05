@@ -32,8 +32,7 @@ workflows:
 
       - name: Decode signing files
         script: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          python3 -c "import base64, os; open(os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision'), 'wb').write(base64.b64decode(os.environ['CM_PROVISIONING_PROFILE'].replace('\n','').replace('\r','')))"
+          python3 -c "import base64, os, plistlib; data = base64.b64decode(os.environ['CM_PROVISIONING_PROFILE'].replace('\n','').replace('\r','')); plist = plistlib.loads(data[data.find(b'<plist'):data.find(b'</plist>')+8]); uuid = plist['UUID']; target_dir = os.path.expanduser('~/Library/MobileDevice/Provisioning Profiles'); os.makedirs(target_dir, exist_ok=True); open(os.path.join(target_dir, f'{uuid}.mobileprovision'), 'wb').write(data); print(f'Instalado perfil con UUID: {uuid}')"
           python3 -c "import base64, os; open('/tmp/ios_distribution.p12', 'wb').write(base64.b64decode(os.environ['CM_CERTIFICATE'].replace('\n','').replace('\r','')))"
       - name: Set up keychain
         script: |
