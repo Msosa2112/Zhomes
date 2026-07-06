@@ -1,6 +1,9 @@
 import { useEffect } from 'react'
 import { IonApp } from '@ionic/react'
 import { HashRouter as Router } from 'react-router-dom'
+import { App as CapApp } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
+import { supabase } from './lib/supabaseClient'
 import { PropertiesProvider } from './context/PropertyContext'
 import { AgentProvider } from './context/AgentContext'
 import AppRoutes from './AppRoutes'
@@ -25,6 +28,42 @@ function App() {
     }
     document.addEventListener('mousemove', handler)
     return () => document.removeEventListener('mousemove', handler)
+  }, [])
+
+  /* Listen to Supabase deep links for OAuth authentication */
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+
+    const handleDeepLink = async (event) => {
+      try {
+        const url = new URL(event.url)
+        if (url.hash) {
+          const hash = url.hash.substring(1)
+          const params = new URLSearchParams(hash)
+          const access_token = params.get('access_token')
+          const refresh_token = params.get('refresh_token')
+
+          if (access_token && refresh_token) {
+            const { error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token
+            })
+            if (!error) {
+              window.location.hash = '#/'
+            } else {
+              console.error('Error setting session from deep link:', error)
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Deep link parsing error:', err)
+      }
+    }
+
+    CapApp.addListener('appUrlOpen', handleDeepLink)
+    return () => {
+      CapApp.removeAllListeners()
+    }
   }, [])
 
 

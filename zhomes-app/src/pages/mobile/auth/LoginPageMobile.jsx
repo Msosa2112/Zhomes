@@ -96,10 +96,15 @@ export default function LoginPageMobile() {
         setLoading(true)
         setErrorMsg('')
         try {
+            const { Capacitor } = await import('@capacitor/core')
+            const redirectTo = Capacitor.isNativePlatform()
+                ? 'com.zhomesre.app://login'
+                : window.location.origin + '/login'
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: window.location.origin + '/login'
+                    redirectTo
                 }
             })
             if (error) throw error

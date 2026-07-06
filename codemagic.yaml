@@ -55,7 +55,17 @@ workflows:
       - name: Patch Xcode project and Info.plist
         script: |
           python3 -c "import re; path = 'zhomes-app/ios/App/App.xcodeproj/project.pbxproj'; content = open(path).read(); content = re.sub(r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*[A-Za-z0-9._\'\"\-]*\s*;', 'PRODUCT_BUNDLE_IDENTIFIER = com.zhomesre.app;', content); content = re.sub(r'DevelopmentTeam\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'DevelopmentTeam = 98Z74Q5FCB;', content); content = re.sub(r'ProvisioningStyle\s*=\s*[A-Za-z0-9\'\"_]*\s*;', 'ProvisioningStyle = Manual;', content); open(path, 'w').write(content); print('Proyecto parcheado con Bundle ID, Team ID y firma Manual.')"
-          python3 -c "path = 'zhomes-app/ios/App/App/Info.plist'; content = open(path).read(); content = content.replace('<dict>', '<dict>\n\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>') if 'ITSAppUsesNonExemptEncryption' not in content else content; open(path, 'w').write(content); print('Info.plist parcheado con Export Compliance.')"
+          python3 -c "
+          path = 'zhomes-app/ios/App/App/Info.plist'
+          content = open(path).read()
+          if 'ITSAppUsesNonExemptEncryption' not in content:
+              content = content.replace('<dict>', '<dict>\n\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>')
+          if 'CFBundleURLTypes' not in content:
+              url_types = '\n\t<key>CFBundleURLTypes</key>\n\t<array>\n\t\t<dict>\n\t\t\t<key>CFBundleURLName</key>\n\t\t\t<string>com.zhomesre.app</string>\n\t\t\t<key>CFBundleURLSchemes</key>\n\t\t\t<array>\n\t\t\t\t<string>com.zhomesre.app</string>\n\t\t\t</array>\n\t\t</dict>\n\t</array>'
+              content = content.replace('<dict>', '<dict>' + url_types)
+          open(path, 'w').write(content)
+          print('Info.plist parcheado con Export Compliance y URL Scheme para Deep Linking.')
+          "
       - name: Set up code signing
         script: |
           cd zhomes-app/ios/App
