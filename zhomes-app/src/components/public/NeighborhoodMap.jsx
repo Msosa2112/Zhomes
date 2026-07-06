@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import { GraduationCap, Utensils, Car, TreePine, ShoppingBag, Dumbbell, Coffee, Clock, MapPin, Layers } from 'lucide-react'
@@ -99,6 +99,26 @@ export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
     }, [propertyId, lat, lng])
 
     const pois = useMemo(() => realPois || generatePOIs(lat, lng), [lat, lng, realPois])
+
+    const dynamicTimeline = useMemo(() => {
+        const school = pois.schools[0] || { name: 'Escuela local', dist: 'cercana' }
+        const cafe = pois.dining.find(d => d.type.toLowerCase().includes('café') || d.type.toLowerCase().includes('cafe')) || pois.dining[0] || { name: 'Cafetería local', dist: 'cercana' }
+        const lunch = pois.dining.find(d => d.name !== cafe.name) || pois.dining[0] || { name: 'Restaurante local', dist: 'cercano' }
+        const park = pois.lifestyle.find(l => l.type.toLowerCase().includes('parque') || l.type.toLowerCase().includes('park') || l.type.toLowerCase().includes('plaza')) || pois.lifestyle[0] || { name: 'Parque local', dist: 'cercano' }
+        const gymOrShop = pois.lifestyle.find(l => l.name !== park.name) || pois.lifestyle[1] || { name: 'Gimnasio o comercio', dist: 'cercano' }
+        const highway = pois.commute[0] || { name: 'Vía principal', time: 'unos minutos' }
+        
+        return [
+            { time: '7:00 AM', emoji: '☕', activity: `Café o desayuno en ${cafe.name} (${cafe.dist || 'cercana'})`, category: 'dining' },
+            { time: '7:45 AM', emoji: '🚗', activity: `${highway.name} a ${highway.time || 'unos minutos'} — Salida cómoda`, category: 'commute' },
+            { time: '8:00 AM', emoji: '🏫', activity: `Dejar niños en ${school.name} (${school.dist || 'cercana'})`, category: 'schools' },
+            { time: '12:00 PM', emoji: '🍽️', activity: `Almuerzo en ${lunch.name} (${lunch.dist || 'cercana'})`, category: 'dining' },
+            { time: '3:30 PM', emoji: '🎒', activity: `Recogida de la escuela`, category: 'schools' },
+            { time: '4:00 PM', emoji: '🌳', activity: `Paseo por ${park.name} (${park.dist || 'cercana'})`, category: 'lifestyle' },
+            { time: '6:30 PM', emoji: '🛒', activity: `Compras rápidas en ${gymOrShop.name} (${gymOrShop.dist || 'cercana'})`, category: 'lifestyle' },
+            { time: '7:30 PM', emoji: '🏠', activity: `De vuelta a casa en tu nuevo hogar`, category: 'home' },
+        ]
+    }, [pois])
 
     const toggleLayer = (layer) => {
         setActiveLayers(prev =>
@@ -267,7 +287,7 @@ export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
                         Así podría lucir un día típico viviendo en <strong>{address}</strong>
                     </p>
                     <div className="nh-day-timeline">
-                        {DAY_TIMELINE.map((item, i) => (
+                        {dynamicTimeline.map((item, i) => (
                             <div
                                 key={i}
                                 className={`nh-day-item animate-fadeInUp`}
@@ -283,7 +303,7 @@ export default function NeighborhoodMap({ propertyId, lat, lng, address }) {
                                                 : LAYER_CONFIG[item.category]?.color || '#6B7280'
                                         }}
                                     />
-                                    {i < DAY_TIMELINE.length - 1 && <div className="nh-day-line" />}
+                                    {i < dynamicTimeline.length - 1 && <div className="nh-day-line" />}
                                 </div>
                                 <div className="nh-day-content">
                                     <span className="nh-day-emoji">{item.emoji}</span>

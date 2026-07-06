@@ -78,8 +78,8 @@ export default function SwipeModePageMobile() {
     }
 
     return (
-        <div className="swipe-page">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 1rem' }}>
+        <div className="swipe-page" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem 1rem 0' }}>
                 <button onClick={() => navigate(-1)} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ArrowLeft size={18} color="var(--text-primary)" /></button>
                 <h1 className="swipe-title" style={{ margin: 0 }}>Zhomes Match</h1>
             </div>

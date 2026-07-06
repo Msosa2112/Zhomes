@@ -74,6 +74,7 @@ export default function PropertyDetailPageMobile() {
     })
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         setLoading(true);
         
         // 1. Immediately show limited data from context if available (avoids loading screen)

@@ -36,6 +36,8 @@ export default function PublicLayoutMobile() {
     ]
 
     const isPropertyDetail = loc.pathname.startsWith('/propiedades/') && loc.pathname.length > '/propiedades/'.length;
+    const hideHeaderRoutes = ['/mapa', '/swipe', '/login', '/registro', '/recuperar', '/actualizar-password'];
+    const shouldHideHeader = isPropertyDetail || hideHeaderRoutes.some(route => loc.pathname === route || loc.pathname.startsWith(route + '/'));
 
     return (
         <IonPage className="mobile-public-layout">
@@ -48,7 +50,7 @@ export default function PublicLayoutMobile() {
                 transform: showHeader ? 'translateY(0)' : 'translateY(-100%)',
                 transition: 'transform 0.4s cubic-bezier(0.3, 1, 0.3, 1)',
                 pointerEvents: showHeader ? 'auto' : 'none',
-                display: isPropertyDetail ? 'none' : 'block'
+                display: shouldHideHeader ? 'none' : 'block'
             }}>
                 <IonToolbar style={{ '--background': 'transparent' }}>
                     <div style={{ padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' }}>

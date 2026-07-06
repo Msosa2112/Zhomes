@@ -519,7 +519,7 @@
     }
 
     .marvel-back-global {
-        top: 20px;
+        top: calc(12px + env(safe-area-inset-top));
         left: 20px;
         padding: 8px 16px;
     }
