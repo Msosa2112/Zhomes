@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { IonApp } from '@ionic/react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { HashRouter as Router } from 'react-router-dom'
 import { PropertiesProvider } from './context/PropertyContext'
 import { AgentProvider } from './context/AgentContext'
 import AppRoutes from './AppRoutes'
